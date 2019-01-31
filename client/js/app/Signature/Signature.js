@@ -36,7 +36,10 @@ class Signature extends Component {
         left: e.pageX + 'px',
         top: e.pageY + 'px'
     }
-    let element = React.createElement(this.state.textInput, {style: dynamicstyle})
+    // let element = React.createElement(this.state.textInput, {style: dynamicstyle})
+    var element = document.createElement('input');
+    element.type = this.state.textInput;
+    element.style.cssText = 'left:'+e.pageX+'px;top:'+e.pageY+'px;';
     console.log(element)
     container.appendChild(element);
     console.log(e.pageX);
