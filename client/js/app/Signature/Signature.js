@@ -8,7 +8,8 @@ class Signature extends Component {
     super(props);
     this.state ={
       page:'signature',
-      signInput:null,
+      textInput:null,
+      type:null,
       buttons:{
         sign:false,
         clear:false,
@@ -16,6 +17,32 @@ class Signature extends Component {
       }
     };
   }
+
+  removeSignature(e){
+    var signature = this.refs.mySignature;
+    signature.clear();
+  }
+
+  createTextField(e){
+    e.preventDefault();
+    this.setState({textInput:'text'});
+    console.log(this.state.textInput);
+  }
+
+  pasteSelectedField(e){
+    e.preventDefault();
+    let container = document.getElementById('signature_container');
+    let dynamicstyle = {
+        left: e.pageX + 'px',
+        top: e.pageY + 'px'
+    }
+    let element = React.createElement(this.state.textInput, {style: dynamicstyle})
+    console.log(element)
+    container.appendChild(element);
+    console.log(e.pageX);
+    console.log(this.state.textInput);
+  }
+
     bindSignature(e){
     if(this.state.signInput.isEmpty()) return false;
       let image = this.state.signInput.toDataURL(),
@@ -64,7 +91,7 @@ class Signature extends Component {
   //       onEnd(e){
 
   //       },
-  //     }); 
+  //     });
   //     // this.setState({signInput:widget});
   //     // console.log(this.state.signInput)
   //     // window.addEventListener("resize",this.resizeCanvas);
@@ -111,11 +138,12 @@ class Signature extends Component {
                 <div id="collapseOne" className="collapse  show" aria-labelledby="headingOne" data-parent="#accordion">
                   <div className="card-body">
                     <ol className="btn-mainlist">
-                      <li><a href="#" className="btn current-btn">Signature</a></li>
-                      <li><a href="#" className="btn">Text</a></li>
-                      <li><a href="#" className="btn">Date</a></li>
-                      <li><a href="#" className="btn">Initials</a></li>
-                      <li><a href="#" className="btn">Check</a></li>
+                      <li><a href="javascript:void(0)" className="btn current-btn">Signature</a></li>
+                      <li><a href="javascript:void(0)" className="btn" onClick={this.createTextField.bind(this)}>Text</a></li>
+                      <li><a href="javascript:void(0)" className="btn">Date</a></li>
+                      <li><a href="javascript:void(0)" className="btn">Initials</a></li>
+                      <li><a href="javascript:void(0)" className="btn">Check</a></li>
+                      <li><a href="javascript:void(0)" className="btn" onClick={this.removeSignature.bind(this)}>Clear</a></li>
                     </ol>
                   </div>
                 </div>
@@ -125,7 +153,7 @@ class Signature extends Component {
         </ul>
         <ul className="btn-list">
           <li>
-            <div id="accordion" className="inner-accordian">      
+            <div id="accordion" className="inner-accordian">
               <div className="card">
                 <div className="card-header" id="headingTwo">
                   <button className="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
@@ -153,7 +181,9 @@ class Signature extends Component {
       </div>
       <div className="right-maintemplate">
         <div className="pageNumber">Page 1 of 1</div>
-        <SignaturePad options={{minWidth: 5, maxWidth: 10, penColor: 'rgb(66, 133, 244)'}} />
+        <div className='page container' id="signature_container" onClick={this.pasteSelectedField.bind(this)}>
+          <SignaturePad clearButton="true" ref="mySignature" options={{minWidth: 5, maxWidth: 10, penColor: 'rgb(66, 133, 244)'}} />
+        </div>
       </div>
     </div></div>)
   }

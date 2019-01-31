@@ -66,15 +66,12 @@ export default class ModalComponent extends React.Component {
   Login(event){
     event.preventDefault();
     this.props.dispatch(auth.actions.login(this.state, '/'));
-    // axios.post('/api/login',this.state).then((res) => {
     if (localStorage.getItem('jwtToken')) {
       this.setState({
         added: true,
         msg: 'Logged In Successfully! Redirecting..',
       });
     }
-    //   sessionStorage.setItem('user',JSON.stringify(res.data));
-    // });
   }
   closePopUp(){
     setTimeout(
