@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import  { Redirect } from 'react-router-dom'
 
 import auth from 'src/auth';
 
@@ -19,7 +20,7 @@ export default class Logout extends React.Component {
 
   logout(){
     localStorage.clear();
-    this.props.dispatch(auth.actions.logout());
+    // this.props.dispatch(auth.actions.logout());
     // this.props.dispatch(auth.actions.logout());
   }
 
@@ -28,6 +29,6 @@ export default class Logout extends React.Component {
     }
 
     render() {
-        return <div>See you again!</div>;
+        return <Redirect to='/'  />
     }
 }

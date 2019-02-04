@@ -7,6 +7,8 @@ import Prices from './Prices';
 import Feature from './Feature';
 import Contact from './Contact';
 import Signature from './Signature';
+import Dashboard from './Dashboard';
+import Logout from './Logout';
 
 export default [
     user,
@@ -15,5 +17,7 @@ export default [
     Prices,
     Feature,
     Contact,
-    Signature
+    Signature,
+    Dashboard,
+    Logout
 ];

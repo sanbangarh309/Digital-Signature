@@ -42,8 +42,6 @@ class Signature extends Component {
     element.style.cssText = 'left:'+e.pageX+'px;top:'+e.pageY+'px;';
     console.log(element)
     container.appendChild(element);
-    console.log(e.pageX);
-    console.log(this.state.textInput);
   }
 
     bindSignature(e){

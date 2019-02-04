@@ -16,6 +16,7 @@ const appReducer = combineReducers(reducers);
 // Flush out the (sensitive) data when logged out to prevent
 // data leak when switching between users with different permissions.
 const rootReducer = (state, action) => {
+  console.log(state)
     if (action.type === 'CLEAR_STORE') {
         /* Code for handling Redux persist
         Object.keys(state).forEach((key) => {

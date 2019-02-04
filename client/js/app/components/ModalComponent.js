@@ -1,4 +1,5 @@
 import React from 'react';
+import  { Redirect } from 'react-router-dom'
 // import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import PropTypes from 'prop-types';
 import auth from 'src/auth';
@@ -50,7 +51,6 @@ export default class ModalComponent extends React.Component {
   Register(event){
     event.preventDefault();
     this.props.dispatch(auth.actions.signup(this.state, '/'));
-    console.log(this.props);
       this.setState({
         added: true,
         msg: 'Registerted Successfully',
@@ -65,22 +65,24 @@ export default class ModalComponent extends React.Component {
 
   Login(event){
     event.preventDefault();
-    this.props.dispatch(auth.actions.login(this.state, '/'));
-    if (localStorage.getItem('jwtToken')) {
+    document.getElementById("hidePopUpBtn").click();
+    this.props.dispatch(auth.actions.login(this.state, '/dashboard'));
+    if(user && user.user.email !=''){
+      // console.log(this.props.action)
       this.setState({
         added: true,
         msg: 'Logged In Successfully! Redirecting..',
       });
+      document.getElementById("hidePopUpBtn").click();
     }
   }
   closePopUp(){
     setTimeout(
         function() {
-            document.getElementById("hidePopUpBtn").click();
-            window.location.reload();
+            return <Redirect to='/dashboard'  />
         }
         .bind(this),
-        2000
+        1000
     );
   }
   render() {
@@ -91,7 +93,7 @@ export default class ModalComponent extends React.Component {
       addedAlert = <div className="alert alert-success">
       <strong>Success!</strong>   {this.state.msg}
       </div>;
-      this.closePopUp()
+      // this.closePopUp()
     }
     return (
         <div className={cusClass.join(' ')} id="auth-modal" tabindex="-1" role="dialog">

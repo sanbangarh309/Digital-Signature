@@ -1,4 +1,5 @@
 import React from 'react';
+import  { Redirect } from 'react-router-dom'
 import {connect} from 'react-redux';
 import './css/docs.theme.min.css';
 import './css/owl.carousel.min.css';
@@ -29,15 +30,16 @@ import './scripts/custom.js';
 var NavLink = require('react-router-dom').NavLink;
 let logout = () => {
   localStorage.clear();
-  return 1;
 }
-
 const Header = () => {
-  let user_action = <a className="" href="#" data-toggle="modal" data-target="#auth-modal">
+  if (localStorage.getItem('jwtToken')) {
+    return <Redirect to='/dashboard'  />
+  }
+  let user_action = <a className="" href="javascript:void(0)" data-toggle="modal" data-target="#auth-modal">
   <span className="fa fa-unlock-alt"></span>
   Login</a>;
   if (localStorage.getItem('jwtToken')) {
-    user_action = <a className="" href="#" onClick = {logout}>
+    user_action = <a className="" href="./logout">
     <span className="fa fa-unlock-alt"></span>
     Logout</a>;
   }
