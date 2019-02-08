@@ -9,7 +9,7 @@ class Signature extends Component {
     this.state ={
       page:'signature',
       textInput:null,
-      containerClasses:['page','container'],
+      containerClasses:['page','container','doc-bg'],
       type:null,
       buttons:{
         sign:false,
@@ -117,6 +117,15 @@ class Signature extends Component {
   //     // debugger;
   //   }
   render() {
+    let backImage = {}
+    let doc = localStorage.getItem('uploaded_doc') || ''
+    console.log(doc)
+    if(doc){
+      backImage = {
+        backgroundImage:"url(" + doc + ")"
+      }
+    }
+    console.log(backImage)
     return (
       <div><header>
          <nav className="navbar navbar-expand-lg navbar-light custom-navheader navbar-fixed header-template" id="sroll-className">
@@ -200,7 +209,7 @@ class Signature extends Component {
       </div>
       <div className="right-maintemplate">
         <div className="pageNumber">Page 1 of 1</div>
-        <div className={this.state.containerClasses.join(' ')} id="signature_container" onClick={this.pasteSelectedField.bind(this)}>
+        <div className={this.state.containerClasses.join(' ')} id="signature_container" style = {backImage} onClick={this.pasteSelectedField.bind(this)}>
 
         </div>
       </div>

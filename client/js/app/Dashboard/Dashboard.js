@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Redirect} from 'react-router-dom';
 import './Dashboard.css';
 import axios from 'src/common/myAxios';
+import {browserHistory} from 'react-router';
 var NavLink = require('react-router-dom').NavLink;
 
 const getBase64 = (file) => {
@@ -17,6 +18,7 @@ class Dashboard extends Component {
     super(props);
     this.state = {
       page:'Dashboard',
+      redirect: false,
       doc:'',
       data:[]
     };
@@ -27,7 +29,10 @@ class Dashboard extends Component {
     const file = e.target.files[0];
     getBase64(file).then(base64 => {
       this.setState({doc:base64});
-      console.log(this.state.doc);
+      localStorage.setItem('uploaded_doc', base64);
+      this.setState({
+        redirect: 'signature'
+      })
     });
   }
 
@@ -36,6 +41,12 @@ class Dashboard extends Component {
    }
 
   render() {
+    if (!localStorage.getItem('jwtToken')) {
+      return <Redirect to='/'  />
+    }
+    if (this.state.redirect) {
+      return (<Redirect to={this.state.redirect}/>)
+    }
     return (
       <div className="container-fluid main-wrapper">
       <aside className="main-sidebar">
