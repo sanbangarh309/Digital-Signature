@@ -4,14 +4,31 @@ import './Dashboard.css';
 import axios from 'src/common/myAxios';
 var NavLink = require('react-router-dom').NavLink;
 
+const getBase64 = (file) => {
+  return new Promise((resolve,reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
 class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      page:'About',
+      page:'Dashboard',
+      doc:'',
       data:[]
     };
     this.onChange = this.onChange.bind(this);
+  }
+
+  docUpload = (e) => {
+    const file = e.target.files[0];
+    getBase64(file).then(base64 => {
+      this.setState({doc:base64});
+      console.log(this.state.doc);
+    });
   }
 
   onChange(e){
@@ -31,9 +48,9 @@ class Dashboard extends Component {
           </div>
          </div>
          <ul className="sidebar-menu tree" data-widget="tree">
-          <li className="active" onClick={this.Login}><NavLink activeClassName='active' to='/docs'><i className="fa fa-dashboard"></i> <span>Documentation</span></NavLink></li>
-          <li onClick={this.Login}><NavLink activeClassName='active' to='/dashboard'><i className="fa fa-rebel"></i> <span>Templates</span></NavLink></li>
-          <li onClick={this.Login}><NavLink activeClassName='active' to='/logout'><i className="fa fa-sign-out"></i> <span>Logout</span></NavLink></li>
+          <li><NavLink activeClassName='active' to='/dashboard'><i className="fa fa-dashboard"></i> <span>Documentation</span></NavLink></li>
+          <li><NavLink activeClassName='active' to='/temps'><i className="fa fa-rebel"></i> <span>Templates</span></NavLink></li>
+          <li><NavLink activeClassName='active' to='/logout'><i className="fa fa-sign-out"></i> <span>Logout</span></NavLink></li>
          </ul>
       </aside>
       <div className="right-maintemplate admin-right">
@@ -58,23 +75,7 @@ class Dashboard extends Component {
                         </label>
                       </form>
                     </li>
-                    <li className="dropdown">
-                      <a href="#" className="dropdown-toggle drop-tog" data-toggle="dropdown" aria-expanded="true" data-toggle="dropdown">
-                        <i className="fa fa-cloud-download"></i>
-                      </a>
-                      <ul className="dropdown-menu drop-downbox">
-                        <li>
-                          <a href="#" className="btn btn-default btn-flat"><i className="fa fa-user"></i> My Profile</a>
-                        </li>
-                        <li>
-                          <a href="#" className="btn btn-default btn-flat"><i className="fa fa-globe"></i> Feedback</a>
-                        </li>
-                        <li>
-                          <a href="#" className="btn btn-default btn-flat"><i className="fa fa-sign-out"></i> Logout out</a>
-                        </li>
-                      </ul>
-                    </li>
-                    <li><a href="#"><i className="fa fa-upload"></i></a></li>
+                    <li className="upload_docs"><input type="file" id="hidden_upload_file" onChange={this.docUpload}  /><i className="fa fa-upload"></i></li>
                     <li><a href="#"><i className="fa fa-filter"></i></a></li>
                   </ul>
                 </div>
