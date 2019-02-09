@@ -2,7 +2,7 @@
 * @author Sandeep Bangarh <sanbangarh309@gmail.com>
 */
 "use strict"
-var Product = require('./models/product');
+var Doc = require('./models/Doc');
 var config = require('./custom_config');
 var ObjectId = require('mongodb').ObjectID;
 module.exports = {
