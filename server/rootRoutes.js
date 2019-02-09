@@ -12,7 +12,7 @@ const getModuleRouteFiles = (source) =>
 
 module.exports = (app) => {
     // Import misc. routes
-    require('./routes/products')(app);
+    require('./routes/doc')(app);
     require('./routes/sampleAuth')(app);
 
     // Import per-module routes

@@ -1,14 +1,12 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-  name:String,
+  title:String,
   user_id:{ type: String, default: '' },
   price:String,
-  qty: Number,
-  color: String,
+  signed: Number,
   description: String,
-  qrcode: String,
-  images: [],
+  file: String,
   created_at:{ type: Date, default: Date.now },
 });
 

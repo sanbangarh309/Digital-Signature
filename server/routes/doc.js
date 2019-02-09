@@ -1,71 +1,65 @@
-const Product = require.main.require('./models/product');
+const Doc = require.main.require('./models/Doc');
 const San_Function = require.main.require('./functions');
 const config = require.main.require('./custom_config');
 module.exports = (app) => {
-    app.post('/api/get_products', (req, res, next) => {
+    app.post('/api/get_docs', (req, res, next) => {
         let query = {};
         if(req.body.qry){
             query = { 'name': new RegExp(req.body.qry, 'i') };
         }
-        Product.find(query)
+        Doc.find(query)
         .exec()
-        .then((products) => res.json(products))
+        .then((docs) => res.json(docs))
         .catch((err) => next(err));
     });
 
-    app.post('/api/add_product', (req, res, next) => {
+    app.post('/api/add_doc', (req, res, next) => {
         let base64Data = req.body.images;
-        var multiarray = [];
         San_Function.uploadBase64Image(base64Data,function(image_name){
+            let doc = new Doc();
+            doc.user_id = 1;
+            doc.title = req.body.product_name;
+            doc.price = req.body.price;
+            doc.description = req.body.description;
             if (image_name) {
-                multiarray.push(image_name);
+                doc.file = image_name;
             }
-            let prod = new Product();
-            prod.user_id = 1;
-            prod.name = req.body.product_name;
-            prod.price = req.body.price;
-            prod.description = req.body.description;
-            if (multiarray.length > 0) {
-                prod.images = multiarray;
-            }
-            prod.qty = 1;
-            prod.color = 'blue';
-            prod.save();
+            doc.save();
           // data._id
-          San_Function.sanGenerateBarCode(prod._id, function(qrcode){
-            prod.qrcode = qrcode;
-            // data.save();
-            Product.findByIdAndUpdate(prod._id, prod, {new: true}, function (err, product) {
-                if (err) return res.status(500).send("There was a problem updating the user.");
-                res.status(200).send(product);
-            });
-        });
+        //   San_Function.sanGenerateBarCode(prod._id, function(qrcode){
+        //     doc.qrcode = qrcode;
+        //     // data.save();
+        //     Doc.findByIdAndUpdate(prod._id, prod, {new: true}, function (err, product) {
+        //         if (err) return res.status(500).send("There was a problem updating the user.");
+        //         res.status(200).send(product);
+        //     });
+        // });
       });
 
     });
 
-    app.delete('/api/product/:id', (req, res, next) => {
-        Product.findOneAndRemove({_id: req.params.id})
+    app.delete('/api/doc/:id', (req, res, next) => {
+        Doc.findOneAndRemove({_id: req.params.id})
         .exec()
-        .then((product) => {
+        .then((doc) => {
           var fs = require('fs');
-          if ( typeof product.images !== 'undefined' && product.images[0] ){
-            fs.unlink(config.directory+'/uploads/products/'+product.images[0]);
+          if ( typeof doc.images !== 'undefined' && doc.images[0] ){
+            fs.unlink(config.directory+'/uploads/products/'+doc.images[0]);
           }
-          if ( typeof product.qrcode !== 'undefined' && product.qrcode ){
-            fs.unlink(config.directory+'/uploads/qrcodes/'+product.qrcode);
+          if ( typeof doc.qrcode !== 'undefined' && doc.qrcode ){
+            fs.unlink(config.directory+'/uploads/qrcodes/'+doc.qrcode);
           }
           res.json(product);
         })
         .catch((err) => next(err));
     });
 
-    app.put('/api/product/:id', (req, res, next) => {
+    app.put('/api/doc/:id', (req, res, next) => {
         Product.findById(req.params.id)
         .exec()
-        .then((product) => {
-            product.save()
-            .then(() => res.json(product))
+        .then((doc) => {
+            doc.save()
+            .then(() => res.json(doc))
             .catch((err) => next(err));
         })
         .catch((err) => next(err));
