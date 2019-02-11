@@ -31,7 +31,7 @@ const WebpackConfig = WebpackConfigure(process.env, {argv: {mode: process.env.NO
 
 // Set up Mongoose with centralized promise
 mongoose.Promise = global.Promise;
-mongoose.connect(devMode ? config.db_dev : config.db,{ useNewUrlParser: true }).then(() => {
+mongoose.connect(devMode ? config.db_dev : config.db,{ useCreateIndex: true,useNewUrlParser: true }).then(() => {
     winston.log('info', 'Successfully connect with mongoose DB');
 }).catch((err) => {
     winston.log('error', err);

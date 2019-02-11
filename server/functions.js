@@ -45,22 +45,47 @@ module.exports = {
     if (!base64Data) {
       return sb('');
     }
-    var imageTypeRegularExpression      = /\/(.*?)$/;
+    var imageTypeRegularExpression = /\/(.*?)$/;
     // Generate random string
     var uniqueSHA1String = module.exports.san_Password()
     var imageBuffer = module.exports.decodeBase64Image(base64Data);
-    var uploafdf_dir = config.directory + "/uploads/products/";
-    var uniqueRandomImageName = 'image-' + uniqueSHA1String;
+    var uploafdf_dir = config.directory + "/uploads/docs/";
     var imageTypeDetected = imageBuffer.type.match(imageTypeRegularExpression);
+    if(imageTypeDetected[1] == 'pdf'){
+      var uniqueRandomImageName = 'pdf_' + uniqueSHA1String;
+    }else{
+      var uniqueRandomImageName = 'image_' + uniqueSHA1String;
+    }
     var userUploadedImagePath = uploafdf_dir + uniqueRandomImageName + '.' + imageTypeDetected[1];
     var filename = uniqueRandomImageName + '.' + imageTypeDetected[1];
     try
     {
-      require('fs').writeFile(userUploadedImagePath, imageBuffer.data,
-        function()
-        {
-          sb(filename);
-        });
+      if(imageTypeDetected[1] == 'pdf'){
+        require('fs').writeFile(userUploadedImagePath, imageBuffer.data,
+          function()
+          {
+              let PDF2Pic = require('pdf2pic')
+              let converter = new PDF2Pic({
+                density: 100,           // output pixels per inch
+                savename: uniqueRandomImageName + "_cnvrt",   // output file name
+                savedir: uploafdf_dir,    // output file location
+                format: "png",          // output file format
+                size: 1200               // output size in pixels
+              })
+              // converter.convertToBase64(userUploadedImagePath)
+              // .then(resolve => {
+              //   if (resolve.base64) {
+              //     sb(resolve.base64);
+              //   }
+              // })
+              converter.convertBulk(userUploadedImagePath, -1)
+              .then(resolve => {
+                sb(resolve); 
+              })
+          });
+      }else{
+        sb(imageBuffer.data);
+      }
       }
       catch(error)
       {

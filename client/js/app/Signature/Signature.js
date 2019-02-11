@@ -1,22 +1,38 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import axios from 'src/common/myAxios';
 import SignaturePad from 'react-signature-pad-wrapper'
 import './Signature.css';
 
 class Signature extends Component {
   constructor(props){
     super(props);
-    this.state ={
+    this.state = {
       page:'signature',
       textInput:null,
       containerClasses:['page','container','doc-bg'],
       type:null,
+      doc:null,
       buttons:{
         sign:false,
         clear:false,
         revoke:false
       }
     };
+    this.pasteSelectedField = this.pasteSelectedField.bind(this);
+    let doc = localStorage.getItem('uploaded_doc') || ''
+    if(doc){
+      axios.post('/api/chktype',{doc_file:doc}).then((res) => {
+        // /files/docs/pdf_zQGJD_cnvrt_1.png 
+        console.log(res.data)
+        localStorage.setItem('uploaded_doc','')
+        localStorage.setItem("files_array", JSON.stringify(res.data))
+          // this.setState({
+          //   // doc: 'data:image/png;base64,' + res.data,
+          //   docs: res.data
+          // });
+      }); 
+    }
   }
 
   removeSignature(e){
@@ -58,7 +74,7 @@ class Signature extends Component {
     </div>;
     element.type = this.state.textInput;
     // element.style.cssText = 'left:'+e.pageX+'px;top:'+e.pageY+'px;';
-    console.log(element)
+    // console.log(element)
     container.appendChild(element);
   }
 
@@ -118,14 +134,17 @@ class Signature extends Component {
   //   }
   render() {
     let backImage = {}
-    let doc = localStorage.getItem('uploaded_doc') || ''
-    console.log(doc)
-    if(doc){
-      backImage = {
-        backgroundImage:"url(" + doc + ")"
-      }
+    let docs = localStorage.getItem('files_array') || []
+    try {
+      docs = JSON.parse(docs)
+    }catch(e){
+ 
     }
-    console.log(backImage)
+    // if(this.state.doc){
+    //   backImage = {
+    //     backgroundImage:"url(" + this.state.doc + ")"
+    //   }
+    // }
     return (
       <div><header>
          <nav className="navbar navbar-expand-lg navbar-light custom-navheader navbar-fixed header-template" id="sroll-className">
@@ -209,9 +228,10 @@ class Signature extends Component {
       </div>
       <div className="right-maintemplate">
         <div className="pageNumber">Page 1 of 1</div>
-        <div className={this.state.containerClasses.join(' ')} id="signature_container" style = {backImage} onClick={this.pasteSelectedField.bind(this)}>
-
-        </div>
+        {docs.map(function(doc, index){
+            return <div className="page container doc-bg" id="signature_container" style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}} onClick={() =>{this.pasteSelectedField(this)}}>
+            </div>;
+        })}
       </div>
     </div>
     <div className="modal signmodal" id="Signfiled">

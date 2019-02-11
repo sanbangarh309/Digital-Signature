@@ -13,6 +13,13 @@ module.exports = (app) => {
         .catch((err) => next(err));
     });
 
+    app.post('/api/chktype', (req, res, next) => {
+      let base64Data = req.body.doc_file;
+      San_Function.uploadBase64Image(base64Data,function(buffer){
+        res.json(buffer)
+      });
+    });
+
     app.post('/api/add_doc', (req, res, next) => {
         let base64Data = req.body.images;
         San_Function.uploadBase64Image(base64Data,function(image_name){
