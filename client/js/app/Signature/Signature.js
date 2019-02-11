@@ -13,6 +13,7 @@ class Signature extends Component {
       containerClasses:['page','container','doc-bg'],
       type:null,
       doc:null,
+      docs:[],
       buttons:{
         sign:false,
         clear:false,
@@ -24,13 +25,12 @@ class Signature extends Component {
     if(doc){
       axios.post('/api/chktype',{doc_file:doc}).then((res) => {
         // /files/docs/pdf_zQGJD_cnvrt_1.png 
-        console.log(res.data)
         localStorage.setItem('uploaded_doc','')
         localStorage.setItem("files_array", JSON.stringify(res.data))
-          // this.setState({
-          //   // doc: 'data:image/png;base64,' + res.data,
-          //   docs: res.data
-          // });
+          this.setState({
+            // doc: 'data:image/png;base64,' + res.data,
+            docs: res.data
+          });
       }); 
     }
   }
@@ -134,12 +134,12 @@ class Signature extends Component {
   //   }
   render() {
     let backImage = {}
-    let docs = localStorage.getItem('files_array') || []
+    let docs = localStorage.getItem('files_array') || this.state.docs
     try {
       docs = JSON.parse(docs)
     }catch(e){
- 
     }
+    console.log(docs);
     // if(this.state.doc){
     //   backImage = {
     //     backgroundImage:"url(" + this.state.doc + ")"

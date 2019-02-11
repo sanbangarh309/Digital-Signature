@@ -60,10 +60,10 @@ module.exports = {
     var filename = uniqueRandomImageName + '.' + imageTypeDetected[1];
     try
     {
-      if(imageTypeDetected[1] == 'pdf'){
         require('fs').writeFile(userUploadedImagePath, imageBuffer.data,
           function()
           {
+            if(imageTypeDetected[1] == 'pdf'){
               let PDF2Pic = require('pdf2pic')
               let converter = new PDF2Pic({
                 density: 100,           // output pixels per inch
@@ -72,20 +72,14 @@ module.exports = {
                 format: "png",          // output file format
                 size: 1200               // output size in pixels
               })
-              // converter.convertToBase64(userUploadedImagePath)
-              // .then(resolve => {
-              //   if (resolve.base64) {
-              //     sb(resolve.base64);
-              //   }
-              // })
               converter.convertBulk(userUploadedImagePath, -1)
               .then(resolve => {
                 sb(resolve); 
               })
+            }else{
+              sb([{name:filename}]);
+            }
           });
-      }else{
-        sb(imageBuffer.data);
-      }
       }
       catch(error)
       {

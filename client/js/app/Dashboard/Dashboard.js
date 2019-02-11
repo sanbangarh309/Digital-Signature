@@ -22,6 +22,7 @@ class Dashboard extends Component {
       doc:'',
       data:[]
     };
+    localStorage.setItem("files_array", [])
     this.onChange = this.onChange.bind(this);
   }
 
