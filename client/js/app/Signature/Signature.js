@@ -82,14 +82,17 @@ class Signature extends Component {
     let dynamicstyle = {
         left: e.pageX + 'px',
         top: e.pageY + 'px',
-        width:'100px',
-        height:'100px'
+        height: '156px',
+        width: '287px',
+        cursor: 'move',
+        position: 'absolute'
     }
     // let element = React.createElement(this.state.textInput, {style: dynamicstyle})
     // var element = document.createElement('input');
     let cusstyle = {
         fontSize:'100%',
-        position:'relative'
+        position:'relative',
+        cursor: 'move',
     }
     var element = <div className="text-field-box" style={dynamicstyle}>
       <textarea className="form-control" style={cusstyle}></textarea>
