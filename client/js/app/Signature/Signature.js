@@ -4,15 +4,26 @@ import axios from 'src/common/myAxios';
 import SignaturePad from 'react-signature-pad-wrapper'
 import './Signature.css';
 
+const getBase64 = (file) => {
+  return new Promise((resolve,reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
 class Signature extends Component {
   constructor(props){
     super(props);
     this.state = {
       page:'signature',
       textInput:null,
+      showdata : '',
       containerClasses:['page','container','doc-bg'],
       type:null,
       doc:null,
+      uploaded_sign:null,
       docs:[],
       buttons:{
         sign:false,
@@ -23,21 +34,34 @@ class Signature extends Component {
     this.pasteSelectedField = this.pasteSelectedField.bind(this);
     let doc = localStorage.getItem('uploaded_doc') || ''
     if(doc){
-      axios.post('/api/chktype',{doc_file:doc}).then((res) => {
-        // /files/docs/pdf_zQGJD_cnvrt_1.png 
-        localStorage.setItem('uploaded_doc','')
-        localStorage.setItem("files_array", JSON.stringify(res.data))
-          this.setState({
-            // doc: 'data:image/png;base64,' + res.data,
-            docs: res.data
-          });
-      }); 
+      this.chkFileType(doc);
     }
   }
 
+  chkFileType = (doc) => {
+    console.log(doc)
+    axios.post('/api/chktype',{doc_file:doc}).then((res) => {
+      localStorage.setItem('uploaded_doc','')
+      localStorage.setItem("files_array", JSON.stringify(res.data))
+        this.setState({
+          docs: res.data
+        });
+    }); 
+  }
+
+  docUpload = (e) => {
+    const file = e.target.files[0];
+    getBase64(file).then(base64 => {
+      this.setState({
+        uploaded_sign: base64
+      });
+      // this.chkFileType(base64);
+    });
+  }
+
   removeSignature(e){
-    var signature = this.refs.mySignature;
-    signature.clear();
+    e.preventDefault();
+    this.signaturePad.clear();
   }
 
   createTextField(e){
@@ -49,21 +73,23 @@ class Signature extends Component {
     this.setState({textInput:'text'});
   }
 
-  pasteSelectedField(e){
+  pasteSelectedField(e,id){
+    if(!this.state.uploaded_sign){
+      // $('#Signfiled').modal('show');
+    }
     e.preventDefault();
     let container = document.getElementById('signature_container');
     let dynamicstyle = {
         left: e.pageX + 'px',
         top: e.pageY + 'px',
-        width:'50px',
-        height:'50px'
+        width:'100px',
+        height:'100px'
     }
     // let element = React.createElement(this.state.textInput, {style: dynamicstyle})
     // var element = document.createElement('input');
     let cusstyle = {
-        height:'50px',
-        width:'50px',
-        fontSize:'100%'
+        fontSize:'100%',
+        position:'relative'
     }
     var element = <div className="text-field-box" style={dynamicstyle}>
       <textarea className="form-control" style={cusstyle}></textarea>
@@ -72,10 +98,17 @@ class Signature extends Component {
       <div className="round-sml ui-resizable-handle ui-resizable-sw" style={{zIndex: '90'}}></div>
       <div className="round-sml ui-resizable-handle ui-resizable-se" style={{zIndex: '90'}}></div>
     </div>;
-    element.type = this.state.textInput;
+    if(!this.state.showdata){
+      this.setState({
+        showdata : element,
+      });
+    }
+    // element.type = this.state.textInput;
     // element.style.cssText = 'left:'+e.pageX+'px;top:'+e.pageY+'px;';
-    // console.log(element)
-    container.appendChild(element);
+    console.log(element)
+    console.log('#signature_container_'+id)
+    // $('#signature_container_'+id).append(element);
+    // container.appendChild(element);
   }
 
     bindSignature(e){
@@ -133,18 +166,23 @@ class Signature extends Component {
   //     // debugger;
   //   }
   render() {
-    let backImage = {}
+    let uploaded_style = {}
     let docs = localStorage.getItem('files_array') || this.state.docs
     try {
       docs = JSON.parse(docs)
     }catch(e){
+
     }
-    console.log(docs);
-    // if(this.state.doc){
-    //   backImage = {
-    //     backgroundImage:"url(" + this.state.doc + ")"
-    //   }
-    // }
+    if(this.state.uploaded_sign){
+      uploaded_style = {
+        backgroundImage:"url(" + this.state.uploaded_sign + ")",
+        backgroundSize:'cover !important',
+        backgroundRepeat:'no-repeat',
+        height:'20px',
+        width:'20px'
+      }
+    }
+    console.log(this.state.showdata);
     return (
       <div><header>
          <nav className="navbar navbar-expand-lg navbar-light custom-navheader navbar-fixed header-template" id="sroll-className">
@@ -185,7 +223,7 @@ class Signature extends Component {
                 <div id="collapseOne" className="collapse  show" aria-labelledby="headingOne" data-parent="#accordion">
                   <div className="card-body">
                     <ol className="btn-mainlist">
-                      <li><a href="javascript:void(0)" className="btn sign-btn current-btn"  data-toggle="modal" data-target="#Signfiled">Signature</a></li>
+                      <li><a href="javascript:void(0)" className="btn sign-btn current-btn" data-toggle="modal" data-target="#Signfiled">Signature</a></li>
                       <li><a href="javascript:void(0)" className="btn" onClick={this.createTextField.bind(this)}>Text</a></li>
                       <li><a href="javascript:void(0)" className="btn">Date</a></li>
                       <li><a href="javascript:void(0)" className="btn">Initials</a></li>
@@ -228,8 +266,10 @@ class Signature extends Component {
       </div>
       <div className="right-maintemplate">
         <div className="pageNumber">Page 1 of 1</div>
-        {docs.map(function(doc, index){
-            return <div className="page container doc-bg" id="signature_container" style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}} onClick={() =>{this.pasteSelectedField(this)}}>
+        {docs.map(doc => {
+            return <div className="page container doc-bg" id={"signature_container_"+doc.name} style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}} onClick={(e) =>{this.pasteSelectedField(e,doc.name)}}>
+            <span style = {uploaded_style}></span>
+            {this.state.showdata}
             </div>;
         })}
       </div>
@@ -276,9 +316,9 @@ class Signature extends Component {
 						<div className="tab-pane container fade" id="draw">
 							<div className="col-12 p-0">
 								<div className="signature-area">
-									<SignaturePad clearButton="true" ref="mySignature" options={{minWidth: 5, maxWidth: 10, penColor: 'rgb(66, 133, 244)'}} />
+                <SignaturePad ref={ref => this.signaturePad = ref} />
 									<div className="Close-ico">✕</div>
-									<p className="clear-link"><a href="#">clear</a></p>
+									<p className="clear-link"><a href="javascript:void(0)" onClick={this.removeSignature.bind(this)}>clear</a></p>
 								</div>
 							</div>
 						</div>
@@ -288,11 +328,11 @@ class Signature extends Component {
 									<div className="col-md-12 text-center imguploadwrapper">
 										<p>Upload an image of your signature</p>
 										<div className="upload-box">
-											<input type="file"/>
+											<input type="file" onChange={this.docUpload} />
 											<label><button>Upload Signature</button></label>
 										</div>
 									</div>
-									<p className="clear-link"><a href="#">clear</a></p>
+									<p className="clear-link"><a href="javascript:void(0)" onClick={this.removeSignature.bind(this)}>clear</a></p>
 								</div>
 							</div>
 						</div>
