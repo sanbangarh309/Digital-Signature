@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'src/common/myAxios';
 import SignaturePad from 'react-signature-pad-wrapper'
+import DropArea from './DropArea';
 import './Signature.css';
 
 const getBase64 = (file) => {
@@ -59,6 +60,18 @@ class Signature extends Component {
     });
   }
 
+  onDragStart = (e, id) => {
+      console.log('dragstart:',id);
+  }
+
+  onDragOver = (e) => {
+      ev.preventDefault();
+  }
+
+  onDrop = (e) => {       
+       
+  }
+
   removeSignature(e){
     e.preventDefault();
     this.signaturePad.clear();
@@ -85,16 +98,29 @@ class Signature extends Component {
         height: '156px',
         width: '287px',
         cursor: 'move',
+        position: 'absolute',
+        backgroundColor: 'rgba(28, 164, 255, 0.2)',
         position: 'absolute'
     }
     // let element = React.createElement(this.state.textInput, {style: dynamicstyle})
     // var element = document.createElement('input');
     let cusstyle = {
+        width: '100%',
+        height: '100%',
+        maxHeight: '100%',
+        maxWidth: '100%',
+        background: 'transparent',
+        outline: 'none',
+        color: '#000',
+        padding: '0px',
+        margin: '0px',
+        resize: 'none',
+        overflow: 'hidden',
         fontSize:'100%',
         position:'relative',
         cursor: 'move',
     }
-    var element = <div className="text-field-box" style={dynamicstyle}>
+    var element = <div className="text-field-box" style={dynamicstyle} onDragStart={(e)=>this.onDragStart(e)} draggable>
       <textarea className="form-control" style={cusstyle}></textarea>
       <div className="round-sml btn-removebox1">✕</div>
       <div className="round-sml ui-resizable-handle ui-resizable-nw" style={{zIndex: '90'}}></div>
@@ -270,11 +296,11 @@ class Signature extends Component {
       <div className="right-maintemplate">
         <div className="pageNumber">Page 1 of 1</div>
         {docs.map(doc => {
-            return <div className="page container doc-bg" id={"signature_container_"+doc.name} style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}} onClick={(e) =>{this.pasteSelectedField(e,doc.name)}}>
-            <span style = {uploaded_style}></span>
+            return <div className="page container doc-bg" onDragOver={(e)=>this.onDragOver(e)} onDrop={(e)=>{this.onDrop(e)}} id={"signature_container_"+doc.name} style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}} onClick={(e) =>{this.pasteSelectedField(e,doc.name)}}>
             {this.state.showdata}
             </div>;
         })}
+        <DropArea/>
       </div>
     </div>
     <div className="modal signmodal" id="Signfiled">

@@ -27,6 +27,7 @@ class Home extends React.Component {
       page:'home',
       added:false,
       msg: '',
+      alert: '',
       email: '',
       reg_email: '',
       password: '',
@@ -50,13 +51,24 @@ class Home extends React.Component {
 
   Register(event){
     event.preventDefault();
-    this.props.dispatch(auth.actions.signup(this.state, '/'));
-    // if(this.props.user){
+   //  this.props.dispatch(auth.actions.signup(this.state, '/'));
+   //    this.setState({
+   //      added: true,
+   //      msg: 'Registerted Successfully',
+   //    });
+   axios.post('/api/signup',this.state).then((res) => {
       this.setState({
         added: true,
+        alert: 'alert alert-success form-group',
         msg: 'Registerted Successfully',
       });
-    // }
+    }).catch(error => {
+      this.setState({
+        added: true,
+        alert: 'alert alert-danger form-group',
+        msg: error.response.data.error,
+      });
+    });
   }
 
   componentDidMount() {
@@ -90,8 +102,8 @@ class Home extends React.Component {
     }
     let addedAlert;
     if (this.state.added) {
-      addedAlert = <div className="alert alert-success">
-      <strong>Success!</strong>   {this.state.msg}
+      addedAlert = <div className={this.state.alert} style={{textAlign:'center'}}>
+      <strong>{this.state.msg}</strong>   
       </div>;
     }
 
@@ -152,7 +164,7 @@ class Home extends React.Component {
           <div className="form-group">
              <div className="input-group">
               <span className="input-group-addon"><span className="fa fa-building"></span></span>
-              <input type="password" className="form-control" name="password" onChange={this.handleChange} required="required" placeholder="Password" />
+              <input type="password" className="form-control" name="password" onChange={this.handleChange} required="required" placeholder="Password Must Have one upper case letter with symbols" />
              </div>
           </div>
           <div className="form-group">

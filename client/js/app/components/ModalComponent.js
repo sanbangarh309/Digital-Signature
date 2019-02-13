@@ -21,6 +21,7 @@ export default class ModalComponent extends React.Component {
       this.state = {
           added: false,
           msg: '',
+          alert: '',
           email: '',
           reg_email: '',
           password: '',
@@ -50,17 +51,24 @@ export default class ModalComponent extends React.Component {
 
   Register(event){
     event.preventDefault();
-    this.props.dispatch(auth.actions.signup(this.state, '/'));
-      this.setState({
-        added: true,
-        msg: 'Registerted Successfully',
-      });
-    // axios.post('/api/signup',this.state).then((res) => {
+    // this.props.dispatch(auth.actions.signup(this.state, '/'));
     //   this.setState({
     //     added: true,
     //     msg: 'Registerted Successfully',
     //   });
-    // });
+    axios.post('/api/signup',this.state).then((res) => {
+      this.setState({
+        added: true,
+        alert: 'alert alert-success',
+        msg: 'Registerted Successfully',
+      });
+    }).catch(error => {
+      this.setState({
+        added: true,
+        alert: 'alert alert-danger',
+        msg: error.response.data.error,
+      });
+    });
   }
 
   Login(event){
@@ -71,6 +79,7 @@ export default class ModalComponent extends React.Component {
       // console.log(this.props.action)
       this.setState({
         added: true,
+        alert: 'alert alert-success',
         msg: 'Logged In Successfully! Redirecting..',
       });
       document.getElementById("hidePopUpBtn").click();
@@ -90,8 +99,8 @@ export default class ModalComponent extends React.Component {
     let cusClass = ['modal','fade','auth-modal','no-guest-checkout'];
     let addedAlert;
     if (this.state.added) {
-      addedAlert = <div className="alert alert-success">
-      <strong>Success!</strong>   {this.state.msg}
+      addedAlert = <div className={this.state.alert} style={{textAlign:'center'}}>
+      <strong>{this.state.msg}</strong>   
       </div>;
       // this.closePopUp()
     }
@@ -198,7 +207,7 @@ export default class ModalComponent extends React.Component {
                            <div className="col-12 p-0 raw">
                             <div className="col-md-6">
                                <label className="control-label sr-only required" for="customer_registration_password_first">Password</label>
-                               <input id="customer_registration_password_first" name="password" value={this.state.password} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Password" autocomplete="off" type="password"/>
+                               <input id="customer_registration_password_first" name="password" value={this.state.password} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Password Must Have one upper case letter with symbols" autocomplete="off" type="password"/>
                             </div>
                             <div className="col-md-6">
                                <label className="control-label sr-only required" for="customer_registration_password_second"> Repeat password</label>
