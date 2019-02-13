@@ -76,6 +76,7 @@ class DropArea extends React.Component {
     }
     render() {
       let items = [];
+      console.log(this.props.docs)
       for (let item of this.state.list) {
         items.push(
           <Draggable 
@@ -95,11 +96,12 @@ class DropArea extends React.Component {
         );
       }
       return (
-        <div
-          className="drop-area"
-          onDragOver={this.onDragOver.bind(this)}
-          onDrop={this.onDrop.bind(this)} >
-          {items}
+        <div>
+          {this.props.docs.map(doc => {
+            return <div className="page container doc-bg" onDragOver={(e)=>this.onDragOver.bind(this)} onDrop={(e)=>{this.onDrop.bind(this)}} id={"signature_container_"+doc.name} style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}} onClick={(e) =>{this.pasteSelectedField(e,doc.name)}}>
+            {items}
+            </div>;
+        })}
         </div>
       );
     }
@@ -149,7 +151,7 @@ class DropArea extends React.Component {
           ref={"node"}
           draggable={this.props.isDragging}
           id={ 'item_' + this.props.id }
-          className="item unselectable"
+          className="item unselectable page"
           style={styles}
           
           onMouseDown={this.onMouseDown.bind(this)}

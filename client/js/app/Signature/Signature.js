@@ -40,7 +40,6 @@ class Signature extends Component {
   }
 
   chkFileType = (doc) => {
-    console.log(doc)
     axios.post('/api/chktype',{doc_file:doc}).then((res) => {
       localStorage.setItem('uploaded_doc','')
       localStorage.setItem("files_array", JSON.stringify(res.data))
@@ -211,7 +210,6 @@ class Signature extends Component {
         width:'20px'
       }
     }
-    console.log(this.state.showdata);
     return (
       <div><header>
          <nav className="navbar navbar-expand-lg navbar-light custom-navheader navbar-fixed header-template" id="sroll-className">
@@ -295,12 +293,7 @@ class Signature extends Component {
       </div>
       <div className="right-maintemplate">
         <div className="pageNumber">Page 1 of 1</div>
-        {docs.map(doc => {
-            return <div className="page container doc-bg" onDragOver={(e)=>this.onDragOver(e)} onDrop={(e)=>{this.onDrop(e)}} id={"signature_container_"+doc.name} style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}} onClick={(e) =>{this.pasteSelectedField(e,doc.name)}}>
-            {this.state.showdata}
-            </div>;
-        })}
-        <DropArea/>
+        <DropArea docs={docs}  />
       </div>
     </div>
     <div className="modal signmodal" id="Signfiled">
