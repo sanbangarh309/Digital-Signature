@@ -53,7 +53,6 @@ class DropArea extends React.Component {
       let index = this.state.list.findIndex((item) => item.id == id);
       list[index].isResizing = isResizing;
       
-      
       let newState = Object.assign(
         this.state, {
           list : list
@@ -63,7 +62,7 @@ class DropArea extends React.Component {
     funcResizing(id, clientX, clientY){
       let node = this.refs["node_" + id];
       let list = this.state.list;
-      console.log(node.offsetLeft);
+      console.log(node.refs.node);
       let index = this.state.list.findIndex((item) => item.id == id);
       list[index].width =   clientX - node.offsetLeft + (16 / 2);
       list[index].height =  clientY - node.offsetTop  + (16 / 2);
@@ -76,7 +75,6 @@ class DropArea extends React.Component {
     }
     render() {
       let items = [];
-      console.log(this.props.docs)
       for (let item of this.state.list) {
         items.push(
           <Draggable 
@@ -95,13 +93,21 @@ class DropArea extends React.Component {
           />
         );
       }
+      let DropJgah = []
+      this.props.docs.map(doc => { 
+        DropJgah.push(<div
+          className="drop-area container doc-bg"
+          onDragOver={this.onDragOver.bind(this)}
+          onDrop={this.onDrop.bind(this)} 
+          style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}}
+          onClick={(e) =>{this.pasteSelectedField(e,doc.name)}}
+          >
+          {items}
+        </div>)
+      })
       return (
         <div>
-          {this.props.docs.map(doc => {
-            return <div className="page container doc-bg" onDragOver={(e)=>this.onDragOver.bind(this)} onDrop={(e)=>{this.onDrop.bind(this)}} id={"signature_container_"+doc.name} style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}} onClick={(e) =>{this.pasteSelectedField(e,doc.name)}}>
-            {items}
-            </div>;
-        })}
+        {DropJgah}
         </div>
       );
     }
@@ -205,8 +211,8 @@ class DropArea extends React.Component {
       this.props.updateStateResizing( this.props.id, true);
     }
     onMouseMove(e) {
-      console.log("Resizer.onMouseMove");
       if( this.props.isResizing ){
+        console.log("Resizer.onMouseMove");
         this.props.funcResizing( this.props.id, e.clientX, e.clientY);
       }
     }

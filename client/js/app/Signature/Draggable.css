@@ -10,20 +10,19 @@
     -khtml-user-select: none;
     -webkit-user-select: none;
     user-select: none;
-    /* 古いブラウザ対応 */
     -khtml-user-drag: element;
     -webkit-user-drag: element;
   }
   .drop-area {
-       position: relative;
+    position: relative;
     padding:0;
-       width: 100%;
-       height: 600px;
-       border: 1px solid #999;
+    width: 100%;
+    height: 600px;
+    border: 1px solid #999;
   }
   .drop-area .item {
-       position: absolute;
-      cursor: pointer;
+    position: absolute;
+    cursor: pointer;
     width:100px;
     height:60px;
       font-size: 105%;
