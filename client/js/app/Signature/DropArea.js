@@ -122,23 +122,25 @@ class DropArea extends React.Component {
       
       if(this.state.show_field){
         for (let item of this.state.list) {
-          items.push(
-            <Draggable 
-              ref={"node_" + item.id}
-              key={item.id}
-              id={item.id}
-              top={item.top}
-              left={item.left}
-              width={item.width}
-              height={item.height}
-              isDragging={item.isDragging}
-              isResizing={item.isResizing}
-              updateStateDragging={this.updateStateDragging.bind(this)}
-              updateStateResizing={this.updateStateResizing.bind(this)}
-              funcResizing={this.funcResizing.bind(this)}
-              removeFieldBox={this.removeFieldBox.bind(this)}
-            />
-          );
+          if(!item.isHide){
+            items.push(
+              <Draggable 
+                ref={"node_" + item.id}
+                key={item.id}
+                id={item.id}
+                top={item.top}
+                left={item.left}
+                width={item.width}
+                height={item.height}
+                isDragging={item.isDragging}
+                isResizing={item.isResizing}
+                updateStateDragging={this.updateStateDragging.bind(this)}
+                updateStateResizing={this.updateStateResizing.bind(this)}
+                funcResizing={this.funcResizing.bind(this)}
+                removeFieldBox={this.removeFieldBox.bind(this)}
+              />
+            );
+          }
         }
       }
       let DropJgah = []
