@@ -8,9 +8,11 @@ class DropArea extends React.Component {
   
       this.state = {
         list: [ 
-          { id: 1, isDragging: false, isResizing: false, top:100, left: 50,   width:100, height:150 }, 
-          { id: 2, isDragging: false, isResizing: false, top:50, left: 200, width:200, height:100 }, 
+          { id: 1, isDragging: false, isResizing: false, top:100, left: 50,   width:100, height:150, isHide:false }, 
+          // { id: 2, isDragging: false, isResizing: false, top:50, left: 200, width:200, height:100 }, 
         ],
+        show_field: false,
+        items: []
       };
     }
     onDragOver(e) {
@@ -62,10 +64,13 @@ class DropArea extends React.Component {
     funcResizing(id, clientX, clientY){
       let node = this.refs["node_" + id];
       let list = this.state.list;
-      console.log(node.refs.node);
+      // console.log(clientX);
+      // console.log(node.refs.node.offsetLeft);
+      // console.log(clientY);
+      // console.log(node.refs.node.offsetTop);
       let index = this.state.list.findIndex((item) => item.id == id);
-      list[index].width =   clientX - node.offsetLeft + (16 / 2);
-      list[index].height =  clientY - node.offsetTop  + (16 / 2);
+      list[index].width =   clientX - node.refs.node.offsetLeft + (16 / 2);
+      list[index].height =  clientY - node.refs.node.offsetTop  + (16 / 2);
       
       let newState = Object.assign(
         this.state, {
@@ -73,34 +78,77 @@ class DropArea extends React.Component {
         });
       this.setState(newState);
     }
+    pasteSelectedField(e){
+      let position = this.getPosition(e.currentTarget);
+      let list = this.state.list;
+      list[0].top = position.y;
+      list[0].left = position.x;
+      this.setState({show_field:true});
+      this.setState({list:list});
+    }
+
+    getPosition = (el) => {
+      var xPosition = 0;
+      var yPosition = 0;
+      while (el) {
+        if (el.tagName == "BODY") {
+          var xScrollPos = el.scrollLeft || document.documentElement.scrollLeft;
+          var yScrollPos = el.scrollTop || document.documentElement.scrollTop;
+          xPosition += (el.offsetLeft - xScrollPos + el.clientLeft);
+          yPosition += (el.offsetTop - yScrollPos + el.clientTop);
+        } else {
+          xPosition += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+          yPosition += (el.offsetTop - el.scrollTop + el.clientTop);
+        }
+        el = el.offsetParent;
+      }
+      return {
+        x: xPosition,
+        y: yPosition
+      };
+    }
+
+    removeFieldBox = (e,id) => {
+      let list = this.state.list;
+      let index = this.state.list.findIndex((item) => item.id == id);
+      list[index].isHide =  true;
+      this.setState({show_field:false});
+      this.setState({list:[]});
+      console.log(this.state)
+    }
+
     render() {
       let items = [];
-      for (let item of this.state.list) {
-        items.push(
-          <Draggable 
-            ref={"node_" + item.id}
-            key={item.id}
-            id={item.id}
-            top={item.top}
-            left={item.left}
-            width={item.width}
-            height={item.height}
-            isDragging={item.isDragging}
-            isResizing={item.isResizing}
-            updateStateDragging={this.updateStateDragging.bind(this)}
-            updateStateResizing={this.updateStateResizing.bind(this)}
-            funcResizing={this.funcResizing.bind(this)}
-          />
-        );
+      
+      if(this.state.show_field){
+        for (let item of this.state.list) {
+          items.push(
+            <Draggable 
+              ref={"node_" + item.id}
+              key={item.id}
+              id={item.id}
+              top={item.top}
+              left={item.left}
+              width={item.width}
+              height={item.height}
+              isDragging={item.isDragging}
+              isResizing={item.isResizing}
+              updateStateDragging={this.updateStateDragging.bind(this)}
+              updateStateResizing={this.updateStateResizing.bind(this)}
+              funcResizing={this.funcResizing.bind(this)}
+              removeFieldBox={this.removeFieldBox.bind(this)}
+            />
+          );
+        }
       }
       let DropJgah = []
       this.props.docs.map(doc => { 
         DropJgah.push(<div
-          className="drop-area container doc-bg"
+          className="drop-area container doc-bg signature_container"
           onDragOver={this.onDragOver.bind(this)}
           onDrop={this.onDrop.bind(this)} 
           style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}}
-          onClick={(e) =>{this.pasteSelectedField(e,doc.name)}}
+          onClick={(e) =>{this.pasteSelectedField(e)}}
           >
           {items}
         </div>)
@@ -145,6 +193,7 @@ class DropArea extends React.Component {
       
       this.props.updateStateDragging( this.props.id, false );
     }
+
     render() {
       const styles = {
         top:    this.props.top,
@@ -152,20 +201,37 @@ class DropArea extends React.Component {
         width:  this.props.width,
         height: this.props.height,
       };
+      const cusstyle = {
+        width: '100%',
+        height: '100%',
+        maxHeight: '100%',
+        maxWidth: '100%',
+        background: 'transparent',
+        outline: 'none',
+        color: '#000',
+        padding: '0px',
+        margin: '0px',
+        resize: 'none',
+        overflow: 'hidden',
+        fontSize:'100%',
+        position:'relative',
+        cursor: 'move',
+    }
       return (
-        <div
+        <div className="text-field-box item unselectable page" 
           ref={"node"}
           draggable={this.props.isDragging}
           id={ 'item_' + this.props.id }
-          className="item unselectable page"
-          style={styles}
-          
           onMouseDown={this.onMouseDown.bind(this)}
           onMouseUp={this.onMouseUp.bind(this)}
           onDragStart={this.onDragStart.bind(this)}
-          onDragEnd={this.onDragEnd.bind(this)}>
-            { 'item_' + this.props.id }
-          <Resizer
+          onDragEnd={this.onDragEnd.bind(this)} style={styles}>
+        <textarea className="form-control" style={cusstyle}></textarea>
+        <div className="round-sml btn-removebox1" onClick={(e) =>{this.props.removeFieldBox(e,this.props.id)}}>✕</div>
+        <div className="round-sml ui-resizable-handle ui-resizable-nw" style={{zIndex: '90'}}></div>
+        <div className="round-sml ui-resizable-handle ui-resizable-sw" style={{zIndex: '90'}}></div>
+        <div className="round-sml ui-resizable-handle ui-resizable-se" style={{zIndex: '90'}}></div>
+        <Resizer
             ref={"resizerNode"}
             id={this.props.id}
             isResizing={this.props.isResizing}
@@ -173,7 +239,7 @@ class DropArea extends React.Component {
             resizerHeight={16}
             updateStateResizing={this.props.updateStateResizing}
             funcResizing={this.props.funcResizing} />
-        </div>
+      </div>
       );
     }
   };

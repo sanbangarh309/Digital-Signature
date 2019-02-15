@@ -59,18 +59,6 @@ class Signature extends Component {
     });
   }
 
-  onDragStart = (e, id) => {
-      console.log('dragstart:',id);
-  }
-
-  onDragOver = (e) => {
-      ev.preventDefault();
-  }
-
-  onDrop = (e) => {       
-       
-  }
-
   removeSignature(e){
     e.preventDefault();
     this.signaturePad.clear();
@@ -78,11 +66,12 @@ class Signature extends Component {
 
   createTextField(e){
     e.preventDefault();
-    $('#signature_container').addClass('hovrcr_text');
-  	$('#signature_container').removeClass('hovrcr_date');
-  	$('#signature_container').removeClass('hovrcr_initials');
-  	$('#signature_container').removeClass('hovrcr_check');
+    $('.signature_container').addClass('hovrcr_text');
+  	$('.signature_container').removeClass('hovrcr_date');
+  	$('.signature_container').removeClass('hovrcr_initials');
+  	$('.signature_container').removeClass('hovrcr_check');
     this.setState({textInput:'text'});
+    console.log('clicked on text button')
   }
 
   pasteSelectedField(e,id){

@@ -25,9 +25,9 @@
     cursor: pointer;
     width:100px;
     height:60px;
-      font-size: 105%;
+    font-size: 105%;
     background: white;
-    border: dashed 1px black;
+    /* border: dashed 1px black; */
     margin:0;
     padding:0;
   }
@@ -45,4 +45,8 @@
     margin:5px;
     border-bottom: solid 2px #333;
     border-right: solid 2px #333;
+  }
+
+  .drop-area .page{
+    overflow: visible !important;
   }
