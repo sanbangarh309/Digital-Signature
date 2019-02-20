@@ -282,7 +282,7 @@ class Signature extends Component {
       </div>
       <div className="right-maintemplate">
         <div className="pageNumber">Page 1 of 1</div>
-        <DropArea docs={docs}  />
+        <DropArea docs={docs} field_type={this.state.textInput} />
       </div>
     </div>
     <div className="modal signmodal" id="Signfiled">
