@@ -8,10 +8,11 @@ class DropArea extends React.Component {
   
       this.state = {
         list: [ 
-          { id: 1, isDragging: false, isResizing: false, top:100, left: 50,   width:100, height:150, isHide:true }, 
+          { id: 1, isDragging: false, isResizing: false, top:100, left: 50,   width:200, height:100, isHide:true }, 
           // { id: 2, isDragging: false, isResizing: false, top:50, left: 200, width:200, height:100 }, 
         ],
         show_field: false,
+        doc_key: null,
         items: []
       };
     }
@@ -64,10 +65,10 @@ class DropArea extends React.Component {
     funcResizing(id, clientX, clientY){
       let node = this.refs["node_" + id];
       let list = this.state.list;
-      // console.log(clientX);
-      // console.log(node.refs.node.offsetLeft);
-      // console.log(clientY);
-      // console.log(node.refs.node.offsetTop);
+      console.log(clientX);
+      console.log(node.refs.node.offsetLeft);
+      console.log(clientY);
+      console.log(node.refs.node.offsetTop);
       let index = this.state.list.findIndex((item) => item.id == id);
       list[index].width =   clientX - node.refs.node.offsetLeft + (16 / 2);
       list[index].height =  clientY - node.refs.node.offsetTop  + (16 / 2);
@@ -79,6 +80,7 @@ class DropArea extends React.Component {
       this.setState(newState);
     }
     pasteSelectedField(e){
+      e.preventDefault();
       if(this.props.field_type){
         let position = this.getPosition(e.currentTarget);
         let list = this.state.list;
@@ -86,6 +88,7 @@ class DropArea extends React.Component {
         list[0].left = position.x;
         list[0].isHide =  false;
         this.setState({show_field:true});
+        this.setState({doc_key:e.target.id});
         this.setState({list:list});
       }
     }
@@ -112,66 +115,53 @@ class DropArea extends React.Component {
     }
 
     removeFieldBox = (e,id) => {
+      e.preventDefault();
       let list = this.state.list;
       let index = this.state.list.findIndex((item) => item.id == id);
       list[index].isHide =  true;
       this.setState({show_field:false});
       this.setState({list:[]});
-      console.log(this.state)
     }
 
     render() {
-      let items = this.state.list;
-      console.log(items)
-      // if(this.state.show_field){
-      //   for (let item of this.state.list) {
-      //     if(!item.isHide){
-      //       items.push(
-      //         <Draggable 
-      //           ref={"node_" + item.id}
-      //           key={item.id}
-      //           id={item.id}
-      //           top={item.top}
-      //           left={item.left}
-      //           width={item.width}
-      //           height={item.height}
-      //           isDragging={item.isDragging}
-      //           isResizing={item.isResizing}
-      //           updateStateDragging={this.updateStateDragging.bind(this)}
-      //           updateStateResizing={this.updateStateResizing.bind(this)}
-      //           funcResizing={this.funcResizing.bind(this)}
-      //           removeFieldBox={this.removeFieldBox.bind(this)}
-      //         />
-      //       );
-      //     }
-      //   }
-      // }
       let DropJgah = []
+      let key_ = 1; 
       this.props.docs.map(doc => { 
+        let items = [];
+        if(this.state.show_field && this.state.doc_key == key_){
+          for (let item of this.state.list) {
+            if(!item.isHide){
+              items.push(
+                <Draggable 
+                  ref={"node_" + item.id}
+                  key={item.id}
+                  id={item.id}
+                  top={item.top}
+                  left={item.left}
+                  width={item.width}
+                  height={item.height}
+                  isDragging={item.isDragging}
+                  isResizing={item.isResizing}
+                  updateStateDragging={this.updateStateDragging.bind(this)}
+                  updateStateResizing={this.updateStateResizing.bind(this)}
+                  funcResizing={this.funcResizing.bind(this)}
+                  removeFieldBox={this.removeFieldBox.bind(this)}
+                />
+              );
+            }
+          }
+        }
         DropJgah.push(<div
           className="drop-area container doc-bg signature_container"
           onDragOver={this.onDragOver.bind(this)}
+          id={key_}
           onDrop={this.onDrop.bind(this)} 
           style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}}
           onClick={(e) =>{this.pasteSelectedField(e)}}
           >
-          <Draggable 
-                ref={"node_" + items[0].id}
-                key={items[0].id}
-                id={items[0].id}
-                top={items[0].top}
-                isHide={items[0].isHide}
-                left={items[0].left}
-                width={items[0].width}
-                height={items[0].height}
-                isDragging={items[0].isDragging}
-                isResizing={items[0].isResizing}
-                updateStateDragging={this.updateStateDragging.bind(this)}
-                updateStateResizing={this.updateStateResizing.bind(this)}
-                funcResizing={this.funcResizing.bind(this)}
-                removeFieldBox={this.removeFieldBox.bind(this)}
-              />
+          {items}
         </div>)
+        key_++;
       })
       return (
         <div>
@@ -221,13 +211,6 @@ class DropArea extends React.Component {
         width:  this.props.width,
         height: this.props.height,
       };
-      if(this.props.isHide){
-        styles.display = 'none';
-      }else{
-        styles.display = 'block';
-      }
-      console.log(this.props.isHide)
-      console.log(styles)
       const cusstyle = {
         width: '100%',
         height: '100%',

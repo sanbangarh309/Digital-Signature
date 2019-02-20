@@ -32,7 +32,6 @@ class Signature extends Component {
         revoke:false
       }
     };
-    this.pasteSelectedField = this.pasteSelectedField.bind(this);
     let doc = localStorage.getItem('uploaded_doc') || ''
     if(doc){
       this.chkFileType(doc);
@@ -72,60 +71,6 @@ class Signature extends Component {
   	$('.signature_container').removeClass('hovrcr_check');
     this.setState({textInput:'text'});
     console.log('clicked on text button')
-  }
-
-  pasteSelectedField(e,id){
-    if(!this.state.uploaded_sign){
-      // $('#Signfiled').modal('show');
-    }
-    e.preventDefault();
-    let container = document.getElementById('signature_container');
-    let dynamicstyle = {
-        left: e.pageX + 'px',
-        top: e.pageY + 'px',
-        height: '156px',
-        width: '287px',
-        cursor: 'move',
-        position: 'absolute',
-        backgroundColor: 'rgba(28, 164, 255, 0.2)',
-        position: 'absolute'
-    }
-    // let element = React.createElement(this.state.textInput, {style: dynamicstyle})
-    // var element = document.createElement('input');
-    let cusstyle = {
-        width: '100%',
-        height: '100%',
-        maxHeight: '100%',
-        maxWidth: '100%',
-        background: 'transparent',
-        outline: 'none',
-        color: '#000',
-        padding: '0px',
-        margin: '0px',
-        resize: 'none',
-        overflow: 'hidden',
-        fontSize:'100%',
-        position:'relative',
-        cursor: 'move',
-    }
-    var element = <div className="text-field-box" style={dynamicstyle} onDragStart={(e)=>this.onDragStart(e)} draggable>
-      <textarea className="form-control" style={cusstyle}></textarea>
-      <div className="round-sml btn-removebox1">✕</div>
-      <div className="round-sml ui-resizable-handle ui-resizable-nw" style={{zIndex: '90'}}></div>
-      <div className="round-sml ui-resizable-handle ui-resizable-sw" style={{zIndex: '90'}}></div>
-      <div className="round-sml ui-resizable-handle ui-resizable-se" style={{zIndex: '90'}}></div>
-    </div>;
-    if(!this.state.showdata){
-      this.setState({
-        showdata : element,
-      });
-    }
-    // element.type = this.state.textInput;
-    // element.style.cssText = 'left:'+e.pageX+'px;top:'+e.pageY+'px;';
-    console.log(element)
-    console.log('#signature_container_'+id)
-    // $('#signature_container_'+id).append(element);
-    // container.appendChild(element);
   }
 
     bindSignature(e){
