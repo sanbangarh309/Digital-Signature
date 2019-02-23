@@ -155,7 +155,6 @@ class Signature extends Component {
         width:'20px'
       }
     }
-    console.log(this.state.inputFields)
     return (
       <div><header>
          <nav className="navbar navbar-expand-lg navbar-light custom-navheader navbar-fixed header-template" id="sroll-className">
