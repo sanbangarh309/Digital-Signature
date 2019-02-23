@@ -19,10 +19,7 @@ class Signature extends Component {
     super(props);
     this.state = {
       page:'signature',
-      textInput:null,
-      showdata : '',
-      containerClasses:['page','container','doc-bg'],
-      type:null,
+      inputFields:[],
       doc:null,
       uploaded_sign:null,
       docs:[],
@@ -68,9 +65,23 @@ class Signature extends Component {
     $('.signature_container').addClass('hovrcr_text');
   	$('.signature_container').removeClass('hovrcr_date');
   	$('.signature_container').removeClass('hovrcr_initials');
-  	$('.signature_container').removeClass('hovrcr_check');
-    this.setState({textInput:'text'});
+    $('.signature_container').removeClass('hovrcr_check');
+    this.state.inputFields.push('text');
+    // this.setState({inputFields:textfield});
     console.log('clicked on text button')
+  }
+
+  createDateField(e){
+    e.preventDefault();
+    $('.signature_container').addClass('hovrcr_date');
+    $('.signature_container').removeClass('hovrcr_text');
+    $('.signature_container').removeClass('hovrcr_initials');
+    $('.signature_container').removeClass('hovrcr_check');
+    this.state.inputFields.push('date');
+    // this.setState({inputFields:datefield});
+    let unique = [...new Set(this.state.inputFields)];
+    this.setState({inputFields:unique});
+    console.log('clicked on Date button')
   }
 
     bindSignature(e){
@@ -144,6 +155,7 @@ class Signature extends Component {
         width:'20px'
       }
     }
+    console.log(this.state.inputFields)
     return (
       <div><header>
          <nav className="navbar navbar-expand-lg navbar-light custom-navheader navbar-fixed header-template" id="sroll-className">
@@ -186,7 +198,7 @@ class Signature extends Component {
                     <ol className="btn-mainlist">
                       <li><a href="javascript:void(0)" className="btn sign-btn current-btn" data-toggle="modal" data-target="#Signfiled">Signature</a></li>
                       <li><a href="javascript:void(0)" className="btn" onClick={this.createTextField.bind(this)}>Text</a></li>
-                      <li><a href="javascript:void(0)" className="btn">Date</a></li>
+                      <li><a href="javascript:void(0)" className="btn" onClick={this.createDateField.bind(this)}>Date</a></li>
                       <li><a href="javascript:void(0)" className="btn">Initials</a></li>
                       <li><a href="javascript:void(0)" className="btn">Check</a></li>
                       <li><a href="javascript:void(0)" className="btn" onClick={this.removeSignature.bind(this)}>Clear</a></li>
@@ -227,7 +239,7 @@ class Signature extends Component {
       </div>
       <div className="right-maintemplate">
         <div className="pageNumber">Page 1 of 1</div>
-        <DropArea docs={docs} field_type={this.state.textInput} />
+        <DropArea docs={docs} field_type={this.state.inputFields} />
       </div>
     </div>
     <div className="modal signmodal" id="Signfiled">

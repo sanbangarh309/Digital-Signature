@@ -13,7 +13,7 @@ class DropArea extends React.Component {
         ],
         show_field: false,
         doc_key: null,
-        items: []
+        fields: []
       };
     }
     onDragOver(e) {
@@ -63,7 +63,7 @@ class DropArea extends React.Component {
       this.setState(newState);
     }
     funcResizing(id, clientX, clientY){
-      let node = this.refs["node_" + id];
+      let node = this.refs[this.props.field_type[id] + id];
       let list = this.state.list;
       console.log(clientX);
       console.log(node.refs.node.offsetLeft);
@@ -91,6 +91,8 @@ class DropArea extends React.Component {
         this.setState({doc_key:e.target.id});
         this.setState({list:list});
       }
+      // let unique = [...new Set(this.state.fields)];
+      // this.setState({fields:unique});
     }
 
     getPosition = (el) => {
@@ -126,22 +128,47 @@ class DropArea extends React.Component {
     render() {
       let DropJgah = []
       let key_ = 1; 
+      let item = this.state.list;
+      console.log(this.props.field_type)
       this.props.docs.map(doc => { 
         let items = [];
         if(this.state.show_field && this.state.doc_key == key_){
-          for (let item of this.state.list) {
-            if(!item.isHide){
+          // for (let item of this.state.list) {
+          //   if(!item.isHide){
+          //     items.push(
+          //       <Draggable 
+          //         ref={"node_" + item.id}
+          //         key={item.id}
+          //         id={item.id}
+          //         fieldType={this.props.field_type}
+          //         top={item.top}
+          //         left={item.left}
+          //         width={item.width}
+          //         height={item.height}
+          //         isDragging={item.isDragging}
+          //         isResizing={item.isResizing}
+          //         updateStateDragging={this.updateStateDragging.bind(this)}
+          //         updateStateResizing={this.updateStateResizing.bind(this)}
+          //         funcResizing={this.funcResizing.bind(this)}
+          //         removeFieldBox={this.removeFieldBox.bind(this)}
+          //       />
+          //     );
+          //   }
+          // }
+          for (let field of this.props.field_type) {
+            if(!item[0].isHide){
               items.push(
                 <Draggable 
-                  ref={"node_" + item.id}
-                  key={item.id}
-                  id={item.id}
-                  top={item.top}
-                  left={item.left}
-                  width={item.width}
-                  height={item.height}
-                  isDragging={item.isDragging}
-                  isResizing={item.isResizing}
+                  ref={field + item[0].id}
+                  key={item[0].id}
+                  id={item[0].id}
+                  fieldType={field}
+                  top={item[0].top}
+                  left={item[0].left}
+                  width={item[0].width}
+                  height={item[0].height}
+                  isDragging={item[0].isDragging}
+                  isResizing={item[0].isResizing}
                   updateStateDragging={this.updateStateDragging.bind(this)}
                   updateStateResizing={this.updateStateResizing.bind(this)}
                   funcResizing={this.funcResizing.bind(this)}
@@ -205,13 +232,15 @@ class DropArea extends React.Component {
     }
 
     render() {
-      const styles = {
+      let dateField = ''
+     
+      let styles = {
         top:    this.props.top,
         left:   this.props.left,
         width:  this.props.width,
         height: this.props.height,
       };
-      const cusstyle = {
+      let cusstyle = {
         width: '100%',
         height: '100%',
         maxHeight: '100%',
@@ -227,16 +256,26 @@ class DropArea extends React.Component {
         position:'relative',
         cursor: 'move',
     }
+    if(this.props.fieldType == 'date'){
+      var date = new Date().getDate();
+      var month = new Date().getMonth() + 1;
+      var year = new Date().getFullYear();
+      styles.width = 80
+      styles.height = 40
+      console.log(month + '/' + date + '/' + year);
+      dateField = month + '/' + date + '/' + year;
+      console.log(this.props.fieldType)
+    }
       return (
         <div className="text-field-box item unselectable page" 
           ref={"node"}
           draggable={this.props.isDragging}
-          id={ 'item_' + this.props.id }
+          id={ this.props.fieldType+'_' + this.props.id }
           onMouseDown={this.onMouseDown.bind(this)}
           onMouseUp={this.onMouseUp.bind(this)}
           onDragStart={this.onDragStart.bind(this)}
           onDragEnd={this.onDragEnd.bind(this)} style={styles}>
-        <textarea className="form-control" style={cusstyle}></textarea>
+        <textarea className="form-control" defaultValue={dateField} style={cusstyle}></textarea>
         <div className="round-sml btn-removebox1" onClick={(e) =>{this.props.removeFieldBox(e,this.props.id)}}>✕</div>
         <div className="round-sml ui-resizable-handle ui-resizable-nw" style={{zIndex: '90'}}></div>
         <div className="round-sml ui-resizable-handle ui-resizable-sw" style={{zIndex: '90'}}></div>
