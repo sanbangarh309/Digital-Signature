@@ -115,7 +115,7 @@ class Signature extends Component {
   clearSignature(e){
     debugger;
     this.state.signInput.clear();
-     this.setState({buttons:{sign:true,clear:true,revoke:false}});
+    this.setState({buttons:{sign:true,clear:true,revoke:false}});
   }
   // componentWillUnmount(){
   //      window.addEventListener("resize",this.resizeCanvas);

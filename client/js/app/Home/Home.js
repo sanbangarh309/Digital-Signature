@@ -162,6 +162,11 @@ class Home extends React.Component {
              </div>
           </div>
           <div className="form-group">
+            <div className="input-group">
+            <label style={{padding: '14px',fontSize:'medium'}}>Note:- Password Strength with in 6 to 100 letters ,Must have letters , digits , not spaces and not one of these [Passw0rd, Password123]</label>
+            </div>
+          </div>
+          <div className="form-group">
              <div className="input-group">
               <span className="input-group-addon"><span className="fa fa-building"></span></span>
               <input type="password" className="form-control" name="password" onChange={this.handleChange} required="required" placeholder="Password Must Have one upper case letter with symbols" />

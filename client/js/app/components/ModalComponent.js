@@ -189,10 +189,10 @@ export default class ModalComponent extends React.Component {
                           <div className="form-group">
                            <label className="control-label sr-only required" for="customer_registration_mobileNumber"> Mobile</label>
                            <div className="col-12 p-0 raw">
-                            <div className="col-3">
+                            {/* <div className="col-3">
                                <input id="customer_registration_mobileCountryCode" name="mobilecountrycode" value={this.state.mobilecountrycode} onChange={this.handleChange} required="required" readonly="readonly" className="form-control input-lg" value="91" type="text"/>
-                            </div>
-                            <div className="col-9">
+                            </div> */}
+                            <div className="col-12">
                                <input id="customer_registration_mobileNumber" name="mobile" value={this.state.mobile} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Mobile" type="text"/>
                             </div>
                            </div>
@@ -204,6 +204,7 @@ export default class ModalComponent extends React.Component {
                           </div>
                           </div>
                           <div className="form-group cst-group">
+                          <label style={{padding: '14px',fontSize:'medium'}}>Note:- Password Strength with in 6 to 100 letters ,Must have letters , digits , not spaces and not one of these [Passw0rd, Password123]</label>
                            <div className="col-12 p-0 raw">
                             <div className="col-md-6">
                                <label className="control-label sr-only required" for="customer_registration_password_first">Password</label>

@@ -26,8 +26,9 @@
     width:100px;
     height:60px;
     font-size: 105%;
-    background: white;
+    /* background: white; */
     /* border: dashed 1px black; */
+    background-color: rgba(28, 164, 255, 0.2);
     margin:0;
     padding:0;
   }
@@ -36,6 +37,11 @@
     -khtml-user-select: none;
     -webkit-user-select: none;
     user-select: none;
+    resize:'both';
+  }
+  .unselectable textarea{
+    border: none !important;
+    background: transparent !important;
   }
   .drop-area .item .resizer {
     position:absolute;
@@ -45,6 +51,7 @@
     margin:5px;
     border-bottom: solid 2px #333;
     border-right: solid 2px #333;
+    opacity: 0;
   }
 
   .drop-area .page{
