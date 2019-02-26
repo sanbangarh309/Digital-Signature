@@ -8,15 +8,13 @@ class DropArea extends React.Component {
   
       this.state = {
         field_lists : { text: { id: 1, isDragging: false, isResizing: false, top:100, left: 50,   width:200, height:100, fontSize:25,isHide:true, type:'text',appendOn:false}, date: { id: 2, isDragging: false, isResizing: false, top:100, left: 50, width:100, height:50, fontSize:20, isHide:true, type:'date',appendOn:false} },
-        list: [ 
-          { id: 1, isDragging: false, isResizing: false, top:100, left: 50,   width:200, height:100, isHide:true }, 
-          { id: 2, isDragging: false, isResizing: false, top:50, left: 200, width:200, height:100, isHide:true }, 
-        ],
+        list: [],
         show_field: false,
         doc_key: null,
-        text_field_count:1,
-        date_field_count:1,
-        items: []
+        field_count:0,
+        items: [],
+        items_count: [],
+        chkduplicacy:[]
       };
     }
     onDragOver(e) {
@@ -26,147 +24,102 @@ class DropArea extends React.Component {
     }
     onDrop(e) {
       console.log("DropArea.onDrop");
-      
       var obj = JSON.parse(e.dataTransfer.getData('application/json'));
       // let list = this.state.list;
-      let list = this.state.field_lists;
+      let list = this.state.list;
       // let index = this.state.list.findIndex((item) => item.id == obj.id);
-      list[obj.fieldtype].isDragging = false;
-      list[obj.fieldtype].top  = (e.clientY - obj.y);
-      list[obj.fieldtype].left = (e.clientX - obj.x);
+      list[obj.id].isDragging = false;
+      list[obj.id].top  = (e.clientY - obj.y);
+      list[obj.id].left = (e.clientX - obj.x);
       
       let newState = Object.assign(
         this.state, {
-          field_lists : list
+          list : list
         });
+        console.log(newState)
       this.setState(newState);
-  
       e.preventDefault();
     }
     updateStateDragging( id, isDragging){
-      let list = this.state.field_lists;
+      let list = this.state.list;
+      // console.log(id)
+      // console.log(list)
+      // 'doc_'+key_+'_'+field.id
       // let index = this.state.field_lists.findIndex((item) => item.id == id);
       list[id].isDragging = isDragging;
 
       let newState = Object.assign(
         this.state, {
-          field_lists : list
+          list : list
         });
-        // console.log(list[id])
       this.setState(newState);
     }
     updateStateResizing( id, isResizing){
-      let list = this.state.field_lists;
+      let list = this.state.list;
       // let index = this.state.list.findIndex((item) => item.id == id);
       list[id].isResizing = isResizing;
       
       let newState = Object.assign(
         this.state, {
-          field_lists : list
+          list : list
         });
-        
       this.setState(newState);
     }
-    funcResizing(id, clientX, clientY, doc_id=''){
-      let element = this.refs[id + doc_id];  
-      let list = this.state.field_lists;
+    funcResizing(id, clientX, clientY, field=''){
+      let element = this.refs[field+'_'+ this.state.doc_key+'_'+ id];  
+      let list = this.state.list;
       let position = element.refs.node.getBoundingClientRect();
       list[id].width =   clientX - position.left + (16 / 2);
       list[id].height =  clientY - position.top  + (16 / 2);
       list[id].fontSize = parseFloat(list[id].height/2.5);
       // console.log(position)
       console.log(list[id])
-      // while(element.refs.node.scrollHeight > element.refs.node.offsetHeight){
-      //   list[id].fontSize = parseInt(list[id].fontSize) -1;
-      //   console.log(list[id].fontSize); 
-      // }
       let newState = Object.assign(
         this.state, {
-          field_lists : list
+          list : list
         });
       this.setState(newState);
     }
     pasteSelectedField(e){
       e.preventDefault();
-      this.setState((state) => ({ date_field_count: state.date_field_count + 1}));
-      let list = this.state.field_lists;
+      let id = 0;
+      let h = 200;
+      let w = 100;
+      let alreday = false;
+      let list = this.state.list;
+      let key___ = this.props.field_type.slice(this.props.field_type.length - 1);
+      this.setState((state) => ({ field_count: state.field_count + 1}));
+      if(key___ == 'date'){
+        w = 100
+        h = 50
+      }
       let position = e.target.getBoundingClientRect();
       var x = e.clientX - position.left; //x position within the element.
       var y = e.clientY - position.top;
-      let key___ = this.props.field_type.slice(this.props.field_type.length - 1);
-      let doc_id = e.target.id.replace ( /[^\d.]/g, '' ); 
-      this.state.items.push(<Draggable 
-        ref={key___ +'_'+doc_id+'_'+ this.state.date_field_count}
-        key={this.state.date_field_count}
-        id={'doc_'+doc_id+'_'+this.state.date_field_count}
-        docId={doc_id}
-        fieldType={key___}
-        top={y}
-        left={x}
-        width={list[key___].width}
-        height={list[key___].height}
-        fontSize={list[key___].fontSize}
-        isDragging={list[key___].isDragging}
-        isResizing={list[key___].isResizing}
-        updateStateDragging={this.updateStateDragging.bind(this)}
-        updateStateResizing={this.updateStateResizing.bind(this)}
-        funcResizing={this.funcResizing.bind(this)}
-        removeFieldBox={this.removeFieldBox.bind(this)}
-      />)
-      this.setState({items:this.state.items});
-
-
-
-      
-      if(this.props.field_type && !list[key___].appendOn){
-        list[key___].top = y;
-        list[key___].left = x;
-        list[key___].isHide =  false;
-        list[key___].appendOn = true;
-        // console.log(list[key___])
-        // this.setState({show_field:true});
+      let doc_id = e.target.id.replace ( /[^\d.]/g, '' );
+      for(let res of list){
+        if(res.top == y && res.left == x){
+          alreday = true;
+        }
+      }
+      if(!alreday){
+        this.state.list.push({ id: this.state.field_count, isDragging: false, isResizing: false, top:y, left: x,   width:w, height:h, fontSize:23,isHide:false, type:key___,appendOn:false,doc_id:doc_id});
+        this.setState({show_field:true});
         if(e.target.id && e.target.id !=''){
           this.setState({doc_key:doc_id});
         }
-        this.setState({field_lists:list});
-      }else{
-        console.log('appended already!!')
-      }
-      // let unique = [...new Set(this.state.fields)];
-      // this.setState({fields:unique});
-    }
-
-    getPosition = (el) => {
-      var xPosition = 0;
-      var yPosition = 0;
-      
-      console.log(el.getBoundingClientRect())
-      while (el) {
-        if (el.tagName == "BODY") {
-          var xScrollPos = el.scrollLeft || document.documentElement.scrollLeft;
-          var yScrollPos = el.scrollTop || document.documentElement.scrollTop;
-          xPosition += (el.offsetLeft - xScrollPos + el.clientLeft);
-          yPosition += (el.offsetTop - yScrollPos + el.clientTop);
-        } else {
-          xPosition += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-          yPosition += (el.offsetTop - el.scrollTop + el.clientTop);
-        }
-        el = el.offsetParent;
-      }
-      return {
-        x: xPosition,
-        y: yPosition
-      };
+        this.setState({list:this.state.list});
+      } 
     }
 
     removeFieldBox(id,doc_id){
-      let list = this.state.field_lists; 
+      let list = this.state.list; 
       // let index = this.state.field_lists.findIndex((item) => item.id == id);
       list[id].isHide = true;
       list[id].type = 'yes';
       list[id].appendOn = false;
       this.setState({doc_key:doc_id});
-      this.setState({field_lists:list});
+      this.setState({list:list});
       // let newState = Object.assign(
       //   this.state, {
       //     field_lists : list
@@ -177,46 +130,80 @@ class DropArea extends React.Component {
     render() {
       let DropJgah = []
       let key_ = 1; 
-      let item = this.state.field_lists;
-      console.log(this.state.items)
+      let cnt = 0;
+      let fields = this.state.list;
       this.props.docs.map(doc => { 
-        let items = [];
         if(this.state.doc_key == key_){
-          for (let field of this.props.field_type) {
-            if(item[field].type == 'yes'){
-              item[field].isHide = true;
-              item[field].appendOn = false;
-              item[field].type = field;
-              this.setState({field_lists:item});
+          fields.map(field => {
+            if(!field.isHide){
+              if(this.state.chkduplicacy.indexOf(field.id) > -1){
+
+              }else{
+                this.state.chkduplicacy.push(field.id);
+                this.state.items.push(
+                  <Draggable 
+                    ref={field.type[0] +'_'+key_+'_'+ field.id}
+                    key={field.id}
+                    drag_id={field.id}
+                    id={'doc_'+key_+'_'+field.id}
+                    docId={key_}
+                    fieldType={field.type[0]}
+                    top={field.top}
+                    left={field.left}
+                    width={field.width}
+                    height={field.height}
+                    fontSize={field.fontSize}
+                    isDragging={field.isDragging}
+                    isResizing={field.isResizing}
+                    updateStateDragging={this.updateStateDragging.bind(this)}
+                    updateStateResizing={this.updateStateResizing.bind(this)}
+                    funcResizing={this.funcResizing.bind(this)}
+                    removeFieldBox={this.removeFieldBox.bind(this)}
+                  />
+                );
+              }
             }
-            if(!item[field].isHide){
-              items.push(
-                <Draggable 
-                  ref={field + item[field].id}
-                  key={field+item[field].id}
-                  id={item[field].id}
-                  docId={key_}
-                  fieldType={field}
-                  top={item[field].top}
-                  left={item[field].left}
-                  width={item[field].width}
-                  height={item[field].height}
-                  fontSize={item[field].fontSize}
-                  isDragging={item[field].isDragging}
-                  isResizing={item[field].isResizing}
-                  updateStateDragging={this.updateStateDragging.bind(this)}
-                  updateStateResizing={this.updateStateResizing.bind(this)}
-                  funcResizing={this.funcResizing.bind(this)}
-                  removeFieldBox={this.removeFieldBox.bind(this)}
-                />
-              );
-            }
-          }
+          });
+          // this.props.field_type.map(field => { 
+          //   if(item[field].type == 'yes'){
+          //     item[field].isHide = true;
+          //     item[field].appendOn = false;
+          //     item[field].type = field;
+          //     this.setState({field_lists:item});
+          //   }
+          //   if(!item[field].isHide){
+          //     if(field == 'date'){
+          //       cnt = this.state.date_field_count
+          //     }else{
+          //       cnt = this.state.text_field_co
+          //     if(this.state.chkduplicacy.indexOf(cnt) > -1){
+          //       // continue;
+          //     }else{
+          //       this.state.chkduplicacy.push(cnt);
+          //       this.state.items.push(
+          //         <Draggable 
+          //           ref={field +'_'+key_+'_'+ cnt}
+          //           key={cnt}
+          //           id={'doc_'+key_+'_'+cnt}
+          //           docId={key_}
+          //           fieldType={field}
+          //           top={top}
+          //           left={left}
+          //           width={item[field].width}
+          //           height={item[field].height}
+          //           fontSize={item[field].fontSize}
+          //           isDragging={item[field].isDragging}
+          //           isResizing={item[field].isResizing}
+          //           updateStateDragging={this.updateStateDragging.bind(this)}
+          //           updateStateResizing={this.updateStateResizing.bind(this)}
+          //           funcResizing={this.funcResizing.bind(this)}
+          //           removeFieldBox={this.removeFieldBox.bind(this)}
+          //         />
+          //       );
+          //     }
+          //   }
+          // })
         }
-        console.log('render items')
-        console.log(items)
-        console.log('originals items')
-        console.log(this.state.items)
         DropJgah.push(<div
           className="drop-area container doc-bg signature_container"
           onDragOver={this.onDragOver.bind(this)}
@@ -225,7 +212,7 @@ class DropArea extends React.Component {
           style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}}
           onClick={(e) =>{this.pasteSelectedField(e)}}
           >
-          {items}
+          {this.state.items}
         </div>)
         key_++;
       })
@@ -247,31 +234,31 @@ class DropArea extends React.Component {
       console.log("Draggable.onMouseDown");
       var elm = document.elementFromPoint(e.clientX, e.clientY);
       if( elm.className != 'resizer' ){
-        this.props.updateStateDragging( this.props.fieldType, true );
+        this.props.updateStateDragging( this.props.drag_id, true );
       }
     }
     onMouseUp(e){
       console.log("Draggable.onMouseUp");
-      this.props.updateStateDragging( this.props.fieldType, false );
+      this.props.updateStateDragging( this.props.drag_id, false );
     }
     onDragStart(e) {
       console.log("Draggable.onDragStart");
       const nodeStyle = this.refs.node.style;
       let fieldtype = this.refs.node.id.replace('_'+this.props.id, '');
       e.dataTransfer.setData( 'application/json', JSON.stringify({
-        id: this.props.id,
-        fieldtype: fieldtype,
+        id: this.props.drag_id,
+        fieldtype: this.props.fieldType,
         x: e.clientX - parseInt(nodeStyle.left),
         y: e.clientY - parseInt(nodeStyle.top),
       }));
     }
     onDragEnd(e){
       console.log("Draggable.onDragEnd");
-      this.props.updateStateDragging( this.props.fieldType, false );
+      this.props.updateStateDragging( this.props.drag_id, false );
     }
 
     removeField(e){
-      this.props.removeFieldBox(this.props.fieldType,this.props.docId)
+      this.props.removeFieldBox(this.props.drag_id,this.props.docId)
     }
 
     render() {
@@ -323,6 +310,7 @@ class DropArea extends React.Component {
         <Resizer
             ref={"resizerNode"}
             id={this.props.id}
+            drag_id={this.props.drag_id}
             docId={this.props.docId}
             isResizing={this.props.isResizing}
             fieldtype={this.props.fieldType}
@@ -335,7 +323,7 @@ class DropArea extends React.Component {
     }
   };
   Draggable.propTypes = {
-      id:         PropTypes.number.isRequired,
+      id:         PropTypes.string.isRequired,
       isDragging: PropTypes.bool.isRequired,
       isResizing: PropTypes.bool.isRequired,
       top:        PropTypes.number.isRequired,
@@ -368,18 +356,18 @@ class DropArea extends React.Component {
     }
     onMouseDown(e) {
       console.log("Resizer.onMouseDown");
-      this.props.updateStateResizing( this.props.fieldtype, true);
+      this.props.updateStateResizing( this.props.drag_id, true);
     }
     onMouseMove(e) {
       if( this.props.isResizing ){
         console.log("Resizer.onMouseMove");
-        this.props.funcResizing( this.props.fieldtype, e.clientX, e.clientY,this.props.id);
+        this.props.funcResizing( this.props.drag_id, e.clientX, e.clientY,this.props.fieldtype);
       }
     }
     onMouseUp(e) {
       console.log("Resizer.onMouseUp");
       if( this.props.isResizing ){
-        this.props.updateStateResizing( this.props.fieldtype, false);
+        this.props.updateStateResizing( this.props.drag_id, false);
       }
     }
     render() {
@@ -396,7 +384,7 @@ class DropArea extends React.Component {
     }
   };
   Resizer.propTypes = {
-    id:                   PropTypes.number.isRequired,
+    id:                   PropTypes.string.isRequired,
     isResizing:           PropTypes.bool.isRequired,
     funcResizing:         PropTypes.func.isRequired,
     updateStateResizing:  PropTypes.func.isRequired,
