@@ -13,6 +13,12 @@
     -khtml-user-drag: element;
     -webkit-user-drag: element;
   }
+
+  .right-maintemplate .san_jgah {
+    /* float: left;
+    width: 100%;
+    padding: 41px; */
+  }
   .drop-area {
     position: relative;
     padding:0;

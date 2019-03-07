@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'src/common/myAxios';
-import SignaturePad from 'react-signature-pad-wrapper'
 import DropArea from './DropArea';
+import Sign from './Sign';
 import './Signature.css';
 
 const getBase64 = (file) => {
@@ -21,8 +21,12 @@ class Signature extends Component {
       page:'signature',
       inputFields:[],
       doc:null,
+      top:383,
+      left:479,
+      doc_id:null,
       uploaded_sign:null,
       docs:[],
+      color:'black',
       buttons:{
         sign:false,
         clear:false,
@@ -36,11 +40,12 @@ class Signature extends Component {
   }
 
   chkFileType = (doc) => {
+    console.log(doc);
     axios.post('/api/chktype',{doc_file:doc}).then((res) => {
       localStorage.setItem('uploaded_doc','')
-      localStorage.setItem("files_array", JSON.stringify(res.data))
+      localStorage.setItem("files_array", JSON.stringify(res.data.message))
         this.setState({
-          docs: res.data
+          docs: res.data.message
         });
     }); 
   }
@@ -51,13 +56,42 @@ class Signature extends Component {
       this.setState({
         uploaded_sign: base64
       });
-      // this.chkFileType(base64);
+      this.chkFileType(base64);
     });
   }
 
   removeSignature(e){
     e.preventDefault();
     this.signaturePad.clear();
+  }
+
+  saveData(e){
+    // const data = $('.signature_container .unselectable textarea').text();
+    let data = [];
+    $('.signature_container .unselectable').each(function( index ) {
+      let doc_id_data = $( this ).attr('id');
+      let doc_id = doc_id_data.split('_')[2];
+      let text = $( this ).find('textarea').val();
+      let h = parseInt($( this ).css('height').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
+      let w = parseInt($( this ).css('width').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
+      let t = parseInt($( this ).css('top').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
+      let l = parseInt($( this ).css('left').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
+      data.push({doc_id:doc_id,doc_text:text,top:t,left:l,height:h,width:w})
+   });
+    let docs = localStorage.getItem('files_array');
+    let sign_data = JSON.parse(docs);
+    // console.log(docs)
+    // console.log(data)
+    // for (var key in sign_data) {
+    //   console.log(sign_data[key])
+    //   axios.post('/api/savedata',{data:data,doc:sign_data[key],key:key}).then((res) => {
+     
+    //   });
+    // }
+    // axios.post('/api/savedata',{data:data,docs:sign_data}).then((res) => {
+     
+    // });
+     
   }
 
   createTextField(e){
@@ -84,60 +118,16 @@ class Signature extends Component {
     console.log('clicked on Date button')
   }
 
-    bindSignature(e){
-    if(this.state.signInput.isEmpty()) return false;
-      let image = this.state.signInput.toDataURL(),
-          container = document.getElementById('sign-location'),
-          img = document.createElement("img"),
-          onClick = (e)=>{
-            debugger;
-            container.removeChild(e.target);
-          };
-
-      img.src = image;
-      img.alt = "Double Click to Remove Signature";
-      container.children.length ? container.removeChild(container.children[0]) : null;
-      container.appendChild(img);
-      debugger;
-       img.removeEventListener("dblclick",onClick);
-      img.addEventListener("dblclick",onClick);
-      this.setState({buttons:{revoke:true,clear:true,sign:true}});
+  getSignPosition(top,left,doc_id){
+    this.setState({top:top});
+    this.setState({left:left});
+    this.setState({doc_id:doc_id});
   }
 
-  resizeCanvas(e){
-    let canvas = React.FindDOMNode(this.refs.signingSurface),
-         ratio =  Math.max(window.devicePixelRatio || 1, 1);
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
-    canvas.getContext("2d").scale(ratio, ratio);
-
+  saveColor = (e) => {
+    this.setState({[e.target.name]: e.target.value});
   }
-  clearSignature(e){
-    debugger;
-    this.state.signInput.clear();
-    this.setState({buttons:{sign:true,clear:true,revoke:false}});
-  }
-  // componentWillUnmount(){
-  //      window.addEventListener("resize",this.resizeCanvas);
-  // }
 
-  //   componentDidMount(){
-  //     let canvas = document.getElementById('signature-input'),
-  //     widget =new SignaturePad(canvas,{
-  //       minWidth:.2,
-  //       maxWidth:3,
-  //       onBegin(e){
-  //         this.setState({buttons:{sign:true,clear:true,revoke:false}});
-  //       },
-  //       onEnd(e){
-
-  //       },
-  //     });
-  //     // this.setState({signInput:widget});
-  //     // console.log(this.state.signInput)
-  //     // window.addEventListener("resize",this.resizeCanvas);
-  //     // debugger;
-  //   }
   render() {
     let uploaded_style = {}
     let docs = localStorage.getItem('files_array') || this.state.docs
@@ -171,7 +161,7 @@ class Signature extends Component {
                    <a className="nav-link" href="#"><i className="fa fa-download"></i></a>
                 </li>
                 <li className="nav-item">
-                   <a className="btn btn-done nav-link" href="#">Done</a>
+                   <a className="btn btn-done nav-link" onClick={this.saveData.bind(this)} href="javascript:void(0)">Done</a>
                 </li>
               </ul>
             </div>
@@ -236,10 +226,7 @@ class Signature extends Component {
           </li>
         </ul>
       </div>
-      <div className="right-maintemplate">
-        <div className="pageNumber">Page 1 of 1</div>
-        <DropArea docs={docs} field_type={this.state.inputFields} />
-      </div>
+      <DropArea docs={docs} field_type={this.state.inputFields} getSignPosition={this.getSignPosition.bind(this)} />
     </div>
     <div className="modal signmodal" id="Signfiled">
 	<div className="modal-dialog modal-lg">
@@ -283,9 +270,7 @@ class Signature extends Component {
 						<div className="tab-pane container fade" id="draw">
 							<div className="col-12 p-0">
 								<div className="signature-area">
-                <SignaturePad ref={ref => this.signaturePad = ref} />
-									<div className="Close-ico">✕</div>
-									<p className="clear-link"><a href="javascript:void(0)" onClick={this.removeSignature.bind(this)}>clear</a></p>
+                  <Sign w="800" h="250" t={this.state.top} l={this.state.left} docId={this.state.doc_id} color={this.state.color} />
 								</div>
 							</div>
 						</div>
@@ -310,9 +295,9 @@ class Signature extends Component {
 				<div className="row">
 					<div className="col-md-6 pl-0">
 						<ul className="list-inline color-list">
-							<li className="black"><input name="color" type="radio"/><label></label></li>
-							<li className="blue"><input name="color" type="radio"/><label></label></li>
-							<li className="green"><input name="color" type="radio"/><label></label></li>
+							<li className="black"><input name="color" value="black" type="radio" onChange={this.saveColor.bind(this)} /><label></label></li>
+							<li className="blue"><input name="color" value="blue" type="radio" onChange={this.saveColor.bind(this)}/><label></label></li>
+							<li className="green"><input name="color" value="green" type="radio" onChange={this.saveColor.bind(this)}/><label></label></li>
 						</ul>
 					</div>
 					<div className="col-md-6">

@@ -7,13 +7,12 @@ class DropArea extends React.Component {
       super(props);
   
       this.state = {
-        field_lists : { text: { id: 1, isDragging: false, isResizing: false, top:100, left: 50,   width:200, height:100, fontSize:25,isHide:true, type:'text',appendOn:false}, date: { id: 2, isDragging: false, isResizing: false, top:100, left: 50, width:100, height:50, fontSize:20, isHide:true, type:'date',appendOn:false} },
+        field_lists : [],
         list: [],
         show_field: false,
         doc_key: null,
         field_count:0,
-        items: [],
-        items_count: [],
+        items: {},
         chkduplicacy:[]
       };
     }
@@ -26,48 +25,57 @@ class DropArea extends React.Component {
       console.log("DropArea.onDrop");
       var obj = JSON.parse(e.dataTransfer.getData('application/json'));
       // let list = this.state.list;
-      let list = this.state.list;
+      let list = this.state.items;
+      console.log(obj)
+      console.log(list)
       // let index = this.state.list.findIndex((item) => item.id == obj.id);
       list[obj.id].isDragging = false;
       list[obj.id].top  = (e.clientY - obj.y);
       list[obj.id].left = (e.clientX - obj.x);
-      
+
+      // this.setState({
+      //   items: [
+      //      ...this.state.items.slice(0,obj.id),
+      //      Object.assign({}, this.state.items[obj.id], {isDragging: false,top: (e.clientY - obj.y),left: (e.clientX - obj.x)}),
+      //      ...this.state.items.slice(obj.id+1)
+      //   ]
+      // });
+
+    
       let newState = Object.assign(
         this.state, {
-          list : list
+          items : list
         });
-        console.log(newState)
+
       this.setState(newState);
       e.preventDefault();
     }
     updateStateDragging( id, isDragging){
-      let list = this.state.list;
-      // console.log(id)
-      // console.log(list)
-      // 'doc_'+key_+'_'+field.id
+      let list = this.state.items;
       // let index = this.state.field_lists.findIndex((item) => item.id == id);
-      list[id].isDragging = isDragging;
-
+      list[id].isDragging = isDragging;   
       let newState = Object.assign(
         this.state, {
-          list : list
+          items : list
         });
+        // console.log(list[id])
+      
       this.setState(newState);
     }
     updateStateResizing( id, isResizing){
-      let list = this.state.list;
+      let list = this.state.items;
       // let index = this.state.list.findIndex((item) => item.id == id);
       list[id].isResizing = isResizing;
       
       let newState = Object.assign(
         this.state, {
-          list : list
+          items : list
         });
       this.setState(newState);
     }
     funcResizing(id, clientX, clientY, field=''){
       let element = this.refs[field+'_'+ this.state.doc_key+'_'+ id];  
-      let list = this.state.list;
+      let list = this.state.items;
       let position = element.refs.node.getBoundingClientRect();
       list[id].width =   clientX - position.left + (16 / 2);
       list[id].height =  clientY - position.top  + (16 / 2);
@@ -76,50 +84,70 @@ class DropArea extends React.Component {
       console.log(list[id])
       let newState = Object.assign(
         this.state, {
-          list : list
+          items : list
         });
       this.setState(newState);
     }
     pasteSelectedField(e){
       e.preventDefault();
-      let id = 0;
-      let h = 200;
-      let w = 100;
-      let alreday = false;
-      let list = this.state.list;
-      let key___ = this.props.field_type.slice(this.props.field_type.length - 1);
-      this.setState((state) => ({ field_count: state.field_count + 1}));
-      if(key___ == 'date'){
-        w = 100
-        h = 50
-      }
-      let position = e.target.getBoundingClientRect();
-      var x = e.clientX - position.left; //x position within the element.
-      var y = e.clientY - position.top;
-      let doc_id = e.target.id.replace ( /[^\d.]/g, '' );
-      for(let res of list){
-        if(res.top == y && res.left == x){
-          alreday = true;
+      if( !e.target.className.includes('btn-removebox1') && !e.target.className.includes('form-control') && !e.target.className.includes('unselectable') && !e.target.className.includes('sign_image')){
+        console.log('new element created')
+        let position = e.target.getBoundingClientRect();
+        var x = e.clientX - position.left; //x position within the element.
+        var y = e.clientY - position.top;
+        let doc_id = e.target.id.replace ( /[^\d.]/g, '' );
+        let id = 0;
+        let h = 100;
+        let w = 200;
+        let alreday = false;
+        let list = this.state.items;
+        let key___ = this.props.field_type.slice(this.props.field_type.length - 1);
+        if(key___.length <= 0){
+          this.props.getSignPosition(y,x,doc_id);
+          $('.sign-btn').click();
+          return false
+        }
+
+        key___ = key___[0];
+        this.setState((state) => ({ field_count: state.field_count + 1}));
+        if(key___ == 'date'){
+          w = 100
+          h = 50
+        }
+        for(let res of Object.keys(list)){
+          if(res.top == y && res.left == x){
+            alreday = true;
+          }
+          if(this.state.chkduplicacy.indexOf(this.state.field_count) > -1){
+            alreday = true;
+          }
+          // if(res.isDragging || res.isResizing){
+          //   alreday = true;
+          // }
+        }
+        
+        if(!alreday){
+          let items = []
+          this.state.field_lists.push({ id: this.state.field_count, isDragging: false, isResizing: false, top:y, left: x,   width:w, height:h, fontSize:20,isHide:false, type:key___,appendOn:false,doc_id:doc_id});
+          let newobj = {};
+          Object.assign(newobj, this.state.field_lists); 
+          this.setState({show_field:true});
+          if(e.target.id && e.target.id !=''){
+            this.setState({doc_key:doc_id});
+          }
+          this.setState({items:newobj});
         }
       }
-      if(!alreday){
-        this.state.list.push({ id: this.state.field_count, isDragging: false, isResizing: false, top:y, left: x,   width:w, height:h, fontSize:23,isHide:false, type:key___,appendOn:false,doc_id:doc_id});
-        this.setState({show_field:true});
-        if(e.target.id && e.target.id !=''){
-          this.setState({doc_key:doc_id});
-        }
-        this.setState({list:this.state.list});
-      } 
     }
 
     removeFieldBox(id,doc_id){
-      let list = this.state.list; 
+      let list = this.state.items; 
       // let index = this.state.field_lists.findIndex((item) => item.id == id);
       list[id].isHide = true;
       list[id].type = 'yes';
       list[id].appendOn = false;
       this.setState({doc_key:doc_id});
-      this.setState({list:list});
+      this.setState({items:list});
       // let newState = Object.assign(
       //   this.state, {
       //     field_lists : list
@@ -129,95 +157,90 @@ class DropArea extends React.Component {
 
     render() {
       let DropJgah = []
-      let key_ = 1; 
-      let cnt = 0;
-      let fields = this.state.list;
-      this.props.docs.map(doc => { 
-        if(this.state.doc_key == key_){
-          fields.map(field => {
-            if(!field.isHide){
-              if(this.state.chkduplicacy.indexOf(field.id) > -1){
-
-              }else{
-                this.state.chkduplicacy.push(field.id);
-                this.state.items.push(
+      let key_ = 1;
+      let fields = this.state.items;
+      this.props.docs.map(doc => {
+        let items = []; 
+        if(this.state.doc_key == key_){ 
+          Object.keys(fields).map(key => {
+            if(!fields[key].isHide){
+                if(this.state.chkduplicacy.includes(fields[key].id)){
+                  // delete this.state.list[fields[key].id];
+                  $('#doc_'+key_+'_'+fields[key].id).remove();
+                  console.log('#doc_'+key_+'_'+fields[key].id);
+                }else{
+                  this.state.chkduplicacy.push(fields[key].id);
+                }
+                // console.log('current:key- '+this.state.doc_key);
+                // console.log('org:key- '+key_);
+                this.state.list.push(
                   <Draggable 
-                    ref={field.type[0] +'_'+key_+'_'+ field.id}
-                    key={field.id}
-                    drag_id={field.id}
-                    id={'doc_'+key_+'_'+field.id}
+                    ref={fields[key].type +'_'+key_+'_'+ fields[key].id}
+                    key={fields[key].id}
+                    drag_id={fields[key].id}
+                    id={'doc_'+key_+'_'+fields[key].id}
                     docId={key_}
-                    fieldType={field.type[0]}
-                    top={field.top}
-                    left={field.left}
-                    width={field.width}
-                    height={field.height}
-                    fontSize={field.fontSize}
-                    isDragging={field.isDragging}
-                    isResizing={field.isResizing}
+                    fieldType={fields[key].type}
+                    top={fields[key].top}
+                    left={fields[key].left}
+                    width={fields[key].width}
+                    height={fields[key].height}
+                    fontSize={fields[key].fontSize}
+                    isDragging={fields[key].isDragging}
+                    isResizing={fields[key].isResizing}
                     updateStateDragging={this.updateStateDragging.bind(this)}
                     updateStateResizing={this.updateStateResizing.bind(this)}
                     funcResizing={this.funcResizing.bind(this)}
                     removeFieldBox={this.removeFieldBox.bind(this)}
                   />
                 );
-              }
+              
             }
           });
-          // this.props.field_type.map(field => { 
-          //   if(item[field].type == 'yes'){
-          //     item[field].isHide = true;
-          //     item[field].appendOn = false;
-          //     item[field].type = field;
-          //     this.setState({field_lists:item});
-          //   }
-          //   if(!item[field].isHide){
-          //     if(field == 'date'){
-          //       cnt = this.state.date_field_count
-          //     }else{
-          //       cnt = this.state.text_field_co
-          //     if(this.state.chkduplicacy.indexOf(cnt) > -1){
-          //       // continue;
-          //     }else{
-          //       this.state.chkduplicacy.push(cnt);
-          //       this.state.items.push(
-          //         <Draggable 
-          //           ref={field +'_'+key_+'_'+ cnt}
-          //           key={cnt}
-          //           id={'doc_'+key_+'_'+cnt}
-          //           docId={key_}
-          //           fieldType={field}
-          //           top={top}
-          //           left={left}
-          //           width={item[field].width}
-          //           height={item[field].height}
-          //           fontSize={item[field].fontSize}
-          //           isDragging={item[field].isDragging}
-          //           isResizing={item[field].isResizing}
-          //           updateStateDragging={this.updateStateDragging.bind(this)}
-          //           updateStateResizing={this.updateStateResizing.bind(this)}
-          //           funcResizing={this.funcResizing.bind(this)}
-          //           removeFieldBox={this.removeFieldBox.bind(this)}
-          //         />
-          //       );
-          //     }
-          //   }
-          // })
+          console.log(this.state.list);
+          // DropJgah.push(<div className="drop-area container doc-bg signature_container"><img  
+          //   src={"files/docs/" + doc.name} 
+          //   alt="No Doc" 
+          //   ismap
+          //   id={'signature_container_'+key_}
+          //   onDragOver={this.onDragOver.bind(this)}
+          //   onDrop={this.onDrop.bind(this)} 
+          //   onClick={(e) =>{this.pasteSelectedField(e)}} />{this.state.list}</div>)
+          DropJgah.push(<div
+            className="drop-area container doc-bg signature_container"
+            onDragOver={this.onDragOver.bind(this)}
+            id={'signature_container_'+key_}
+            onDrop={this.onDrop.bind(this)} 
+            style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}}
+            onClick={(e) =>{this.pasteSelectedField(e)}}
+            >
+            {this.state.list}
+          </div>)
+        }else{
+          // DropJgah.push(<div className="drop-area container doc-bg signature_container"><img  
+          //   src={"files/docs/" + doc.name} 
+          //   alt="No Doc" 
+          //   ismap
+          //   id={'signature_container_'+key_}
+          //   onDragOver={this.onDragOver.bind(this)}
+          //   onDrop={this.onDrop.bind(this)} 
+          //   onClick={(e) =>{this.pasteSelectedField(e)}} /></div>)
+          DropJgah.push(<div
+            className="drop-area container doc-bg signature_container"
+            onDragOver={this.onDragOver.bind(this)}
+            id={'signature_container_'+key_}
+            onDrop={this.onDrop.bind(this)} 
+            style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}}
+            onClick={(e) =>{this.pasteSelectedField(e)}}
+            >
+          </div>)
         }
-        DropJgah.push(<div
-          className="drop-area container doc-bg signature_container"
-          onDragOver={this.onDragOver.bind(this)}
-          id={'signature_container_'+key_}
-          onDrop={this.onDrop.bind(this)} 
-          style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}}
-          onClick={(e) =>{this.pasteSelectedField(e)}}
-          >
-          {this.state.items}
-        </div>)
+        
         key_++;
-      })
+      });
       return (
-        <div>
+        <div className="right-maintemplate" key="1">
+        <div className="pageNumber">Page 1 of 1</div>
         {DropJgah}
         </div>
       );
@@ -295,7 +318,7 @@ class DropArea extends React.Component {
       return (
         <div className="text-field-box item unselectable" 
           ref={"node"}
-          draggable={this.props.isDragging}
+          draggable="true"
           id={ this.props.fieldType+'_' + this.props.id }
           fieldtype={this.props.fieldType}
           onMouseDown={this.onMouseDown.bind(this)}

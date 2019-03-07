@@ -23,7 +23,8 @@ export default () => (
             <Route exact path="/" component={Home} />
             {/* This can only be viewed with advanced permission */}
             <Route path="/advanced-permission" component={TestWithAdvPerm} />
-
+            <Route path="/admin/:page" component={TestWithAdvPerm} />
+            {/* <Route path="/admin/:page" component={'heyyy'} /> */}
             {/* Import all routes, permissions are verified in each route */}
             {features.filter((feature) => feature.route).map((feature) => (
                 <Route
@@ -32,7 +33,7 @@ export default () => (
                     component={feature.route}
                 />
             ))}
-            <Redirect to="/" />
+            {/* <Redirect to="/" /> */}
         </Switch>
     </App>
 );

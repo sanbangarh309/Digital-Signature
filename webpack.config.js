@@ -139,6 +139,7 @@ module.exports = (env, argv) => {
         plugins: [
             new webpack.DefinePlugin({
                 __DEV__: JSON.stringify(devMode),
+                 'process.browser': 'true'
             }),
 
             new CleanWebpackPlugin('dist', {} ),
