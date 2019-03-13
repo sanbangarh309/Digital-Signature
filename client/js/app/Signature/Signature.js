@@ -4,6 +4,9 @@ import axios from 'src/common/myAxios';
 import DropArea from './DropArea';
 import Sign from './Sign';
 import './Signature.css';
+var html2canvas = require('html2canvas');
+import jsPDF from 'jspdf';
+import swal from 'sweetalert';
 
 const getBase64 = (file) => {
   return new Promise((resolve,reject) => {
@@ -21,9 +24,17 @@ class Signature extends Component {
       page:'signature',
       inputFields:[],
       doc:null,
+      doc_blob:null,
+      pdf_doc:null,
       top:383,
       left:479,
       doc_id:null,
+      HTML_Width:null,
+      HTML_Height:null,
+      top_left_margin:null,
+      canvas_image_width:null,
+      canvas_image_height:null,
+      page_section:null,
       uploaded_sign:null,
       docs:[],
       color:'black',
@@ -37,10 +48,14 @@ class Signature extends Component {
     if(doc){
       this.chkFileType(doc);
     }
+    
   }
 
   chkFileType = (doc) => {
-    console.log(doc);
+    console.log(doc)
+    // this.setState({
+    //        doc_blob: doc
+    // });
     axios.post('/api/chktype',{doc_file:doc}).then((res) => {
       localStorage.setItem('uploaded_doc','')
       localStorage.setItem("files_array", JSON.stringify(res.data.message))
@@ -48,6 +63,64 @@ class Signature extends Component {
           docs: res.data.message
         });
     }); 
+  }
+
+  convertHtmlToCanvas = () => {
+    let save = '';
+    let doc = '';
+    html2canvas(document.querySelector("#signature_container_1"), { allowTaint: true }).then(canvas => { 
+      var imgData = canvas.toDataURL(
+        'image/png',[0.0, 1.0]);      
+        this.calculatePDF_height_width("#signature_container_1",0);
+        doc = new jsPDF('p', 'pt', [this.state.PDF_Width, this.state.PDF_Height]);
+        doc.addImage(imgData, 'PNG', this.state.top_left_margin, this.state.top_left_margin, this.state.HTML_Width, this.state.HTML_Height);
+        save = 1;
+        // this.setState({pdf_doc:doc});
+    });
+    html2canvas(document.querySelector("#signature_container_2"), { allowTaint: true }).then(canvas => {
+      var imgData = canvas.toDataURL(
+        'image/png',[0.0, 1.0]);      
+      this.calculatePDF_height_width("#signature_container_2",0);
+      doc.addPage(this.state.PDF_Width, this.state.PDF_Height);
+      doc.addImage(imgData, 'PNG', this.state.top_left_margin, this.state.top_left_margin, this.state.HTML_Width, this.state.HTML_Height);
+      setTimeout(function() {
+        // doc.save('../uploads/sample.pdf');
+        var blob = doc.output("blob");
+        var blobURL = URL.createObjectURL(blob);
+        var downloadLink = document.getElementById('pdf-download-link');
+        downloadLink.href = blobURL;
+        // this.setState({pdf_doc:blobURL});
+        console.log(blobURL);
+        // swal("Saved", "Doc Saved Successfully!", "success");
+        swal({
+          title: "Do You Want to save it in your account?",
+          text: "Are you sure that you want to save this ?",
+          icon: "success",
+          buttons: ["No", "Yes"],
+          dangerMode: false,
+        })
+        .then(willSave => {
+          if (willSave) {
+            swal("Saved!", "Your doc file has been saved", "success");
+             axios.post('/api/savedata',{doc:blobURL}).then((res) => {
+                
+             });
+          }
+        });
+      },500);
+    });
+    
+  }
+
+  calculatePDF_height_width = (selector,index) => {
+    this.state.page_section = $(selector).eq(index); console.log(this.state.page_section)
+    this.state.HTML_Width = this.state.page_section.width();
+    this.state.HTML_Height = this.state.page_section.height();
+    this.state.top_left_margin = 10;
+    this.state.PDF_Width = this.state.HTML_Width + (this.state.top_left_margin * 2);
+    this.state.PDF_Height = (this.state.PDF_Width * 1.2) + (this.state.top_left_margin * 2);
+    this.state.canvas_image_width = this.state.HTML_Width;
+    this.state.canvas_image_height = this.state.HTML_Height;
   }
 
   docUpload = (e) => {
@@ -67,19 +140,22 @@ class Signature extends Component {
 
   saveData(e){
     // const data = $('.signature_container .unselectable textarea').text();
-    let data = [];
-    $('.signature_container .unselectable').each(function( index ) {
-      let doc_id_data = $( this ).attr('id');
-      let doc_id = doc_id_data.split('_')[2];
-      let text = $( this ).find('textarea').val();
-      let h = parseInt($( this ).css('height').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
-      let w = parseInt($( this ).css('width').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
-      let t = parseInt($( this ).css('top').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
-      let l = parseInt($( this ).css('left').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
-      data.push({doc_id:doc_id,doc_text:text,top:t,left:l,height:h,width:w})
-   });
-    let docs = localStorage.getItem('files_array');
-    let sign_data = JSON.parse(docs);
+  //   let data = [];
+  //   $('.signature_container .unselectable').each(function( index ) {
+  //     let doc_id_data = $( this ).attr('id');
+  //     let doc_id = doc_id_data.split('_')[2];
+  //     let text = $( this ).find('textarea').val();
+  //     let h = parseInt($( this ).css('height').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
+  //     let w = parseInt($( this ).css('width').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
+  //     let t = parseInt($( this ).css('top').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
+  //     let l = parseInt($( this ).css('left').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
+  //     data.push({doc_id:doc_id,doc_text:text,top:t,left:l,height:h,width:w})
+  //  });
+  //   let docs = localStorage.getItem('files_array');
+  //   let sign_data = JSON.parse(docs);
+    let bloburl = this.convertHtmlToCanvas();
+    // this.calculatePDF_height_width("#signature_container_2",0);
+    console.log(bloburl)
     // console.log(docs)
     // console.log(data)
     // for (var key in sign_data) {
@@ -88,7 +164,7 @@ class Signature extends Component {
      
     //   });
     // }
-    // axios.post('/api/savedata',{data:data,docs:sign_data}).then((res) => {
+    // axios.post('/api/savedata',{doc:this.state.pdf_doc}).then((res) => {
      
     // });
      
@@ -158,10 +234,10 @@ class Signature extends Component {
             <div className="collapse navbar-collapse navigation-bar2" id="navbarCollapse">
               <ul className="navbar-nav ml-auto custom-nav">
                 <li className="nav-item active">
-                   <a className="nav-link" href="#"><i className="fa fa-download"></i></a>
+                   <a className="nav-link" href="#" target="_blank" id="pdf-download-link"><i className="fa fa-download"></i></a>
                 </li>
                 <li className="nav-item">
-                   <a className="btn btn-done nav-link" onClick={this.saveData.bind(this)} href="javascript:void(0)">Done</a>
+                   <a className="btn btn-done nav-link" onClick={this.saveData.bind(this)} href="javascript:void(0)">Save</a>
                 </li>
               </ul>
             </div>

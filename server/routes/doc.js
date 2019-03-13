@@ -22,26 +22,26 @@ module.exports = (app) => {
 
     app.post('/api/savedata',function(req,res){
       var fs = require('fs');
-      var Jimp = require('jimp');
-      var uploafdf_dir = config.directory + "/uploads/docs/";
-      const PDFDocument = require('pdfkit');
-      const doc = new PDFDocument;
-      doc.pipe(fs.createWriteStream(uploafdf_dir+'output.pdf'));
-      for(let j =0;j < req.body.docs.length; j++){
-        console.log(req.body.docs[j]);
-        if(j != 0){
-          doc.addPage();
-        }
-        doc.image(uploafdf_dir+req.body.docs[j].name, 0, 15, {width: 600})
-        // .font('fonts/PalatinoBold.ttf')
-          .fontSize(23);
-          for (var i=0; i < req.body.data.length; i++) {
-            console.log(req.body.data[i]);
-            if (parseInt(req.body.data[i].doc_id) == parseInt(j)+1) {
-              doc.text(req.body.data[i].doc_text, req.body.data[i].top, req.body.data[i].left);
-            }
-          }
-      }
+      // var Jimp = require('jimp');
+      // var uploafdf_dir = config.directory + "/uploads/docs/";
+      // const PDFDocument = require('pdfkit');
+      // const doc = new PDFDocument;
+      // doc.pipe(fs.createWriteStream(uploafdf_dir+'output.pdf'));
+      // for(let j =0;j < req.body.docs.length; j++){
+      //   console.log(req.body.docs[j]);
+      //   if(j != 0){
+      //     doc.addPage();
+      //   }
+      //   doc.image(uploafdf_dir+req.body.docs[j].name, 0, 15, {width: 600})
+      //   // .font('fonts/PalatinoBold.ttf')
+      //     .fontSize(23);
+      //     for (var i=0; i < req.body.data.length; i++) {
+      //       console.log(req.body.data[i]);
+      //       if (parseInt(req.body.data[i].doc_id) == parseInt(j)+1) {
+      //         doc.text(req.body.data[i].doc_text, req.body.data[i].top, req.body.data[i].left);
+      //       }
+      //     }
+      // }
     //   doc.image(uploafdf_dir+'pdf_yPEtx_cnvrt_1.png', 0, 15, {width: 600})
     //   // .font('fonts/PalatinoBold.ttf')
     //     .fontSize(23)
@@ -51,12 +51,12 @@ module.exports = (app) => {
     //     // .font('fonts/PalatinoBold.ttf')
     //     .fontSize(23)
     //     .text(req.body.text, 100, 100);
-     doc.save();
+    //  doc.save();
         // .moveTo(100, 150)
         // .lineTo(100, 250)
         // .lineTo(200, 250)
         // .fill("#FF3300");
-     doc.end();
+    //  doc.end();
     // let sign_data = JSON.parse(req.body.docs);
       // for (var key in sign_data) {
         // Jimp.read(uploafdf_dir+req.body.doc.name)
