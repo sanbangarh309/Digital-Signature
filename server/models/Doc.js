@@ -7,7 +7,8 @@ const schema = new mongoose.Schema({
   signed: Number,
   description: String,
   file: String,
+  filethumb: String,
   created_at:{ type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('Product', schema);
+module.exports = mongoose.model('Docs', schema);

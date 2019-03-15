@@ -25,7 +25,7 @@
 	header .custom-navheader .custom-nav li.active a span, .custom-nav li.active a {color:#30a747 !important;}
 	header .custom-navheader .custom-nav li:hover a {color:#30a747 !important;}
 	header .custom-navheader .custom-nav li a{padding: 0px 0px 0px 5px !important;color:#000; text-transform:uppercase; font-size:13px;}
-	.owl-theme .owl-nav {margin-top:44px !important;}
+	.owl-theme .owl-nav {margin-top:0 !important;}
 	button:focus{outline:none!important;}
 	.banner-captions-right form .input-group-addon {background-color: #30a747 !important;padding: 7px 7px;font-size: 12px;color: #fff;}
 	.banner-captions-right form .form-group .input-group input {height: 35px;border-radius: 3px;border: 1px #ddd solid;font-size: 13px;}
@@ -39,7 +39,7 @@
 	.banner-captions-left.wow.zoomIn h1 {font-size: 34px;color: #fff;font-family: 'Lao UI';line-height: 50px;}
 	.banner-captions-left.wow.zoomIn {padding: 30% 0;}
 	.owl-prev {opacity:1 !important;position: absolute;left: -15px;font-size: 28px !important;color:#4879af !important;top: -106px;}
-	#demos .owl-carousel .item {height: 10rem;background:none !important; padding: 1rem;}
+	#demos .owl-carousel .item {height: 9rem;background:none !important; padding: 1rem;}
 	.owl-dots {display: none;}
 	.owl-next {opacity:1;position: absolute;right:-15px;top: -106px;font-size: 28px !important;color:#4879af !important;}
 	.owl-nav { position: relative;}
@@ -56,6 +56,7 @@
 	.first-boxsmphone-01 figure img {max-width: 95px;}
 	.first-boxsmphone-0 figure img {max-width: 95px;}
 	.first-boxsmphone-02 figure img {max-width: 95px;}
+
 	.first-boxsmphone-01 {max-width: 260px;background: #fff;box-shadow: 2px 2px 13px #ddd;
 	margin-left: 1px;text-align: center;padding: 54px 0;margin: 65px 0 0 21px;min-height: 303px;}
 	.first-boxsmphone-0 {background: #fff;max-width: 260px;box-shadow: 2px 2px 15px #ddd;padding:54px 0;text-align: center;margin-top: -7px;min-height:303px;}
@@ -67,7 +68,7 @@
 	.men-img-aption figure {position: relative;bottom: -15px;}
 	.home-accordian .collapse.show {background: linear-gradient(to right, #4b66fd, #0077fa, #0083f2, #008de6, #0095d7, #009bcc, #009fbd, #00a1ad, #00a398, #00a279, #3e9f54, #669929);color: #fff;border-radius: 0 0px 5px 5px;}
 	.home-accordian .custom_btn.collapsed {background: linear-gradient(to right, #4b66fd, #0077fa, #0083f2, #008de6, #0095d7, #009bcc, #009fbd, #00a1ad, #00a398, #00a279, #3e9f54, #669929);color: #fff;}
-	.home-accordian .custom_btn.collapsed .hand-icon .fas {background: linear-gradient(to right, #4b66fd, #0077fa, #0083f2, #008de6, #0095d7, #009bcc, #009fbd, #00a1ad, #00a398, #00a279, #3e9f54, #669929);
+	.home-accordian .custom_btn.collapsed .hand-icon .fa {font-size:31px;background: linear-gradient(to right, #4b66fd, #0077fa, #0083f2, #008de6, #0095d7, #009bcc, #009fbd, #00a1ad, #00a398, #00a279, #3e9f54, #669929);
 	font-size: 30px;-webkit-background-clip: text;-moz-background-clip: text;background-clip: text;-webkit-text-fill-color:transparent;}
 	.home-accordian .custom_btn .hand-icon .fas {background:  linear-gradient(to right, #fff, #fff, #fff, #fff, #fff, #fff, #fff, #fff, #fff, #fff, #fff, #fff);font-size: 30px;-webkit-background-clip: text;-moz-background-clip: text;background-clip: text;-webkit-text-fill-color:transparent;}
 	.btn.btn-link {margin-bottom: 0px;}
@@ -857,11 +858,23 @@
 
 
 
+section {
+	clear: both;
+}
 
 
+.home-accordian .custom_btn .hand-icon .fa {
+    font-size: 31px;
+}
+.home-accordian .custom_btn.collapsed .btn-hdng{color: #444!important;}
+.home-accordian .custom_btn .hand-icon .fa {
+	font-size: 31px;
+}
+.home-accordian .custom_btn .btn-hdng, .home-accordian .custom_btn:focus .btn-hdng{color: #fff!important;}
 
-
-
+.custom-nav a:focus {
+	outline: none !important;
+}
 
 /* --======================
 #######RESPONSIVE-CSS========

@@ -193,46 +193,47 @@ class Home extends React.Component {
         <div className="row">
            <div className="large-12 columns">
            <OwlCarousel
-                  className="owl-theme"
+                  className="owl-theme" 
                   loop
                   margin={10}
+                  items={5}
                   nav
               >
                  <div className="item">
                     <img src="/assets/img/1.jpg"/>
                  </div>
                  <div className="item">
-                    <img src="/assets/img/2.png"/>
+                    <img src="/assets/img/2.jpg"/>
                  </div>
                  <div className="item">
-                    <img src="/assets/img/3.png"/>
+                    <img src="/assets/img/3.jpg"/>
                  </div>
                  <div className="item">
-                    <img src="/assets/img/4.png"/>
+                    <img src="/assets/img/4.jpg"/>
                  </div>
                  <div className="item">
-                    <img src="/assets/img/5.png"/>
+                    <img src="/assets/img/5.jpg"/>
                  </div>
                  <div className="item">
-                    <img src="/assets/img/2.png"/>
+                    <img src="/assets/img/2.jpg"/>
                  </div>
                  <div className="item">
-                    <img src="/assets/img/3.png"/>
+                    <img src="/assets/img/3.jpg"/>
                  </div>
                  <div className="item">
-                    <img src="/assets/img/4.png"/>
+                    <img src="/assets/img/4.jpg"/>
                  </div>
                  <div className="item">
-                    <img src="/assets/img/5.png"/>
+                    <img src="/assets/img/5.jpg"/>
                  </div>
                  <div className="item">
-                    <img src="/assets/img/3.png"/>
+                    <img src="/assets/img/3.jpg"/>
                  </div>
                  <div className="item">
-                    <img src="/assets/img/4.png"/>
+                    <img src="/assets/img/4.jpg"/>
                  </div>
                  <div className="item">
-                    <img src="/assets/img/2.png"/>
+                    <img src="/assets/img/2.jpg"/>
                  </div>
               </OwlCarousel>
            </div>
@@ -364,6 +365,7 @@ class Home extends React.Component {
                     </div>
                  </div>
               </div>
+
            </div>
            <div className="col-md-5 col-sm-12 col-lg-5">
               <div className="men-img-aption">

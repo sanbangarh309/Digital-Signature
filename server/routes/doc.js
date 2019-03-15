@@ -1,13 +1,17 @@
 const Doc = require.main.require('./models/Doc');
 const jwt = require('jwt-then');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const San_Function = require.main.require('./functions');
 const config = require.main.require('./custom_config');
 const User = require.main.require('./user').models.user;
 module.exports = (app) => {
-    app.post('/api/get_docs', (req, res, next) => {
+    app.post('/api/get_docs', async (req, res, next) => {
         let query = {};
-        if(req.body.qry){
-            query = { 'name': new RegExp(req.body.qry, 'i') };
+        if(req.body.token){
+          const user = await jwt.verify(req.body.token, config.JWT_SECRET);
+          const userMatched = await User.findById(user.sub);
+          query = { 'user_id': ObjectId(userMatched._id) };
         }
         Doc.find(query)
         .exec()
@@ -115,8 +119,8 @@ module.exports = (app) => {
         San_Function.uploadFinalDoc(req.body.base64Data, async (buffer)=> { 
             const user = await jwt.verify(req.body.token, config.JWT_SECRET);
             const userMatched = await User.findById(user.sub);
-            console.log(userMatched);
-            console.log(buffer);
+            // console.log(userMatched);
+            // console.log(buffer);
             if (userMatched) { 
               if (buffer.name) {
                   let doc = new Doc();
@@ -125,7 +129,7 @@ module.exports = (app) => {
                   doc.price = req.body.price || 0;
                   doc.description = req.body.description || '';
                   doc.file = buffer.name;
-                  // doc.save();
+                  doc.save();
                   return res.json(doc);
               }else{
                 return res.json({msg:'file not exist'});
@@ -174,10 +178,14 @@ module.exports = (app) => {
         if (ext == 'svg') {
           ext = 'svg+xml';
         }
+        console.log(ext);
           var fs = require('fs');
           var imageDir = config.directory+'/uploads/'+type+'/';
                fs.readFile(imageDir + filename, function (err, content) {
-                    if (err) {
+                    if (ext == 'pdf') {
+                        res.writeHead(200,{'Content-type':'application/pdf'});
+                        res.end(content);
+                    }else if (err) {
                         res.writeHead(400, {'Content-type':'text/html'})
                         res.end("No such image");
                     } else {

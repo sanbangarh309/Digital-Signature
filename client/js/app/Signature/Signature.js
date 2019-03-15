@@ -8,6 +8,7 @@ import './Signature.css';
 var html2canvas = require('html2canvas');
 import jsPDF from 'jspdf';
 import swal from 'sweetalert';
+var NavLink = require('react-router-dom').NavLink;
 
 const getBase64 = (file) => {
   return new Promise((resolve,reject) => {
@@ -191,6 +192,14 @@ class Signature extends Component {
 
   createTextField(e){
     e.preventDefault();
+    $(e.target).addClass('current-btn');
+    $('#date_field').removeClass('current-btn');
+    $('#initial_field').removeClass('current-btn');
+    $('#sign_pad').removeClass('current-btn');
+    $('#check_field').removeClass('current-btn');
+    $('#clear_field').removeClass('current-btn');
+    
+
     $('.signature_container').addClass('hovrcr_text');
   	$('.signature_container').removeClass('hovrcr_date');
   	$('.signature_container').removeClass('hovrcr_initials');
@@ -202,6 +211,13 @@ class Signature extends Component {
 
   createDateField(e){
     e.preventDefault();
+    $(e.target).addClass('current-btn');
+    $('#text_field').removeClass('current-btn');
+    $('#initial_field').removeClass('current-btn');
+    $('#sign_pad').removeClass('current-btn');
+    $('#check_field').removeClass('current-btn');
+    $('#clear_field').removeClass('current-btn');
+
     $('.signature_container').addClass('hovrcr_date');
     $('.signature_container').removeClass('hovrcr_text');
     $('.signature_container').removeClass('hovrcr_initials');
@@ -225,6 +241,7 @@ class Signature extends Component {
 
   render() {
     let uploaded_style = {}
+    let dashboard = '';
     let docs = localStorage.getItem('files_array')  || this.state.docs 
     try {
       docs = JSON.parse(docs)
@@ -233,6 +250,8 @@ class Signature extends Component {
     }
     if (!localStorage.getItem('jwtToken')) {
       return <Redirect to='/'  />
+    }else{
+      dashboard = <li><NavLink  className="btn current-btn" id="dashboard" to='/dashboard'>Dasboard</NavLink></li>
     }
     if(this.state.uploaded_sign){
       uploaded_style = {
@@ -268,7 +287,7 @@ class Signature extends Component {
       </div>
          </nav>
       </header>
-    <div className="container-fluid main-wrapper">
+    <div className="container-fluid main-wrapper" style={{paddingTop:'0px'}}>
       <div className="left-sidebar">
         <ul className="btn-list">
           <li>
@@ -283,12 +302,13 @@ class Signature extends Component {
                 <div id="collapseOne" className="collapse  show" aria-labelledby="headingOne" data-parent="#accordion">
                   <div className="card-body">
                     <ol className="btn-mainlist">
-                      <li><a href="javascript:void(0)" className="btn sign-btn current-btn" data-toggle="modal" data-target="#Signfiled">Signature</a></li>
-                      <li><a href="javascript:void(0)" className="btn" onClick={this.createTextField.bind(this)}>Text</a></li>
-                      <li><a href="javascript:void(0)" className="btn" onClick={this.createDateField.bind(this)}>Date</a></li>
-                      <li><a href="javascript:void(0)" className="btn">Initials</a></li>
-                      <li><a href="javascript:void(0)" className="btn">Check</a></li>
-                      <li><a href="javascript:void(0)" className="btn" onClick={this.removeSignature.bind(this)}>Clear</a></li>
+                    {dashboard}
+                      <li><a href="javascript:void(0)" id="sign_pad" className="btn sign-btn current-btn" data-toggle="modal" data-target="#Signfiled">Signature</a></li>
+                      <li><a href="javascript:void(0)" id="text_field" className="btn" onClick={this.createTextField.bind(this)}>Text</a></li>
+                      <li><a href="javascript:void(0)" id="date_field" className="btn" onClick={this.createDateField.bind(this)}>Date</a></li>
+                      <li><a href="javascript:void(0)" id="initial_field" className="btn">Initials</a></li>
+                      <li><a href="javascript:void(0)" id="check_field" className="btn">Check</a></li>
+                      <li><a href="javascript:void(0)" id="clear_field" className="btn" onClick={this.removeSignature.bind(this)}>Clear</a></li>
                     </ol>
                   </div>
                 </div>
@@ -368,7 +388,14 @@ class Signature extends Component {
 						<div className="tab-pane container fade" id="draw">
 							<div className="col-12 p-0">
 								<div className="signature-area">
-                  <Sign w="800" h="250" t={this.state.top} l={this.state.left} docId={this.state.doc_id} color={this.state.color} />
+                  <Sign 
+                    w="800" 
+                    h="250" 
+                    t={this.state.top} 
+                    l={this.state.left} 
+                    docId={this.state.doc_id} 
+                    color={this.state.color}
+                    />
 								</div>
 							</div>
 						</div>

@@ -19,11 +19,12 @@ class Dashboard extends Component {
     this.state = {
       page:'Dashboard',
       redirect: false,
-      doc:'',
+      docs:[],
       data:[]
     };
     localStorage.setItem("files_array", [])
     this.onChange = this.onChange.bind(this);
+    this.getDocs();
   }
 
   docUpload = (e) => {
@@ -36,6 +37,15 @@ class Dashboard extends Component {
       this.setState({
         redirect: 'signature'
       })
+    });
+  }
+
+  getDocs = (e) => {
+    axios.post('/api/get_docs/',{token:localStorage.getItem('jwtToken')}).then((res) => {
+      console.log(res);
+      this.setState({
+        docs: res.data
+      });
     });
   }
 
@@ -201,48 +211,29 @@ class Dashboard extends Component {
                 </div>
                 <div className="card-body">
                   <ol className="od-list">
-                    <li>
-                      <ul className="list-inline top-box-list">
-                        <li><input type="checkbox"/><span></span></li>
-                        <li className="doc-box">
-                          <a href="#">
-                            <div className="fig-left">
-                              <img src="/assets/img/doc-1.png" alt="" className="doc-pic"/>
-                            </div>
-                            <div className="doc-info">
-                              <p>Document<span className="date-doc small">12/21/2018 2:55 PM</span></p>
-                            </div>
-                          </a>
-                        </li>
-                        <li><a href="#">SIGN </a></li>
-                        <li><a href="#">SEND FOR SIGNING </a></li>
-                        <li><a href="#"><i className="fa fa-edit"></i></a></li>
-                        <li><a href="#"><i className="fa fa-share"></i></a></li>
-                        <li><a href="#"><i className="fa fa-download"></i></a></li>
-                        <li className="delete-row"><a className="fa fa-trash danger" href="#"></a></li>
-                      </ul>
-                    </li>
-                    <li>
-                      <ul className="list-inline top-box-list">
-                        <li><input type="checkbox"/><span></span></li>
-                        <li className="doc-box">
-                          <a href="#">
-                            <div className="fig-left">
-                              <img src="/assets/img/doc-1.png" alt="" className="doc-pic"/>
-                            </div>
-                            <div className="doc-info">
-                              <p>Document<span className="date-doc small">12/21/2018 2:55 PM</span></p>
-                            </div>
-                          </a>
-                        </li>
-                        <li><a href="#">SIGN </a></li>
-                        <li><a href="#">SEND FOR SIGNING </a></li>
-                        <li><a href="#"><i className="fa fa-edit"></i></a></li>
-                        <li><a href="#"><i className="fa fa-share"></i></a></li>
-                        <li><a href="#"><i className="fa fa-download"></i></a></li>
-                        <li className="delete-row"><a className="fa fa-trash danger" href="#"></a></li>
-                      </ul>
-                    </li>
+                  {this.state.docs.map((value, index) => {
+                    return <li key={index}>
+                               <ul className="list-inline top-box-list">
+                                  <li><input type="checkbox"/><span></span></li>
+                                  <li className="doc-box">
+                                    <a href="#">
+                                      <div className="fig-left">
+                                        <img src="/assets/img/doc-1.png" alt="No Thumb" className="doc-pic"/>
+                                      </div>
+                                      <div className="doc-info">
+                                        <p>Document<span className="date-doc small">{value.created_at}</span></p>
+                                      </div>
+                                    </a>
+                                  </li>
+                                  <li><a href="#">SIGN </a></li>
+                                  <li><a href="#">SEND FOR SIGNING </a></li>
+                                  <li><a href="#"><i className="fa fa-edit"></i></a></li>
+                                  <li><a href="#"><i className="fa fa-share"></i></a></li>
+                                  <li><a href={'files/docs/'+value.file} target="_blank"><i className="fa fa-download"></i></a></li>
+                                  <li className="delete-row"><a className="fa fa-trash danger" href="#"></a></li>
+                              </ul>
+                          </li>
+                  })}
                   </ol>
                 </div>
               </div>

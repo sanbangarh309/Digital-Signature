@@ -166,15 +166,13 @@ class DropArea extends React.Component {
           height: doc.h,
           backgroundImage:"url(files/docs/" + doc.name + ")"
         };
-        console.log(doc); 
-        console.log(back_style)
         if(this.state.doc_key == key_){ 
           Object.keys(fields).map(key => {
             if(!fields[key].isHide){
                 if(this.state.chkduplicacy.includes(fields[key].id)){
                   // delete this.state.list[fields[key].id];
-                  $('#doc_'+key_+'_'+fields[key].id).remove();
-                  console.log('#doc_'+key_+'_'+fields[key].id);
+                  $('#'+fields[key].type+'_doc_'+key_+'_'+fields[key].id).remove();
+                  console.log('#'+fields[key].type+'_doc_'+key_+'_'+fields[key].id);
                 }else{
                   this.state.chkduplicacy.push(fields[key].id);
                 }
