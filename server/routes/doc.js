@@ -1,6 +1,8 @@
 const Doc = require.main.require('./models/Doc');
+const jwt = require('jwt-then');
 const San_Function = require.main.require('./functions');
 const config = require.main.require('./custom_config');
+const User = require.main.require('./user').models.user;
 module.exports = (app) => {
     app.post('/api/get_docs', (req, res, next) => {
         let query = {};
@@ -22,6 +24,9 @@ module.exports = (app) => {
 
     app.post('/api/savedata',function(req,res){
       var fs = require('fs');
+      San_Function.uploadFinalDoc(req.body.base64Data,function(buffer){
+        return res.json(buffer)
+      });
       // var Jimp = require('jimp');
       // var uploafdf_dir = config.directory + "/uploads/docs/";
       // const PDFDocument = require('pdfkit');
@@ -103,30 +108,31 @@ module.exports = (app) => {
       //   console.log(doc);
       // });
       
-    return res.json(req.body)
+    // return res.json(req.body)
   })
 
     app.post('/api/add_doc', (req, res, next) => {
-        let base64Data = req.body.images;
-        San_Function.uploadBase64Image(base64Data,function(image_name){
-            let doc = new Doc();
-            doc.user_id = 1;
-            doc.title = req.body.product_name;
-            doc.price = req.body.price;
-            doc.description = req.body.description;
-            if (image_name) {
-                doc.file = image_name;
+        San_Function.uploadFinalDoc(req.body.base64Data, async (buffer)=> { 
+            const user = await jwt.verify(req.body.token, config.JWT_SECRET);
+            const userMatched = await User.findById(user.sub);
+            console.log(userMatched);
+            console.log(buffer);
+            if (userMatched) { 
+              if (buffer.name) {
+                  let doc = new Doc();
+                  doc.user_id = user.sub;
+                  doc.title = buffer.name;
+                  doc.price = req.body.price || 0;
+                  doc.description = req.body.description || '';
+                  doc.file = buffer.name;
+                  // doc.save();
+                  return res.json(doc);
+              }else{
+                return res.json({msg:'file not exist'});
+              }
+            }else{
+              return res.json({msg:'user not exist'});
             }
-            doc.save();
-          // data._id
-        //   San_Function.sanGenerateBarCode(prod._id, function(qrcode){
-        //     doc.qrcode = qrcode;
-        //     // data.save();
-        //     Doc.findByIdAndUpdate(prod._id, prod, {new: true}, function (err, product) {
-        //         if (err) return res.status(500).send("There was a problem updating the user.");
-        //         res.status(200).send(product);
-        //     });
-        // });
       });
 
     });

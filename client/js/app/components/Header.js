@@ -1,22 +1,23 @@
 import React from 'react';
 import  { Redirect } from 'react-router-dom'
 import {connect} from 'react-redux';
+import 'font-awesome/css/font-awesome.min.css';
 import './css/docs.theme.min.css';
 import './css/owl.carousel.min.css';
 import './css/owl.theme.default.min.css';
 import './css/bootstrap.min.css';
 import './css/animate.min.css';
-import 'font-awesome/css/font-awesome.min.css';
 import './css/style.css';
 import './css/responsive.css';
 // Js Files
 import 'jquery';
 import $ from 'jquery';
+import 'popper.js/dist/popper.js';
 import 'bootstrap/dist/js/bootstrap';
 // import './scripts/popper.min.js';
 // import './scripts/bootstrap.min.js';
 
-// import './scripts/wow.min.js';
+// import './scripts/wow.min.js'; 
 import WOW from 'wow.js'
 const wow = new WOW({
   boxClass: 'wow',
@@ -31,6 +32,7 @@ var NavLink = require('react-router-dom').NavLink;
 let logout = () => {
   localStorage.clear();
 }
+
 const Header = () => {
   if (localStorage.getItem('jwtToken')) {
     return <Redirect to='/dashboard'  />

@@ -18,6 +18,5 @@ export default [
     Feature,
     Contact,
     Signature,
-    Dashboard,
-    Logout
+    Dashboard
 ];

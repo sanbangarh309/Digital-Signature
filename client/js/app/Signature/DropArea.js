@@ -160,7 +160,14 @@ class DropArea extends React.Component {
       let key_ = 1;
       let fields = this.state.items;
       this.props.docs.map(doc => {
-        let items = []; 
+        let items = [];
+        let back_style = {
+          width:  doc.w,
+          height: doc.h,
+          backgroundImage:"url(files/docs/" + doc.name + ")"
+        };
+        console.log(doc); 
+        console.log(back_style)
         if(this.state.doc_key == key_){ 
           Object.keys(fields).map(key => {
             if(!fields[key].isHide){
@@ -197,7 +204,6 @@ class DropArea extends React.Component {
               
             }
           });
-          console.log(this.state.list);
           // DropJgah.push(<div className="drop-area container doc-bg signature_container"><img  
           //   src={"files/docs/" + doc.name} 
           //   alt="No Doc" 
@@ -206,12 +212,13 @@ class DropArea extends React.Component {
           //   onDragOver={this.onDragOver.bind(this)}
           //   onDrop={this.onDrop.bind(this)} 
           //   onClick={(e) =>{this.pasteSelectedField(e)}} />{this.state.list}</div>)
+          
           DropJgah.push(<div
             className="drop-area container doc-bg signature_container"
             onDragOver={this.onDragOver.bind(this)}
             id={'signature_container_'+key_}
             onDrop={this.onDrop.bind(this)} 
-            style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}}
+            style = {back_style}
             onClick={(e) =>{this.pasteSelectedField(e)}}
             >
             {this.state.list}
@@ -230,7 +237,7 @@ class DropArea extends React.Component {
             onDragOver={this.onDragOver.bind(this)}
             id={'signature_container_'+key_}
             onDrop={this.onDrop.bind(this)} 
-            style = {{backgroundImage:"url(files/docs/" + doc.name + ")"}}
+            style = {back_style}
             onClick={(e) =>{this.pasteSelectedField(e)}}
             >
           </div>)

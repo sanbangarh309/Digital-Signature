@@ -41,6 +41,30 @@ module.exports = {
     return response;
   },
 
+  uploadFinalDoc : function(base64Data,sb){
+    if (!base64Data) {
+      return sb('');
+    }
+    var imageTypeRegularExpression = /\/(.*?)$/;
+    // Generate random string
+    var uniqueSHA1String = module.exports.san_Password()
+    var imageBuffer = module.exports.decodeBase64Image(base64Data);
+    var uploafdf_dir = config.directory + "/uploads/docs/";
+    var imageTypeDetected = imageBuffer.type.match(imageTypeRegularExpression);
+    if(imageTypeDetected[1] == 'pdf'){
+      var uniqueRandomImageName = 'pdf_' + uniqueSHA1String;
+    }else{
+      var uniqueRandomImageName = 'image_' + uniqueSHA1String;
+    }
+    var userUploadedImagePath = uploafdf_dir + uniqueRandomImageName + '.' + imageTypeDetected[1];
+    var filename = uniqueRandomImageName + '.' + imageTypeDetected[1];
+    require('fs').writeFile(userUploadedImagePath, imageBuffer.data,
+      function()
+      {
+        sb({name:filename});
+      });
+  },
+
   uploadBase64Image : function(base64Data,sb){
     if (!base64Data) {
       return sb('');
@@ -63,7 +87,6 @@ module.exports = {
         require('fs').writeFile(userUploadedImagePath, imageBuffer.data,
           function()
           {
-            console.log(imageTypeDetected[1])
             if(imageTypeDetected[1] == 'pdf'){
               // let PDF2Pic = require('pdf2pic')
               // let converter = new PDF2Pic({
@@ -83,7 +106,7 @@ module.exports = {
                   console.log('Received: ', msg);
               });
               converter.setOptions({
-                type: 'png',                                // png or jpg, default jpg
+                type: 'jpg',                                // png or jpg, default jpg
                 size: 1024,                                 // default 1024
                 density: 600,                               // default 600
                 quality: 100,                               // default 100

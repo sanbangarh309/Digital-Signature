@@ -6,6 +6,7 @@ import features from './features';
 import auth from 'src/auth';
 
 import App from './components/App';
+import Logout from './Logout';
 
 const Home = Loadable({
     loader: () => import('./Home/route'),
@@ -24,6 +25,7 @@ export default () => (
             {/* This can only be viewed with advanced permission */}
             <Route path="/advanced-permission" component={TestWithAdvPerm} />
             <Route path="/admin/:page" component={TestWithAdvPerm} />
+            <Route path="/logout" component={Logout.route} />
             {/* <Route path="/admin/:page" component={'heyyy'} /> */}
             {/* Import all routes, permissions are verified in each route */}
             {features.filter((feature) => feature.route).map((feature) => (

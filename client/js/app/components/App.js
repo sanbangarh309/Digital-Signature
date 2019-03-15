@@ -4,7 +4,14 @@ import history from '../history';
 import Header from './Header';
 import Comment from './Comment';
 import Footer from './Footer';
-
+import './loader.css';
+let laoder = <div id="outer-barG">
+                <div id="front-barG" className="bar-animationG">
+                    <div id="barG_1" className="bar-lineG"></div>
+                    <div id="barG_2" className="bar-lineG"></div>
+                    <div id="barG_3" className="bar-lineG"></div>
+                </div>
+            </div>
 const propTypes = {
     children: PropTypes.node.isRequired,
 };
@@ -17,6 +24,7 @@ const App = ({children}) => {
   if(prms == 'signature' || prms == 'dashboard'){
     return (
         <div>
+            {laoder}
             {children}
         </div>
     );

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import {Redirect} from 'react-router-dom';
 import axios from 'src/common/myAxios';
 import DropArea from './DropArea';
 import Sign from './Sign';
@@ -16,7 +17,7 @@ const getBase64 = (file) => {
     reader.readAsDataURL(file);
   });
 }
-
+// localStorage.clear();
 class Signature extends Component {
   constructor(props){
     super(props);
@@ -45,10 +46,22 @@ class Signature extends Component {
       }
     };
     let doc = localStorage.getItem('uploaded_doc') || ''
+    
     if(doc){
       this.chkFileType(doc);
     }
-    
+  }
+
+  componentWillMount() {
+    let docs = localStorage.getItem('files_array') || this.state.docs
+    try {
+      docs = JSON.parse(docs)
+    }catch(e){
+
+    }
+    this.setState({
+      docs: docs
+    });
   }
 
   chkFileType = (doc) => {
@@ -56,64 +69,94 @@ class Signature extends Component {
     // this.setState({
     //        doc_blob: doc
     // });
+    var loader = document.getElementById('outer-barG');
+    $('<div class="modal-backdrop show" id="modal_backdrop"></div>').appendTo('body');
+    $(loader).css('display','block');
     axios.post('/api/chktype',{doc_file:doc}).then((res) => {
-      localStorage.setItem('uploaded_doc','')
-      localStorage.setItem("files_array", JSON.stringify(res.data.message))
-        this.setState({
-          docs: res.data.message
+        localStorage.setItem('uploaded_doc','')
+        let fina_data = [];
+        Object.keys(res.data.message).map(key => {
+          var i = new Image(); 
+          i.onload = function(){
+            fina_data.push({name:res.data.message[key].name,w:i.width,h:i.height});
+          };
+          i.src = 'files/docs/'+res.data.message[key].name;
         });
+        
+        setTimeout(() => {
+          localStorage.setItem("files_array", JSON.stringify(fina_data))
+          this.setState({
+            docs: fina_data
+          });
+          var loader = document.getElementById('outer-barG');
+          $('#modal_backdrop').remove();
+          $(loader).css('display','none');
+        }, 1000);
+        
     }); 
   }
 
   convertHtmlToCanvas = () => {
     let save = '';
     let doc = '';
-    html2canvas(document.querySelector("#signature_container_1"), { allowTaint: true }).then(canvas => { 
-      var imgData = canvas.toDataURL(
-        'image/png',[0.0, 1.0]);      
-        this.calculatePDF_height_width("#signature_container_1",0);
-        doc = new jsPDF('p', 'pt', [this.state.PDF_Width, this.state.PDF_Height]);
-        doc.addImage(imgData, 'PNG', this.state.top_left_margin, this.state.top_left_margin, this.state.HTML_Width, this.state.HTML_Height);
-        save = 1;
-        // this.setState({pdf_doc:doc});
-    });
-    html2canvas(document.querySelector("#signature_container_2"), { allowTaint: true }).then(canvas => {
-      var imgData = canvas.toDataURL(
-        'image/png',[0.0, 1.0]);      
-      this.calculatePDF_height_width("#signature_container_2",0);
-      doc.addPage(this.state.PDF_Width, this.state.PDF_Height);
-      doc.addImage(imgData, 'PNG', this.state.top_left_margin, this.state.top_left_margin, this.state.HTML_Width, this.state.HTML_Height);
-      setTimeout(function() {
-        // doc.save('../uploads/sample.pdf');
-        var blob = doc.output("blob");
-        var blobURL = URL.createObjectURL(blob);
-        var downloadLink = document.getElementById('pdf-download-link');
-        downloadLink.href = blobURL;
-        // this.setState({pdf_doc:blobURL});
-        console.log(blobURL);
-        // swal("Saved", "Doc Saved Successfully!", "success");
-        swal({
-          title: "Do You Want to save it in your account?",
-          text: "Are you sure that you want to save this ?",
-          icon: "success",
-          buttons: ["No", "Yes"],
-          dangerMode: false,
-        })
-        .then(willSave => {
-          if (willSave) {
-            swal("Saved!", "Your doc file has been saved", "success");
-             axios.post('/api/savedata',{doc:blobURL}).then((res) => {
-                
-             });
-          }
+    let width = '';
+    let height = '';
+    if(this.state.docs.length > 0){
+      for(let i=1;i <=this.state.docs.length;i++){
+        html2canvas(document.querySelector("#signature_container_"+i), { allowTaint: true }).then(canvas => { 
+          var imgData = canvas.toDataURL(
+            'image/jpeg',[0.0, 1.0]);      
+            this.calculatePDF_height_width("#signature_container_"+i,0);
+            if(i ==1){
+              doc = new jsPDF('p', 'mm', 'a4');
+              width = doc.internal.pageSize.getWidth();
+              height = doc.internal.pageSize.getHeight();
+              doc.setFont("helvetica");
+              doc.setFontType("bold");
+            }else{
+              doc.addPage();
+            }
+            doc.addImage(imgData, 'JPEG', 0, 0, width, height);
+            if(i == this.state.docs.length){
+              setTimeout(function() {
+                var blob = doc.output("blob");
+                var blobURL = URL.createObjectURL(blob);console.log(blobURL)
+                var downloadLink = document.getElementById('pdf-download-link');
+                downloadLink.href = blobURL;
+                var loader = document.getElementById('outer-barG');
+                $('#modal_backdrop').remove();
+                $(loader).css('display','none');
+                swal({
+                  title: "Do You Want to save it in your account?",
+                  text: "Are you sure that you want to save this ?",
+                  icon: "success",
+                  buttons: ["No", "Yes"],
+                  dangerMode: false,
+                })
+                .then(willSave => {
+                  if (willSave) {
+                    var reader = new FileReader();
+                    reader.readAsDataURL(blob); 
+                    reader.onloadend = function() {
+                        let base64data = reader.result;                
+                        axios.post('/api/add_doc',{base64Data:base64data,token:localStorage.getItem('jwtToken')}).then((res) => {
+                          console.log(res);
+                        });
+                    }
+                    swal("Saved!", "Your doc file has been saved", "success");
+                  }
+                });
+              },500);
+            }
         });
-      },500);
-    });
-    
+      }
+    }
   }
 
+ 
+
   calculatePDF_height_width = (selector,index) => {
-    this.state.page_section = $(selector).eq(index); console.log(this.state.page_section)
+    this.state.page_section = $(selector).eq(index);
     this.state.HTML_Width = this.state.page_section.width();
     this.state.HTML_Height = this.state.page_section.height();
     this.state.top_left_margin = 10;
@@ -139,35 +182,11 @@ class Signature extends Component {
   }
 
   saveData(e){
-    // const data = $('.signature_container .unselectable textarea').text();
-  //   let data = [];
-  //   $('.signature_container .unselectable').each(function( index ) {
-  //     let doc_id_data = $( this ).attr('id');
-  //     let doc_id = doc_id_data.split('_')[2];
-  //     let text = $( this ).find('textarea').val();
-  //     let h = parseInt($( this ).css('height').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
-  //     let w = parseInt($( this ).css('width').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
-  //     let t = parseInt($( this ).css('top').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
-  //     let l = parseInt($( this ).css('left').match(/-?(?:\d+(?:\.\d*)?|\.\d+)/)[0]);
-  //     data.push({doc_id:doc_id,doc_text:text,top:t,left:l,height:h,width:w})
-  //  });
-  //   let docs = localStorage.getItem('files_array');
-  //   let sign_data = JSON.parse(docs);
-    let bloburl = this.convertHtmlToCanvas();
-    // this.calculatePDF_height_width("#signature_container_2",0);
-    console.log(bloburl)
-    // console.log(docs)
-    // console.log(data)
-    // for (var key in sign_data) {
-    //   console.log(sign_data[key])
-    //   axios.post('/api/savedata',{data:data,doc:sign_data[key],key:key}).then((res) => {
-     
-    //   });
-    // }
-    // axios.post('/api/savedata',{doc:this.state.pdf_doc}).then((res) => {
-     
-    // });
-     
+    var loader = document.getElementById('outer-barG');
+    $('<div class="modal-backdrop show" id="modal_backdrop"></div>').appendTo('body');
+    // document.getElementById("app").appendChild('<div class="modal-backdrop show"></div>');
+    $(loader).css('display','block');
+    this.convertHtmlToCanvas();
   }
 
   createTextField(e){
@@ -206,11 +225,14 @@ class Signature extends Component {
 
   render() {
     let uploaded_style = {}
-    let docs = localStorage.getItem('files_array') || this.state.docs
+    let docs = localStorage.getItem('files_array')  || this.state.docs 
     try {
       docs = JSON.parse(docs)
     }catch(e){
 
+    }
+    if (!localStorage.getItem('jwtToken')) {
+      return <Redirect to='/'  />
     }
     if(this.state.uploaded_sign){
       uploaded_style = {

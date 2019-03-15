@@ -19,16 +19,17 @@ export default class Logout extends React.Component {
   };
 
   logout(){
-    localStorage.clear();
+    localStorage.setItem('jwtToken','');
     // this.props.dispatch(auth.actions.logout());
     // this.props.dispatch(auth.actions.logout());
   }
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.dispatch(auth.actions.logout());
     }
 
     render() {
+        // debugger;
         return <Redirect to='/'  />
     }
 }

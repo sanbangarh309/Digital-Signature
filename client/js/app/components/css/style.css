@@ -146,10 +146,9 @@
 	.copyright p {color: #ccc;}
 	.back-top {width: 25px;height: 25px;position: fixed;bottom: 68px;right: 15px;display: none;opacity: 0.8;z-index: 99;}
 	.back-top > i {background:#2f7aee;color: #fff;padding: 5px;border-radius: 50%;cursor: pointer;}
-	header{transition: 0.8s;-webkit-transition:  0.8s;}
-	.fixed-theme {	animation-duration: 0.8s;	animation-name: fadeInDown;	animation-timing-function: ease-in-out;	background:#fff;	box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.75);	left: 0;	position: fixed;	right: 0;
+	.home-header {	position: fixed;width: 100%;height: 100px;	background: #fff;	z-index: 6;top: 0;	}
+	.fixed-theme {background:#fff;	box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.75);	left: 0;	position: fixed;	right: 0;
 	top: 0;	width: 100%;	z-index: 9999;	border-radius: 0;	padding:0}
-	.fixed-theme .custom-navheader a.navbar-brand img {width: 118px !important;}
 	.footer-links > li > a::before {bottom: -7px;content: "";height: 2px;left: 0;
 	position: absolute;transition: all 0.35s ease-out 0s;width: 0;}
 	.footer-links > li:hover > a::before {background-color: #4285f4;width: 35%;}
@@ -158,6 +157,7 @@
 	header .navigation-bar2 > ul > li > a.btn-done:hover{color:#fff!important;}
 	.header-template{background: #ddd;position:fixed!important;}
 	header .header-template a.navbar-brand img{max-width: 100px;}
+	.wrapper {padding-top: 90px;}
 	.main-wrapper {padding-top: 55px;background:#EAEAEA;width:100%;}
 	.left-sidebar {position: fixed;width: 200px;}
 	.right-maintemplate{margin-left: 185px;}

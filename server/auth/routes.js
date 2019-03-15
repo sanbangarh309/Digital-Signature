@@ -72,6 +72,16 @@ async function login(req, res, next) {
     }
 }
 
+async function logout(req, res, next) {
+    const {password, email} = req.body;
+
+    try {
+        localStorage.setItem('jwtToken','');
+    } catch (err) {
+        next(err);
+    }
+}
+
 // Use new async await to mongoose and bycrypt
 async function signup(req, res, next) {
     const user = req.body;
@@ -137,6 +147,7 @@ async function reAuthorize(req, res, next) {
 
 module.exports = (app) => {
     app.post('/api/login', login);
+    app.post('/api/logout', logout);
     app.post('/api/signup', signup);
     app.post('/api/reauth', reAuthorize);
 };

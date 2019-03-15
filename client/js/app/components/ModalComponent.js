@@ -105,7 +105,7 @@ export default class ModalComponent extends React.Component {
       // this.closePopUp()
     }
     return (
-        <div className={cusClass.join(' ')} id="auth-modal" tabindex="-1" role="dialog">
+        <div className={cusClass.join(' ')} id="auth-modal" tabIndex="-1" role="dialog">
            <div className="modal-dialog">
               <div className="modal-content">
                  <button type="button" className="close" id = "hidePopUpBtn" data-dismiss="modal" aria-hidden="true">×</button>
@@ -138,7 +138,7 @@ export default class ModalComponent extends React.Component {
                        <div className="form-group login__password">
                         <label className="control-label sr-only required" for="customer_login_password">Password
                         </label>
-                        <input id="customer_login_password" name="password" onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Password" autocomplete="off" type="password"/>
+                        <input id="customer_login_password" name="password" onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Password" type="password"/>
                         <span className="input-helper">
                           <svg className="next-icon next-icon--color-slate-lighter next-icon--size-20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M376 192h-24v-46.7c0-52.7-42-96.5-94.7-97.3-53.4-.7-97.3 42.8-97.3 96v48h-24c-22 0-40 18-40 40v192c0 22 18 40 40 40h240c22 0 40-18 40-40V232c0-22-18-40-40-40zM270 316.8v68.8c0 7.5-5.8 14-13.3 14.4-8 .4-14.7-6-14.7-14v-69.2c-11.5-5.6-19.1-17.8-17.9-31.7 1.4-15.5 14.1-27.9 29.6-29 18.7-1.3 34.3 13.5 34.3 31.9 0 12.7-7.3 23.6-18 28.8zM324 192H188v-48c0-18.1 7.1-35.1 20-48s29.9-20 48-20 35.1 7.1 48 20 20 29.9 20 48v48z"/></svg>
                         </span>
@@ -146,7 +146,7 @@ export default class ModalComponent extends React.Component {
                        <div className="form-group">
                         <div className="col-sm-12 auth-submit">
                            <div className="login__remember-me">
-                            <input id="customer_login_rememberCustomerLogin" name="remember" checked="checked" value="1" type="checkbox"/>
+                            <input id="customer_login_rememberCustomerLogin" name="remember" onChange={this.handleChange} value="1" type="checkbox"/>
                             <label className="control-label" for="customer_login_rememberCustomerLogin"> Remember me
                             </label>
                           </div>
@@ -173,7 +173,7 @@ export default class ModalComponent extends React.Component {
                           <span>OR</span>
                         </div>
                       </div>
-                      <form action="/customer/register" method="post" role="form" novalidate="novalidate" className="sign-up">
+                      <form action="/customer/register" method="post" role="form" noValidate="novalidate" className="sign-up">
                           <div className="form-group">
                            <div className="col-12 p-0 raw">
                             <div className="col-md-6">
@@ -208,11 +208,11 @@ export default class ModalComponent extends React.Component {
                            <div className="col-12 p-0 raw">
                             <div className="col-md-6">
                                <label className="control-label sr-only required" for="customer_registration_password_first">Password</label>
-                               <input id="customer_registration_password_first" name="password" value={this.state.password} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Password Must Have one upper case letter with symbols" autocomplete="off" type="password"/>
+                               <input id="customer_registration_password_first" name="password" value={this.state.password} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Password Must Have one upper case letter with symbols" autoComplete="off" type="password"/>
                             </div>
                             <div className="col-md-6">
                                <label className="control-label sr-only required" for="customer_registration_password_second"> Repeat password</label>
-                               <input id="customer_registration_password_second" name="confirmedPassword" value={this.state.confirmedPassword} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Repeat password" autocomplete="off" type="password"/>
+                               <input id="customer_registration_password_second" name="confirmedPassword" value={this.state.confirmedPassword} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Repeat password" autoComplete="off" type="password"/>
                             </div>
                            </div>
                           </div>

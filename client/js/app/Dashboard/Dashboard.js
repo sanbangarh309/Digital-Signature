@@ -27,6 +27,8 @@ class Dashboard extends Component {
   }
 
   docUpload = (e) => {
+    var loader = document.getElementById('outer-barG');
+    $(loader).css('display','block');
     const file = e.target.files[0];
     getBase64(file).then(base64 => {
       this.setState({doc:base64});
@@ -49,6 +51,112 @@ class Dashboard extends Component {
       return (<Redirect to={this.state.redirect}/>)
     }
     return (
+      <div>
+        <header>
+         <nav className="navbar navbar-expand-lg navbar-light custom-navheader navbar-fixed header-template" id="sroll-className">
+			<div className="container-fluid">
+				<a className="navbar-brand d-lg-block d-md-block" href="#"><img src="/assets/img/fina-logo.png" alt=""/></a>
+				<button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+					<span className="navbar-toggler-icon"></span>
+				</button>
+				<div className="collapse navbar-collapse navigation-bar3" id="navbarCollapse">
+					<ul className="navbar-nav ml-auto custom-navi">
+										<li className="dropdown messages-menu">
+					<a href="#" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+					  <i className="fa fa-envelope-o"></i>
+					  <span className="label label-success">4</span>
+					</a>
+					<ul className="dropdown-menu">
+					  <li className="header">You have 4 messages</li>
+					  <li>
+						<ul className="menu">
+						  <li>
+							<a href="#">
+							  <div className="pull-left">
+								<img src="/assets/img/user2.jpg" className="img-circle" alt="User Image"/>
+							  </div>
+							  <h4>
+								Support Team
+								<small><i className="fa fa-clock-o"></i> 5 mins</small>
+							  </h4>
+							  <p>Why not buy a new awesome theme?</p>
+							</a>
+						  </li>
+						  <li>
+							<a href="#">
+							  <div className="pull-left">
+								<img src="/assets/img/user2.jpg" className="img-circle" alt="User Image"/>
+							  </div>
+							  <h4>
+								AdminLTE Design Team
+								<small><i className="fa fa-clock-o"></i> 2 hours</small>
+							  </h4>
+							  <p>Why not buy a new awesome theme?</p>
+							</a>
+						  </li>
+						  <li>
+							<a href="#">
+							  <div className="pull-left">
+								<img src="/assets/img/user2.jpg" className="img-circle" alt="User Image"/>
+							  </div>
+							  <h4>
+								Developers
+								<small><i className="fa fa-clock-o"></i> Today</small>
+							  </h4>
+							  <p>Why not buy a new awesome theme?</p>
+							</a>
+						  </li>
+						  <li>
+							<a href="#">
+							  <div className="pull-left">
+								<img src="/assets/img/user2.jpg" className="img-circle" alt="User Image"/>
+							  </div>
+							  <h4>
+								Sales Department
+								<small><i className="fa fa-clock-o"></i> Yesterday</small>
+							  </h4>
+							  <p>Why not buy a new awesome theme?</p>
+							</a>
+						  </li>
+						  <li>
+							<a href="#">
+							  <div className="pull-left">
+								<img src="/assets/img/user2.jpg" className="img-circle" alt="User Image"/>
+							  </div>
+							  <h4>
+								Reviewers
+								<small><i className="fa fa-clock-o"></i> 2 days</small>
+							  </h4>
+							  <p>Why not buy a new awesome theme?</p>
+							</a>
+						  </li>
+						</ul>
+					  </li>
+					  <li className="footer"><a href="#">See All Messages</a></li>
+					</ul>
+				  </li>
+						<li className="dropdown user user-menu">
+							<a href="#" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+							  <i className="fa fa-user"></i>
+							  
+							</a>
+							<ul className="dropdown-menu">
+								<li>
+									<a href="#" className="btn btn-default btn-flat"><i className="fa fa-user"></i> My Profile</a>
+								</li>
+								<li>
+								  <a href="#" className="btn btn-default btn-flat"><i className="fa fa-globe"></i> Feedback</a>
+								</li>
+								<li>
+                  <NavLink to='/logout' className="btn btn-default btn-flat"><i className="fa fa-sign-out"></i>Logout</NavLink>
+								</li>
+							</ul>
+						  </li>
+					</ul>
+				</div>
+			</div>
+         </nav>
+      </header>
       <div className="container-fluid main-wrapper">
       <aside className="main-sidebar">
         <div className="user-panel">
@@ -142,6 +250,7 @@ class Dashboard extends Component {
           </div>
         </div>
       </div>
+    </div>
     </div>
     );
   }

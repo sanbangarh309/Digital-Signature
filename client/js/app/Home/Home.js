@@ -305,7 +305,7 @@ class Home extends React.Component {
                     <div className="card-header" id="headingOne">
                        <h5 className="mb-0">
                           <button className="custom_btn" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-            <span className="hand-icon"><i className="fa fa-handshake"></i></span><span className="btn-hdng">Invite Signers</span>
+            <span className="hand-icon"><i className="fa fa-handshake-o"></i></span><span className="btn-hdng">Invite Signers</span>
                           </button>
                        </h5>
                     </div>
@@ -321,7 +321,7 @@ class Home extends React.Component {
                     <div className="card-header" id="headingTwo">
                        <h5 className="mb-0">
                           <button className="custom_btn collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                          <span className="hand-icon"><i className="fa fa-clock"></i></span><span className="btn-hdng">Quick & Easy</span>
+                          <span className="hand-icon"><i className="fa fa-clock-o"></i></span><span className="btn-hdng">Quick & Easy</span>
                           </button>
                        </h5>
                     </div>
@@ -337,7 +337,7 @@ class Home extends React.Component {
                     <div className="card-header" id="headingThree">
                        <h5 className="mb-0">
                           <button className="custom_btn collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                          <span className="hand-icon"><i className="fa fa-user"></i></span><span className="btn-hdng">Professional</span>
+                          <span className="hand-icon"><i className="fa fa-user-o"></i></span><span className="btn-hdng">Professional</span>
                           </button>
                        </h5>
                     </div>
@@ -352,7 +352,7 @@ class Home extends React.Component {
                     <div className="card-header" id="headingFour">
                        <h5 className="mb-0">
                           <button className="custom_btn collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                          <span className="hand-icon"><i className="fa fa-file-signature"></i></span><span className="btn-hdng">Sign as You Want</span>
+                          <span className="hand-icon"><i className="fa fa-pencil-square-o"></i></span><span className="btn-hdng">Sign as You Want</span>
                           </button>
                        </h5>
                     </div>
@@ -380,7 +380,7 @@ class Home extends React.Component {
            <ul className="list-inline cell-list">
               <li>
                  <label className="checkcontainer">
-                 <input type="radio" name="radio" checked/>
+                 <input type="radio" name="radio"/>
                  <span className="radiobtn"></span>
                  </label>
               </li>
