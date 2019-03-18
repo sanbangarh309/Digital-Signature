@@ -7,7 +7,9 @@ import axios from 'src/common/myAxios';
 import {connect} from 'react-redux';
 
 @connect((store) => {
-    return {};
+  return {
+      user: store.user,
+  };
 })
 
 export default class ModalComponent extends React.Component {

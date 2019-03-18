@@ -19,6 +19,17 @@ module.exports = (app) => {
         .catch((err) => next(err));
     });
 
+    app.get('/api/doc/:id', async (req,res,next) => {
+      console.log(req.params.id);
+      Doc.findById(req.params.id)
+        .exec()
+        .then((doc) => {
+          console.log(doc);
+          res.json(doc);
+        })
+        .catch((err) => next(err));
+    });
+
     app.post('/api/chktype', (req, res, next) => {
       let base64Data = req.body.doc_file;
       San_Function.uploadBase64Image(base64Data,function(buffer){
@@ -129,7 +140,9 @@ module.exports = (app) => {
                   doc.price = req.body.price || 0;
                   doc.description = req.body.description || '';
                   doc.file = buffer.name;
+                  doc.images = req.body.docs;
                   doc.save();
+                  console.log(doc);
                   return res.json(doc);
               }else{
                 return res.json({msg:'file not exist'});
@@ -169,30 +182,29 @@ module.exports = (app) => {
     });
 
     app.get('/files/:type/:img_name', function(req,res){
-        var filename = req.params.img_name;
-        var type = req.params.type;
-        var ext  = filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
-        if (!ext) {
-          ext = 'jpg';
-        }
-        if (ext == 'svg') {
-          ext = 'svg+xml';
-        }
-        console.log(ext);
+          var filename = req.params.img_name;
+          var type = req.params.type;
+          var ext  = filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
+          if (!ext) {
+            ext = 'jpg';
+          }
+          if (ext == 'svg') {
+            ext = 'svg+xml';
+          }
           var fs = require('fs');
-          var imageDir = config.directory+'/uploads/'+type+'/';
-               fs.readFile(imageDir + filename, function (err, content) {
-                    if (ext == 'pdf') {
-                        res.writeHead(200,{'Content-type':'application/pdf'});
-                        res.end(content);
-                    }else if (err) {
-                        res.writeHead(400, {'Content-type':'text/html'})
-                        res.end("No such image");
-                    } else {
-                        //specify the content type in the response will be an image
-                        res.writeHead(200,{'Content-type':'image/'+ext});
-                        res.end(content);
-                    }
-                });
+          var fileDir = config.directory+'/uploads/'+type+'/';
+          fs.readFile(fileDir + filename, function (err, content) {
+            if (ext == 'pdf') {
+              res.writeHead(200,{'Content-type':'application/pdf'});
+              res.end(content);
+            }else if (err) {
+              res.writeHead(400, {'Content-type':'text/html'})
+              res.end("No such image");
+            } else {
+              //specify the content type in the response will be an image
+              res.writeHead(200,{'Content-type':'image/'+ext});
+              res.end(content);
+            }
+          });
       });
 };

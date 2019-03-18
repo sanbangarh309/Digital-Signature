@@ -97,9 +97,6 @@ class Home extends React.Component {
 
   render() {
     const {user} = this.props;
-    if (this.state.redirectToReferrer) {
-      return (<Redirect to={'/login'}/>)
-    }
     let addedAlert;
     if (this.state.added) {
       addedAlert = <div className={this.state.alert} style={{textAlign:'center'}}>

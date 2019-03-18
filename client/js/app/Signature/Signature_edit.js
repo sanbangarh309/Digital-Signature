@@ -17,14 +17,15 @@ const getBase64 = (file) => {
   });
 }
 // localStorage.clear();
-class Signature extends Component {
+class Signature_edit extends Component {
   constructor(props){
     super(props);
     let edit_id = null;
-    const params = this.props.match.path.split('/');
+    const params = this.props.location.pathname.split('/');
     if(params[params.length-1] != 'signature'){
       edit_id = params[params.length-1];
     }
+    // debugger;
     this.state = {
       page:'signature',
       inputFields:[],
@@ -62,6 +63,13 @@ class Signature extends Component {
       docs = JSON.parse(docs)
     }catch(e){
 
+    }
+    if (this.state.edit_id) {
+      axios.get('/api/doc/'+this.state.edit_id).then((res) => {
+        console.log(res.data);
+      }).catch(error => {
+        console.log(error.response.data);
+      });
     }
     this.setState({
       docs: docs
@@ -142,7 +150,7 @@ class Signature extends Component {
                     reader.readAsDataURL(blob); 
                     reader.onloadend = function() {
                         let base64data = reader.result;                
-                        axios.post('/api/add_doc',{base64Data:base64data,token:localStorage.getItem('jwtToken'),docs:this.state.docs}).then((res) => {
+                        axios.post('/api/add_doc',{base64Data:base64data,token:localStorage.getItem('jwtToken')}).then((res) => {
                           console.log(res);
                         });
                     }
@@ -249,6 +257,7 @@ class Signature extends Component {
     }catch(e){
 
     }
+    console.log(this.state.edit_id)
     if (!localStorage.getItem('jwtToken')) {
       return <Redirect to='/'  />
     }else{
@@ -433,4 +442,4 @@ class Signature extends Component {
 }
 // console.log(Signature)
 // debugger;
-export default Signature;
+export default Signature_edit;

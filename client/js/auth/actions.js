@@ -43,6 +43,28 @@ export function login(user, redirectTo = '/') {
     };
 }
 
+export function getDocs(token) {
+    if (typeof token !== 'string') throw Error('invalid argument: token must be a string');
+
+    return async (dispatch) => {
+        dispatch({type: 'DOCS_SAVED'});
+        try {
+            // axios.post('/api/get_docs/',{token:localStorage.getItem('jwtToken')}).then((res) => {
+            //     console.log(res);
+            //     this.setState({
+            //       docs: res.data
+            //     });
+            //   });
+            const response = await axios.post('/api/get_docs/', {token:token}); 
+            // console.log(response);
+            dispatch({type: ok('DOCS_SAVED'), payload: response.data});
+            // dispatch(push(redirectTo));
+        } catch (err) {
+            dispatch({type: fail('DOCS_SAVED'), payload: 'not found'});
+        }
+    };
+}
+
 export function logout() {
     return [{type: ok(t.UNAUTH_USER)}, {type: 'CLEAR_STORE'}];
 }

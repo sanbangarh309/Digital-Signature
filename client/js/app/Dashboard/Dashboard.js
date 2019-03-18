@@ -1,9 +1,12 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {Redirect} from 'react-router-dom';
 import './Dashboard.css';
 import axios from 'src/common/myAxios';
 import {browserHistory} from 'react-router';
 var NavLink = require('react-router-dom').NavLink;
+import {connect} from 'react-redux';
+import auth from 'src/auth';
 
 const getBase64 = (file) => {
   return new Promise((resolve,reject) => {
@@ -13,7 +16,21 @@ const getBase64 = (file) => {
     reader.readAsDataURL(file);
   });
 }
+
+@connect((store) => {
+  return {
+      docs: store.docs,
+      user: store.user,
+  };
+})
+
 class Dashboard extends Component {
+  static propTypes = {
+      dispatch: PropTypes.func,
+      docs: PropTypes.object,
+      user: PropTypes.object,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -24,6 +41,7 @@ class Dashboard extends Component {
     };
     localStorage.setItem("files_array", [])
     this.onChange = this.onChange.bind(this);
+    // this.props.dispatch(auth.actions.getDocs(localStorage.getItem('jwtToken')));
     this.getDocs();
   }
 
@@ -54,6 +72,8 @@ class Dashboard extends Component {
    }
 
   render() {
+    // const {docs} = this.props;
+    // console.log(this.props);
     if (!localStorage.getItem('jwtToken')) {
       return <Redirect to='/'  />
     }
@@ -227,7 +247,7 @@ class Dashboard extends Component {
                                   </li>
                                   <li><a href="#">SIGN </a></li>
                                   <li><a href="#">SEND FOR SIGNING </a></li>
-                                  <li><a href="#"><i className="fa fa-edit"></i></a></li>
+                                  <li><NavLink to={'signature/'+value._id} className="btn btn-default btn-flat"><i className="fa fa-edit"></i></NavLink></li>
                                   <li><a href="#"><i className="fa fa-share"></i></a></li>
                                   <li><a href={'files/docs/'+value.file} target="_blank"><i className="fa fa-download"></i></a></li>
                                   <li className="delete-row"><a className="fa fa-trash danger" href="#"></a></li>

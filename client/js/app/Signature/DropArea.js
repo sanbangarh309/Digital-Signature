@@ -26,8 +26,6 @@ class DropArea extends React.Component {
       var obj = JSON.parse(e.dataTransfer.getData('application/json'));
       // let list = this.state.list;
       let list = this.state.items;
-      console.log(obj)
-      console.log(list)
       // let index = this.state.list.findIndex((item) => item.id == obj.id);
       list[obj.id].isDragging = false;
       list[obj.id].top  = (e.clientY - obj.y);
@@ -164,7 +162,7 @@ class DropArea extends React.Component {
         let back_style = {
           width:  doc.w,
           height: doc.h,
-          backgroundImage:"url(files/docs/" + doc.name + ")"
+          backgroundImage:"url(/files/docs/" + doc.name + ")"
         };
         if(this.state.doc_key == key_){ 
           Object.keys(fields).map(key => {

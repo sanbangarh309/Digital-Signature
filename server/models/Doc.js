@@ -7,6 +7,7 @@ const schema = new mongoose.Schema({
   signed: Number,
   description: String,
   file: String,
+  images: [],
   filethumb: String,
   created_at:{ type: Date, default: Date.now },
 });

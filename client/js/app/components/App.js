@@ -21,7 +21,7 @@ const App = ({children}) => {
   let url_params = window.location.href.split("/");
   let prms = url_params[url_params.length-1];
 
-  if(prms == 'signature' || prms == 'dashboard'){
+  if(prms == 'signature' || prms == 'dashboard' || window.location.href.includes('signature')){
     return (
         <div>
             {laoder}

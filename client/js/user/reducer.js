@@ -53,7 +53,6 @@ export default function(state = initialState, action) {
     }
     // Skip actions that does not belong to us
     if (actionType.module !== constants.NAME) return state;
-
     if (actionType.sub === 'USER') {
         // The returned object must be a new one for react to work
         return {...state, ...userReducerHelper(action, state)};
