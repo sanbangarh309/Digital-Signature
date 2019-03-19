@@ -18,9 +18,21 @@ width:100%;
   border-radius:5px;
   margin:10px;
   padding:10px;
-  background-color:darkgrey;
-width:100%;
+  /* background-color:darkgrey; */
+  width:50%;
 }
+.unselectable{
+  /* position: relative !important; */
+}
+
+.unselectable img {
+	position: absolute !important;
+	top: -38px !important;
+	width: 178px !important;
+	height: auto;
+	left: 10%;
+}
+
 .signature-input-wrapper{
   border: 1px solid black;
   margin: 0 auto;

@@ -11,6 +11,7 @@ class DropArea extends React.Component {
         list: [],
         show_field: false,
         doc_key: null,
+        add_new: true,
         field_count:0,
         items: {},
         chkduplicacy:[]
@@ -90,6 +91,7 @@ class DropArea extends React.Component {
       e.preventDefault();
       if( !e.target.className.includes('btn-removebox1') && !e.target.className.includes('form-control') && !e.target.className.includes('unselectable') && !e.target.className.includes('sign_image')){
         console.log('new element created')
+        this.setState({add_new:true});
         let position = e.target.getBoundingClientRect();
         var x = e.clientX - position.left; //x position within the element.
         var y = e.clientY - position.top;
@@ -105,6 +107,10 @@ class DropArea extends React.Component {
           $('.sign-btn').click();
           return false
         }
+
+        // if(key___.includes('sign')){
+
+        // }
 
         key___ = key___[0];
         this.setState((state) => ({ field_count: state.field_count + 1}));
@@ -126,16 +132,21 @@ class DropArea extends React.Component {
         
         if(!alreday){
           let items = []
-          this.state.field_lists.push({ id: this.state.field_count, isDragging: false, isResizing: false, top:y, left: x,   width:w, height:h, fontSize:20,isHide:false, type:key___,appendOn:false,doc_id:doc_id});
+          this.state.field_lists.push({ id: this.state.field_count, isDragging: false, isResizing: false, top:y, left: x,width:w, height:h, fontSize:20,isHide:false, type:key___,appendOn:false,doc_id:doc_id});
           let newobj = {};
           Object.assign(newobj, this.state.field_lists); 
           this.setState({show_field:true});
           if(e.target.id && e.target.id !=''){
             this.setState({doc_key:doc_id});
           }
+          console.log(newobj);
           this.setState({items:newobj});
         }
+      }else{
+        this.setState({add_new:false});
       }
+      console.log(this.state.items);
+      // debugger;
     }
 
     removeFieldBox(id,doc_id){
@@ -166,16 +177,19 @@ class DropArea extends React.Component {
         };
         if(this.state.doc_key == key_){ 
           Object.keys(fields).map(key => {
-            if(!fields[key].isHide){
+            if(!fields[key].isHide && !fields[key].isDragging && !fields[key].isResizing){
                 if(this.state.chkduplicacy.includes(fields[key].id)){
                   // delete this.state.list[fields[key].id];
-                  $('#'+fields[key].type+'_doc_'+key_+'_'+fields[key].id).remove();
+                  console.log(this.state.add_new)
+                  // if(!this.state.add_new){
+                    $('#'+fields[key].type+'_doc_'+key_+'_'+fields[key].id).remove();
+                  // }
                   console.log('#'+fields[key].type+'_doc_'+key_+'_'+fields[key].id);
                 }else{
                   this.state.chkduplicacy.push(fields[key].id);
-                }
-                // console.log('current:key- '+this.state.doc_key);
-                // console.log('org:key- '+key_);
+                    // console.log('current:key- '+this.state.doc_key);
+                    // console.log('org:key- '+key_);
+                  }
                 this.state.list.push(
                   <Draggable 
                     ref={fields[key].type +'_'+key_+'_'+ fields[key].id}
@@ -184,6 +198,7 @@ class DropArea extends React.Component {
                     id={'doc_'+key_+'_'+fields[key].id}
                     docId={key_}
                     fieldType={fields[key].type}
+                    sign_image={this.props.sign_image}
                     top={fields[key].top}
                     left={fields[key].left}
                     width={fields[key].width}
@@ -199,6 +214,13 @@ class DropArea extends React.Component {
                 );
               
             }
+            // else if(fields[key].isDragging || fields[key].isResizing){
+            //   if(this.state.chkduplicacy.includes(fields[key].id)){
+            //     $('#'+fields[key].type+'_doc_'+key_+'_'+fields[key].id).remove();
+            //   }else{
+
+            //   }
+            // }
           });
           // DropJgah.push(<div className="drop-area container doc-bg signature_container"><img  
           //   src={"files/docs/" + doc.name} 
@@ -318,6 +340,13 @@ class DropArea extends React.Component {
       var year = new Date().getFullYear();
       dateField = month + '/' + date + '/' + year;
     }
+
+    console.log(this.props.sign_image);
+    // if(this.props.fieldType == 'sign'){
+    //   let field_ = this.props.sign_image;
+    // }else{
+    //   let field_ = <textarea className="form-control" defaultValue={dateField} style={cusstyle}></textarea>;
+    // }
       return (
         <div className="text-field-box item unselectable" 
           ref={"node"}
@@ -328,7 +357,12 @@ class DropArea extends React.Component {
           onMouseUp={this.onMouseUp.bind(this)}
           onDragStart={this.onDragStart.bind(this)}
           onDragEnd={this.onDragEnd.bind(this)} style={styles}>
-        <textarea className="form-control" defaultValue={dateField} style={cusstyle}></textarea>
+        {(() => {
+          switch (this.props.fieldType) {
+            case "sign": return (<img src={this.props.sign_image.src}></img>);
+            default: return (<textarea className="form-control" defaultValue={dateField} style={cusstyle}></textarea>);
+          }
+        })()}
         <div className="round-sml btn-removebox1" onClick={this.removeField.bind(this)}>✕</div>
         <div className="round-sml ui-resizable-handle ui-resizable-nw" style={{zIndex: '90'}}></div>
         <div className="round-sml ui-resizable-handle ui-resizable-sw" style={{zIndex: '90'}}></div>

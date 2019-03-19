@@ -67,6 +67,27 @@ class Dashboard extends Component {
     });
   }
 
+  deleteDoc = (id,e) => {
+    e.preventDefault();
+    swal({
+      title: "Do You Want to delete it from your account?",
+      text: "Are you sure that you want to delete ?",
+      icon: "warning",
+      buttons: ["No", "Yes"],
+      dangerMode: true,
+    })
+    .then(willdel => {
+      if (willdel) {
+        axios.delete('/api/doc/'+id).then((res) => {
+          this.getDocs();
+          swal("Deleted!", "Your doc file has been deleted", "success");
+        }).catch(error => {
+          swal("Error!", "Something Went wrong", "danger");
+        }); 
+      }
+    }); 
+  }
+
   onChange(e){
     this.setState({[e.target.name]:e.target.value});
    }
@@ -250,7 +271,7 @@ class Dashboard extends Component {
                                   <li><NavLink to={'signature/'+value._id} className="btn btn-default btn-flat"><i className="fa fa-edit"></i></NavLink></li>
                                   <li><a href="#"><i className="fa fa-share"></i></a></li>
                                   <li><a href={'files/docs/'+value.file} target="_blank"><i className="fa fa-download"></i></a></li>
-                                  <li className="delete-row"><a className="fa fa-trash danger" href="#"></a></li>
+                                  <li className="delete-row"><a className="fa fa-trash danger" onClick={this.deleteDoc.bind(this, value._id)} href="javascript:void(0)"></a></li>
                               </ul>
                           </li>
                   })}

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import './Signature.css';
 import SignaturePad from 'react-signature-canvas'
-
+import PropTypes from 'prop-types';
 class Sign extends Component {
     constructor(props){
         super(props);
@@ -28,14 +28,17 @@ class Sign extends Component {
           
           img.src = image;
           img.alt = "Double Click to Remove Signature";
-          $(img).addClass('sign_image')
+          $(img).addClass('sign_image');
           $(img).css('margin-top',this.props.t);
           $(img).css('margin-left',this.props.l);
+          // console.log(img);
+          // console.log(this.props);
+          this.props.updateSignField({src:image,top:this.props.t,left:this.props.l});
           container.children.length ? container.removeChild(container.children[0]) : null;
-          container.appendChild(img);
+          // container.appendChild(img);
         //   debugger;
-           img.removeEventListener("dblclick",onClick);
-          img.addEventListener("dblclick",onClick);
+          //  img.removeEventListener("dblclick",onClick);
+          // img.addEventListener("dblclick",onClick);
           this.setState({buttons:{revoke:true,clear:true,sign:true}});
       }
 
@@ -77,9 +80,9 @@ class Sign extends Component {
     //   }
 
       render() {
-        return <div className='container signature-container'>
+        return <div className='container signature-container' style={{width:'50%'}}>
           <div class='row'>
-            <div class='col-md-12'>
+            <div class='col-md-12' style={{backgroundColor: 'darkgrey'}}>
             <SignaturePad 
                 penColor={this.props.color}
                 canvasProps={{width: this.props.w, height: this.props.h, className: 'sigCanvas'}} 
@@ -96,5 +99,7 @@ class Sign extends Component {
           </div>;
       }
 }
-
+Sign.propTypes = {
+  updateSignField:PropTypes.func,
+};
 export default Sign;

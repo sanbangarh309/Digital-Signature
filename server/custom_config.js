@@ -1,7 +1,7 @@
 // config.js
 module.exports = {
-  db: 'mongodb://sanbangarh311:sandy12345@ds211083.mlab.com:11083/soofi_app',
-  db_dev: 'mongodb://sanbangarh311:sandy12345@ds211083.mlab.com:11083/soofi_app',
+  db: 'mongodb://digital-signature:Sandy12345678@ds117816.mlab.com:17816/digital-signature',
+  db_dev: 'mongodb://digital-signature:Sandy12345678@ds117816.mlab.com:17816/digital-signature',
   JWT_SECRET: 'sandeep@bangarh',
   'directory': __dirname,
   'options' :  {

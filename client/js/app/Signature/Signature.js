@@ -42,6 +42,7 @@ class Signature extends Component {
       canvas_image_height:null,
       page_section:null,
       uploaded_sign:null,
+      sign_image:null,
       docs:[],
       color:'black',
       buttons:{
@@ -104,6 +105,7 @@ class Signature extends Component {
     let doc = '';
     let width = '';
     let height = '';
+    let docs = this.state.docs;
     if(this.state.docs.length > 0){
       for(let i=1;i <=this.state.docs.length;i++){
         html2canvas(document.querySelector("#signature_container_"+i), { allowTaint: true }).then(canvas => { 
@@ -142,7 +144,7 @@ class Signature extends Component {
                     reader.readAsDataURL(blob); 
                     reader.onloadend = function() {
                         let base64data = reader.result;                
-                        axios.post('/api/add_doc',{base64Data:base64data,token:localStorage.getItem('jwtToken'),docs:this.state.docs}).then((res) => {
+                        axios.post('/api/add_doc',{base64Data:base64data,token:localStorage.getItem('jwtToken'),docs:docs}).then((res) => {
                           console.log(res);
                         });
                     }
@@ -235,6 +237,10 @@ class Signature extends Component {
     this.setState({top:top});
     this.setState({left:left});
     this.setState({doc_id:doc_id});
+  }
+
+  updateSignField(sign){
+    this.setState({sign_image:sign});
   }
 
   saveColor = (e) => {
@@ -336,7 +342,7 @@ class Signature extends Component {
           </li>
         </ul>
       </div>
-      <DropArea docs={docs} field_type={this.state.inputFields} getSignPosition={this.getSignPosition.bind(this)} />
+      <DropArea docs={docs} field_type={this.state.inputFields} getSignPosition={this.getSignPosition.bind(this)} sign_image={this.state.sign_image} />
     </div>
     <div className="modal signmodal" id="Signfiled">
 	<div className="modal-dialog modal-lg">
@@ -381,12 +387,13 @@ class Signature extends Component {
 							<div className="col-12 p-0">
 								<div className="signature-area">
                   <Sign 
-                    w="800" 
+                    w="350" 
                     h="250" 
                     t={this.state.top} 
                     l={this.state.left} 
                     docId={this.state.doc_id} 
                     color={this.state.color}
+                    updateSignField={this.updateSignField.bind(this)}
                     />
 								</div>
 							</div>

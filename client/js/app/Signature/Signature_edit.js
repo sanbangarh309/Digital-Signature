@@ -43,6 +43,7 @@ class Signature_edit extends Component {
       canvas_image_height:null,
       page_section:null,
       uploaded_sign:null,
+      sign_image:null,
       docs:[],
       color:'black',
       buttons:{
@@ -66,14 +67,19 @@ class Signature_edit extends Component {
     }
     if (this.state.edit_id) {
       axios.get('/api/doc/'+this.state.edit_id).then((res) => {
+        this.setState({
+          docs: res.data.images
+        });
         console.log(res.data);
       }).catch(error => {
-        console.log(error.response.data);
+        console.log(error.response);
+      });
+    }else{
+      this.setState({
+        docs: docs
       });
     }
-    this.setState({
-      docs: docs
-    });
+    console.log(docs)
   }
 
   chkFileType = (doc) => {
@@ -107,11 +113,13 @@ class Signature_edit extends Component {
     }); 
   }
 
-  convertHtmlToCanvas = () => {
+  convertHtmlToCanvas = (e) => {
+    e.preventDefault();
     let save = '';
     let doc = '';
     let width = '';
     let height = '';
+    let edit_id = this.state.edit_id;
     if(this.state.docs.length > 0){
       for(let i=1;i <=this.state.docs.length;i++){
         html2canvas(document.querySelector("#signature_container_"+i), { allowTaint: true }).then(canvas => { 
@@ -150,7 +158,7 @@ class Signature_edit extends Component {
                     reader.readAsDataURL(blob); 
                     reader.onloadend = function() {
                         let base64data = reader.result;                
-                        axios.post('/api/add_doc',{base64Data:base64data,token:localStorage.getItem('jwtToken')}).then((res) => {
+                        axios.put('/api/doc/'+edit_id,{base64Data:base64data,token:localStorage.getItem('jwtToken')}).then((res) => {
                           console.log(res);
                         });
                     }
@@ -193,11 +201,12 @@ class Signature_edit extends Component {
   }
 
   saveData(e){
+    e.preventDefault();
     var loader = document.getElementById('outer-barG');
     $('<div class="modal-backdrop show" id="modal_backdrop"></div>').appendTo('body');
     // document.getElementById("app").appendChild('<div class="modal-backdrop show"></div>');
     $(loader).css('display','block');
-    this.convertHtmlToCanvas();
+    this.convertHtmlToCanvas(e);
   }
 
   createTextField(e){
@@ -244,6 +253,12 @@ class Signature_edit extends Component {
     this.setState({left:left});
     this.setState({doc_id:doc_id});
   }
+
+   updateSignField(sign){
+      console.log(sign)
+      this.state.inputFields.push('sign');
+      this.setState({sign_image:sign});
+   }
 
   saveColor = (e) => {
     this.setState({[e.target.name]: e.target.value});
@@ -345,7 +360,7 @@ class Signature_edit extends Component {
           </li>
         </ul>
       </div>
-      <DropArea docs={docs} field_type={this.state.inputFields} getSignPosition={this.getSignPosition.bind(this)} />
+      <DropArea docs={docs} field_type={this.state.inputFields} getSignPosition={this.getSignPosition.bind(this)} sign_image={this.state.sign_image} />
     </div>
     <div className="modal signmodal" id="Signfiled">
 	<div className="modal-dialog modal-lg">
@@ -390,12 +405,13 @@ class Signature_edit extends Component {
 							<div className="col-12 p-0">
 								<div className="signature-area">
                   <Sign 
-                    w="800" 
+                    w="350" 
                     h="250" 
                     t={this.state.top} 
                     l={this.state.left} 
                     docId={this.state.doc_id} 
                     color={this.state.color}
+                    updateSignField={this.updateSignField.bind(this)}
                     />
 								</div>
 							</div>
