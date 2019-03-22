@@ -5,7 +5,7 @@ import Header from './Header';
 import Comment from './Comment';
 import Footer from './Footer';
 import './loader.css';
-let laoder = <div id="outer-barG">
+let laoder = <div id="outer-barG" style={{display:'none'}}>
                 <div id="front-barG" className="bar-animationG">
                     <div id="barG_1" className="bar-lineG"></div>
                     <div id="barG_2" className="bar-lineG"></div>
