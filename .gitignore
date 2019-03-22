@@ -1,6 +1,6 @@
 # Compiled files
 dist/
-
+.vscode
 # Config file
 server/config.js
 
