@@ -18,10 +18,9 @@ const propTypes = {
 const defaultProps = {};
 
 const App = ({children}) => {
-  let url_params = window.location.href.split("/");
+  let url_params = history.location.pathname.split('/');
   let prms = url_params[url_params.length-1];
-
-  if(prms == 'signature' || prms == 'dashboard' || window.location.href.includes('signature')){
+  if(prms == 'signature' || prms == 'dashboard' || url_params.includes('signature')){
     return (
         <div>
             {laoder}
