@@ -44,6 +44,8 @@ class Signature_edit extends Component {
       page_section:null,
       uploaded_sign:null,
       sign_image:null,
+      sign_font:null,
+      sign_text:null,
       docs:[],
       color:'black',
       buttons:{
@@ -122,6 +124,7 @@ class Signature_edit extends Component {
     let edit_id = this.state.edit_id;
     if(this.state.docs.length > 0){
       for(let i=1;i <=this.state.docs.length;i++){
+        $("#signature_container_"+i).css('background-color','transparent');
         html2canvas(document.querySelector("#signature_container_"+i), { allowTaint: true }).then(canvas => { 
           var imgData = canvas.toDataURL(
             'image/jpeg',[0.0, 1.0]);      
@@ -254,14 +257,30 @@ class Signature_edit extends Component {
     this.setState({doc_id:doc_id});
   }
 
-   updateSignField(sign){
-      console.log(sign)
-      this.state.inputFields.push('sign');
-      this.setState({sign_image:sign});
-   }
+  updateSignField(sign){
+    this.state.inputFields.push('sign');
+    this.setState({sign_image:sign});
+  }
 
   saveColor = (e) => {
     this.setState({[e.target.name]: e.target.value});
+  }
+
+  setSignFont = (font,e) => {
+    this.setState({sign_font: font});
+  }
+
+  appendSignFont = (e) => {
+    this.setState({sign_text: e.target.value});
+    $('li.card').text(e.target.value);
+    $('li.card').css('color',this.state.color);
+  }
+
+  appendSignature = (e) => {
+    if(this.state.sign_text){
+      this.state.inputFields.push('sign_text');
+    }
+    $('#close_btn').click();
   }
 
   render() {
@@ -272,7 +291,6 @@ class Signature_edit extends Component {
     }catch(e){
 
     }
-    console.log(this.state.edit_id)
     if (!localStorage.getItem('jwtToken')) {
       return <Redirect to='/'  />
     }else{
@@ -360,7 +378,15 @@ class Signature_edit extends Component {
           </li>
         </ul>
       </div>
-      <DropArea docs={docs} field_type={this.state.inputFields} getSignPosition={this.getSignPosition.bind(this)} sign_image={this.state.sign_image} />
+      <DropArea 
+      docs={docs} 
+      field_type={this.state.inputFields} 
+      getSignPosition={this.getSignPosition.bind(this)} 
+      sign_image={this.state.sign_image} 
+      sign_text={this.state.sign_text} 
+      sign_font={this.state.sign_font} 
+      sign_color={this.state.color}
+      />
     </div>
     <div className="modal signmodal" id="Signfiled">
 	<div className="modal-dialog modal-lg">
@@ -387,16 +413,16 @@ class Signature_edit extends Component {
 						<div className="tab-pane active" id="type">
 							<div className="col-12 p-0">
 								<div className="col-md-12 textinput p-0">
-									<input id="signatureTextInput" className="form-control" placeholder="Type your name here"/>
+									<input id="signatureTextInput" className="form-control" onChange={this.appendSignFont.bind(this)} placeholder="Type your name here"/>
 								</div>
 								<div className="col-md-12 textinput">
 									<ul className="col-list">
-										<li className="card prev-box preview cedarville_cursive black-txt">Type your name here</li>
-										<li className="card prev-box preview kristi black-txt">Type your name here</li>
-										<li className="card prev-box preview mr_dafo black-txt">Type your name here</li>
-										<li className="card prev-box preview sacramento black-txt">Type your name here</li>
-										<li className="card prev-box preview montez black-txt">Type your name here</li>
-										<li className="card prev-box preview reenie_beanie black-txt">Type your name here</li>
+										<li className="card prev-box preview cedarville_cursive black-txt" onClick={this.setSignFont.bind(this,'Cedarville cursive')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview kristi black-txt" onClick={this.setSignFont.bind(this,'Kristi')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview mr_dafo black-txt" onClick={this.setSignFont.bind(this,'Mr Dafoe')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview sacramento black-txt" onClick={this.setSignFont.bind(this,'Sacramento')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview montez black-txt" onClick={this.setSignFont.bind(this,'Montez')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview reenie_beanie black-txt" onClick={this.setSignFont.bind(this,'Reenie Beanie')} style={{color:this.state.color}}>Type your name here</li>
 									</ul>
 								</div>
 							</div>
@@ -444,8 +470,8 @@ class Signature_edit extends Component {
 					</div>
 					<div className="col-md-6">
 						<div className="d-flex btn-block pull-right">
-							<button type="button" className="btn btn-default" data-dismiss="modal">Cancel</button>
-							<button className="btn btn-primary btn-large" disabled>Sign</button>
+							<button type="button" className="btn btn-default close_btn" id="close_btn" data-dismiss="modal">Cancel</button>
+							<button className="btn btn-primary btn-large" onClick={this.appendSignature.bind(this)}>Sign</button>
 						</div>
 					</div>
 					</div>

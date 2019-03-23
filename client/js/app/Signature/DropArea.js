@@ -199,6 +199,9 @@ class DropArea extends React.Component {
                     docId={key_}
                     fieldType={fields[key].type}
                     sign_image={this.props.sign_image}
+                    sign_text={this.props.sign_text}
+                    sign_font={this.props.sign_font}
+                    sign_color={this.props.sign_color}
                     top={fields[key].top}
                     left={fields[key].left}
                     width={fields[key].width}
@@ -340,8 +343,14 @@ class DropArea extends React.Component {
       var year = new Date().getFullYear();
       dateField = month + '/' + date + '/' + year;
     }
-
-    console.log(this.props.sign_image);
+    if(this.props.fieldType == 'sign_text'){
+      dateField = this.props.sign_text;
+      cusstyle['fontFamily'] = this.props.sign_font;
+      cusstyle['color'] = this.props.sign_color;
+      cusstyle['padding'] = '10px';
+      cusstyle['margin'] = '3px';
+      cusstyle['fontSize'] = '50px';
+    }
     // if(this.props.fieldType == 'sign'){
     //   let field_ = this.props.sign_image;
     // }else{

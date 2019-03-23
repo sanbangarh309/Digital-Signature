@@ -25,7 +25,8 @@ body{
   width:50%;
 }
 
-.unselectable{
+.unselectable:hover{
+  background-color: rgba(28, 164, 255, 0.2);
   /* position: relative !important; */
 }
 
@@ -77,6 +78,7 @@ body{
   position: absolute;
   left: 20px;
   right: 20px;
+  /* background-color: rgba(28, 164, 255, 0.2); */
   top: 20px;
   bottom: 60px;
   border: 1px solid #f4f4f4;

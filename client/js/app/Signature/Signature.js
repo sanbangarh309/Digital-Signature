@@ -43,6 +43,8 @@ class Signature extends Component {
       page_section:null,
       uploaded_sign:null,
       sign_image:null,
+      sign_font:null,
+      sign_text:null,
       docs:[],
       color:'black',
       buttons:{
@@ -245,8 +247,24 @@ class Signature extends Component {
 
   saveColor = (e) => {
     this.setState({[e.target.name]: e.target.value});
+    // $('li.card').css('color',this.state.color);
   }
 
+  setSignFont = (font,e) => {
+    this.setState({sign_font: font});
+  }
+
+  appendSignFont = (e) => {
+    this.setState({sign_text: e.target.value});
+    $('li.card').text(e.target.value);
+    $('li.card').css('color',this.state.color);
+  }
+
+  appendSignature = (e) => {
+    this.state.inputFields.push('sign_text');
+    // console.log(this.state.sign_text);
+    // console.log(this.state.sign_font);
+  }
   render() {
     let dashboard = '';
     let docs = localStorage.getItem('files_array')  || this.state.docs 
@@ -342,7 +360,15 @@ class Signature extends Component {
           </li>
         </ul>
       </div>
-      <DropArea docs={docs} field_type={this.state.inputFields} getSignPosition={this.getSignPosition.bind(this)} sign_image={this.state.sign_image} />
+      <DropArea 
+      docs={docs} 
+      field_type={this.state.inputFields} 
+      getSignPosition={this.getSignPosition.bind(this)} 
+      sign_image={this.state.sign_image} 
+      sign_text={this.state.sign_text} 
+      sign_font={this.state.sign_font} 
+      sign_color={this.state.color}
+      />
     </div>
     <div className="modal signmodal" id="Signfiled">
 	<div className="modal-dialog modal-lg">
@@ -369,16 +395,16 @@ class Signature extends Component {
 						<div className="tab-pane active" id="type">
 							<div className="col-12 p-0">
 								<div className="col-md-12 textinput p-0">
-									<input id="signatureTextInput" className="form-control" placeholder="Type your name here"/>
+									<input id="signatureTextInput" className="form-control" onChange={this.appendSignFont.bind(this)} placeholder="Type your name here"/>
 								</div>
 								<div className="col-md-12 textinput">
-									<ul className="col-list">
-										<li className="card prev-box preview cedarville_cursive black-txt">Type your name here</li>
-										<li className="card prev-box preview kristi black-txt">Type your name here</li>
-										<li className="card prev-box preview mr_dafo black-txt">Type your name here</li>
-										<li className="card prev-box preview sacramento black-txt">Type your name here</li>
-										<li className="card prev-box preview montez black-txt">Type your name here</li>
-										<li className="card prev-box preview reenie_beanie black-txt">Type your name here</li>
+                <ul className="col-list">
+										<li className="card prev-box preview cedarville_cursive black-txt" onClick={this.setSignFont.bind('Cedarville cursive')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview kristi black-txt" onClick={this.setSignFont.bind('Kristi')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview mr_dafo black-txt" onClick={this.setSignFont.bind('Mr Dafoe')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview sacramento black-txt" onClick={this.setSignFont.bind('Sacramento')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview montez black-txt" onClick={this.setSignFont.bind('Montez')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview reenie_beanie black-txt" onClick={this.setSignFont.bind('Reenie Beanie')} style={{color:this.state.color}}>Type your name here</li>
 									</ul>
 								</div>
 							</div>
