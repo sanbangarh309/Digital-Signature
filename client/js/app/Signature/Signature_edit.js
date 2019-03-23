@@ -46,6 +46,7 @@ class Signature_edit extends Component {
       sign_image:null,
       sign_font:null,
       sign_text:null,
+      bind_signature:false,
       docs:[],
       color:'black',
       buttons:{
@@ -226,6 +227,7 @@ class Signature_edit extends Component {
   	$('.signature_container').removeClass('hovrcr_date');
   	$('.signature_container').removeClass('hovrcr_initials');
     $('.signature_container').removeClass('hovrcr_check');
+    $('.signature_container').removeClass('hovrcr_sign');
     this.state.inputFields.push('text');
     // this.setState({inputFields:textfield});
     console.log('clicked on text button')
@@ -244,11 +246,101 @@ class Signature_edit extends Component {
     $('.signature_container').removeClass('hovrcr_text');
     $('.signature_container').removeClass('hovrcr_initials');
     $('.signature_container').removeClass('hovrcr_check');
+    $('.signature_container').removeClass('hovrcr_sign');
     this.state.inputFields.push('date');
     // this.setState({inputFields:datefield});
     let unique = [...new Set(this.state.inputFields)];
     this.setState({inputFields:unique});
     console.log('clicked on Date button')
+  }
+
+  showInitialField(e){
+    e.preventDefault();
+    this.state.inputFields.push('initials');
+    $(e.target).addClass('current-btn');
+    $('#text_field').removeClass('current-btn');
+    $('#sign_pad').removeClass('current-btn');
+    $('#check_field').removeClass('current-btn');
+    $('#clear_field').removeClass('current-btn');
+    $('#date_field').removeClass('current-btn');
+
+    $('#text_field').removeClass('current-btn');
+    $('.sign-btn').click();
+    $('#sign_nav_tabs .nav-item #type_').addClass('active');
+    $('#sign_nav_tabs .nav-item #draw_').removeClass('active');
+    $('#sign_nav_tabs .nav-item #upload_').removeClass('active');
+
+    $('.modal-content .modal-body #type').addClass('active');
+    $('.modal-content .modal-body #draw').removeClass('active').removeClass('show');
+    $('.modal-content .modal-body #upload').removeClass('active').removeClass('show');
+
+    $('.signature_container').addClass('hovrcr_initials');
+    $('.signature_container').removeClass('hovrcr_text');
+    $('.signature_container').removeClass('hovrcr_date');
+    $('.signature_container').removeClass('hovrcr_check');
+    $('.signature_container').removeClass('hovrcr_sign');
+    console.log('clicked on Initial Button')
+  }
+
+  showSignatureField(e){
+    e.preventDefault();
+    $(e.target).addClass('current-btn');
+    $('#text_field').removeClass('current-btn');
+    $('#initial_field').removeClass('current-btn');
+    $('#check_field').removeClass('current-btn');
+    $('#clear_field').removeClass('current-btn');
+    $('#date_field').removeClass('current-btn');
+
+    $('#text_field').removeClass('current-btn');
+    // $('.sign-btn').click();
+    $('#sign_nav_tabs .nav-item #draw_').addClass('active');
+    $('#sign_nav_tabs .nav-item #type_').removeClass('active');
+    $('#sign_nav_tabs .nav-item #upload_').removeClass('active');
+
+    $('.modal-content .modal-body #draw').addClass('active').addClass('show');
+    $('.modal-content .modal-body #type').removeClass('active');
+    $('.modal-content .modal-body #upload').removeClass('active').removeClass('show');
+
+    $('.signature_container').addClass('hovrcr_sign');
+    $('.signature_container').removeClass('hovrcr_text');
+    $('.signature_container').removeClass('hovrcr_date');
+    $('.signature_container').removeClass('hovrcr_check');
+    $('.signature_container').removeClass('hovrcr_initials');
+    console.log('clicked on Signature Button')
+  } 
+
+  showCheckField = (e) => {
+    e.preventDefault();
+    $(e.target).addClass('current-btn');
+    $('#text_field').removeClass('current-btn');
+    $('#initial_field').removeClass('current-btn');
+    $('#sign_pad').removeClass('current-btn');
+    $('#clear_field').removeClass('current-btn');
+    $('#date_field').removeClass('current-btn');
+
+    $('.signature_container').addClass('hovrcr_check');
+    $('.signature_container').removeClass('hovrcr_text');
+    $('.signature_container').removeClass('hovrcr_date');
+    $('.signature_container').removeClass('hovrcr_sign');
+    $('.signature_container').removeClass('hovrcr_initials');
+    this.state.inputFields.push('check');
+  }
+
+  clearContainer = (e) => {
+    $(e.target).addClass('current-btn');
+    $('.signature_container').removeClass('hovrcr_check').removeClass('hovrcr_text').removeClass('hovrcr_date').removeClass('hovrcr_sign').removeClass('hovrcr_initials');
+    $('#text_field').removeClass('current-btn');
+    $('#initial_field').removeClass('current-btn');
+    $('#sign_pad').removeClass('current-btn');
+    $('#check_field').removeClass('current-btn');
+    $('#date_field').removeClass('current-btn');
+    let unique = [...new Set([])];
+    this.setState({inputFields:unique});
+    this.setState({sign_image:null});
+    this.setState({bind_signature: false});
+    this.setState({sign_text: null});
+    console.log(this.state);
+    $('.signature_container').html('');
   }
 
   getSignPosition(top,left,doc_id){
@@ -258,8 +350,12 @@ class Signature_edit extends Component {
   }
 
   updateSignField(sign){
-    this.state.inputFields.push('sign');
     this.setState({sign_image:sign});
+    this.setState({bind_signature: false});
+  }
+
+  updateSignFieldType(){
+    this.state.inputFields.push('sign');
   }
 
   saveColor = (e) => {
@@ -277,6 +373,9 @@ class Signature_edit extends Component {
   }
 
   appendSignature = (e) => {
+    if(this.state.inputFields.includes('sign')){
+      this.setState({bind_signature: true});
+    }
     if(this.state.sign_text){
       this.state.inputFields.push('sign_text');
     }
@@ -294,7 +393,7 @@ class Signature_edit extends Component {
     if (!localStorage.getItem('jwtToken')) {
       return <Redirect to='/'  />
     }else{
-      dashboard = <li><NavLink  className="btn current-btn" id="dashboard" to='/dashboard'>Dasboard</NavLink></li>
+      dashboard = <li><NavLink  className="btn" id="dashboard" to='/dashboard'>Dasboard</NavLink></li>
     }
     return (
       <div><header>
@@ -337,12 +436,12 @@ class Signature_edit extends Component {
                   <div className="card-body">
                     <ol className="btn-mainlist">
                     {dashboard}
-                      <li><a href="javascript:void(0)" id="sign_pad" className="btn sign-btn current-btn" data-toggle="modal" data-target="#Signfiled">Signature</a></li>
+                      <li><a href="javascript:void(0)" id="sign_pad" className="btn sign-btn" onClick={this.showSignatureField.bind(this)} data-toggle="modal" data-target="#Signfiled">Signature</a></li>
                       <li><a href="javascript:void(0)" id="text_field" className="btn" onClick={this.createTextField.bind(this)}>Text</a></li>
                       <li><a href="javascript:void(0)" id="date_field" className="btn" onClick={this.createDateField.bind(this)}>Date</a></li>
-                      <li><a href="javascript:void(0)" id="initial_field" className="btn">Initials</a></li>
-                      <li><a href="javascript:void(0)" id="check_field" className="btn">Check</a></li>
-                      <li><a href="javascript:void(0)" id="clear_field" className="btn" onClick={this.removeSignature.bind(this)}>Clear</a></li>
+                      <li><a href="javascript:void(0)" id="initial_field" className="btn" onClick={this.showInitialField.bind(this)}>Initials</a></li>
+                      <li><a href="javascript:void(0)" id="check_field" className="btn" onClick={this.showCheckField.bind(this)}>Check</a></li>
+                      <li><a href="javascript:void(0)" id="clear_field" className="btn" onClick={this.clearContainer.bind(this)}>Clear</a></li>
                     </ol>
                   </div>
                 </div>
@@ -379,7 +478,7 @@ class Signature_edit extends Component {
         </ul>
       </div>
       <DropArea 
-      docs={docs} 
+      docs={docs}
       field_type={this.state.inputFields} 
       getSignPosition={this.getSignPosition.bind(this)} 
       sign_image={this.state.sign_image} 
@@ -394,15 +493,15 @@ class Signature_edit extends Component {
 			<div className="modal-header">
 				<button type="button" className="close" data-dismiss="modal">&times;</button>
 				<div className="col-12 p-0 tabnav-top">
-					<ul className="nav nav-tabs">
+					<ul className="nav nav-tabs" id="sign_nav_tabs">
 						<li className="nav-item">
-							<a className="nav-link active" data-toggle="tab" href="#type">Type</a>
+							<a className="nav-link" id="type_" data-toggle="tab" href="#type">Type</a>
 						</li>
 						<li className="nav-item">
-							<a className="nav-link" data-toggle="tab" href="#draw">Draw</a>
+							<a className="nav-link active" id="draw_" data-toggle="tab" href="#draw">Draw</a>
 						</li>
 						<li className="nav-item">
-							<a className="nav-link" data-toggle="tab" href="#upload">Upload</a>
+							<a className="nav-link" id="upload_" data-toggle="tab" href="#upload">Upload</a>
 						</li>
 					</ul>
 				</div>
@@ -410,7 +509,7 @@ class Signature_edit extends Component {
 			<div className="modal-body">
 				<div className="container-fluid">
 					<div className="tab-content">
-						<div className="tab-pane active" id="type">
+						<div className="tab-pane" id="type">
 							<div className="col-12 p-0">
 								<div className="col-md-12 textinput p-0">
 									<input id="signatureTextInput" className="form-control" onChange={this.appendSignFont.bind(this)} placeholder="Type your name here"/>
@@ -427,17 +526,19 @@ class Signature_edit extends Component {
 								</div>
 							</div>
 						</div>
-						<div className="tab-pane container fade" id="draw">
+						<div className="tab-pane container fade active show" id="draw">
 							<div className="col-12 p-0">
 								<div className="signature-area">
                   <Sign 
-                    w="350" 
-                    h="250" 
+                    w="800" 
+                    h="300" 
                     t={this.state.top} 
                     l={this.state.left} 
                     docId={this.state.doc_id} 
                     color={this.state.color}
+                    bind_signature={this.state.bind_signature}
                     updateSignField={this.updateSignField.bind(this)}
+                    updateSignFieldType={this.updateSignFieldType.bind(this)}
                     />
 								</div>
 							</div>

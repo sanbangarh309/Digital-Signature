@@ -102,7 +102,7 @@ class DropArea extends React.Component {
         let alreday = false;
         let list = this.state.items;
         let key___ = this.props.field_type.slice(this.props.field_type.length - 1);
-        if(key___.length <= 0){
+        if(key___.length <= 0 || key___ == 'initials'){
           this.props.getSignPosition(y,x,doc_id);
           $('.sign-btn').click();
           return false
@@ -152,9 +152,11 @@ class DropArea extends React.Component {
     removeFieldBox(id,doc_id){
       let list = this.state.items; 
       // let index = this.state.field_lists.findIndex((item) => item.id == id);
-      list[id].isHide = true;
-      list[id].type = 'yes';
-      list[id].appendOn = false;
+      delete list[id];
+      console.log(list);
+      // list[id].isHide = true;
+      // list[id].type = 'yes';
+      // list[id].appendOn = false;
       this.setState({doc_key:doc_id});
       this.setState({items:list});
       // let newState = Object.assign(
@@ -235,7 +237,7 @@ class DropArea extends React.Component {
           //   onClick={(e) =>{this.pasteSelectedField(e)}} />{this.state.list}</div>)
           
           DropJgah.push(<div
-            className="drop-area container doc-bg signature_container"
+            className="drop-area container doc-bg signature_container hovrcr_sign" 
             onDragOver={this.onDragOver.bind(this)}
             id={'signature_container_'+key_}
             onDrop={this.onDrop.bind(this)} 
@@ -309,6 +311,7 @@ class DropArea extends React.Component {
     }
 
     removeField(e){
+      console.log(this.props);
       this.props.removeFieldBox(this.props.drag_id,this.props.docId)
     }
 
@@ -343,6 +346,14 @@ class DropArea extends React.Component {
       var year = new Date().getFullYear();
       dateField = month + '/' + date + '/' + year;
     }
+    if(this.props.fieldType == 'sign' && this.props.sign_image){
+      styles['width'] = this.props.sign_image.canvas.width;
+      styles['height'] = this.props.sign_image.canvas.height;
+    }
+    if(this.props.fieldType == 'check'){
+      styles['width'] = '100px';
+      styles['height'] = '100px';
+    }
     if(this.props.fieldType == 'sign_text'){
       dateField = this.props.sign_text;
       cusstyle['fontFamily'] = this.props.sign_font;
@@ -368,7 +379,8 @@ class DropArea extends React.Component {
           onDragEnd={this.onDragEnd.bind(this)} style={styles}>
         {(() => {
           switch (this.props.fieldType) {
-            case "sign": return (<img src={this.props.sign_image.src}></img>);
+            case "sign": return (<img src={this.props.sign_image ? this.props.sign_image.src : ''}></img>);
+            case "check": return (<img src={'/assets/img/checkmark.png'} style={{width:'100px',height:'100px'}}></img>);
             default: return (<textarea className="form-control" defaultValue={dateField} style={cusstyle}></textarea>);
           }
         })()}

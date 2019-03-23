@@ -606,13 +606,8 @@
 .hovrcr_text{cursor: auto; cursor: url(/assets/img/hovrcr_text.png) 0 0, auto;}
 .hovrcr_date{cursor: auto; cursor: url(/assets/img/hovrcr_date.png) 0 0, auto;}
 .hovrcr_initials{cursor: auto; cursor: url(/assets/img/hovrcr_initials.png) 0 0, auto;}
-.hovrcr_check{cursor: auto; cursor: url(/assets/img/hovrcr_text.png) 0 0, auto;}
-
-
-
-
-
-
+.hovrcr_check{cursor: auto; cursor: url(/assets/img/hovrcr_check.png) 0 0, auto;}
+.hovrcr_sign{cursor: auto; cursor: url(/assets/img/cursor_sig.png) 0 0, auto;}
 
 /* 	NEWPAGE-TEMPLATE_CSS */
 .btn-list{width:100%;}
@@ -851,10 +846,10 @@
 	bottom: -5px;
 	left: -3px;
 }
-.hovrcr_text{cursor: auto; cursor: url(/assets/img/hovrcr_text.png) 0 0, auto;}
+/* .hovrcr_text{cursor: auto; cursor: url(/assets/img/hovrcr_text.png) 0 0, auto;}
 .hovrcr_date{cursor: auto; cursor: url(/assets/img//hovrcr_date.png) 0 0, auto;}
 .hovrcr_initials{cursor: auto; cursor: url(/assets/img//hovrcr_initials.png) 0 0, auto;}
-.hovrcr_check{cursor: auto; cursor: url(/assets/img//hovrcr_text.png) 0 0, auto;}
+.hovrcr_check{cursor: auto; cursor: url(/assets/img//hovrcr_text.png) 0 0, auto;} */
 
 
 

@@ -30,13 +30,13 @@ body{
   /* position: relative !important; */
 }
 
-.unselectable img {
+/* .unselectable img {
 	position: absolute !important;
 	top: -38px !important;
 	width: 178px !important;
 	height: auto;
 	left: 10%;
-}
+} */
 
 .signature-input-wrapper{
   border: 1px solid black;
