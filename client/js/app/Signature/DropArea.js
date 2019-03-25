@@ -256,7 +256,7 @@ class DropArea extends React.Component {
           //   onDrop={this.onDrop.bind(this)} 
           //   onClick={(e) =>{this.pasteSelectedField(e)}} /></div>)
           DropJgah.push(<div
-            className="drop-area container doc-bg signature_container"
+            className="drop-area container doc-bg signature_container hovrcr_sign"
             onDragOver={this.onDragOver.bind(this)}
             id={'signature_container_'+key_}
             onDrop={this.onDrop.bind(this)} 

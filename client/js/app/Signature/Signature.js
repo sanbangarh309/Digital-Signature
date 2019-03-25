@@ -290,7 +290,7 @@ class Signature extends Component {
     $('.signature_container').removeClass('hovrcr_date');
     $('.signature_container').removeClass('hovrcr_check');
     $('.signature_container').removeClass('hovrcr_initials');
-    console.log('clicked on Initial Button')
+    console.log('clicked on Signature Button')
   } 
 
   showCheckField = (e) => {
@@ -474,17 +474,17 @@ class Signature extends Component {
 	<div className="modal-dialog modal-lg">
 		<div className="modal-content">
 			<div className="modal-header">
-				<button type="button" className="close" data-dismiss="modal">&times;</button>
+				<button type="button" className="close" id="close_btn" data-dismiss="modal">&times;</button>
 				<div className="col-12 p-0 tabnav-top">
-					<ul className="nav nav-tabs">
+					<ul className="nav nav-tabs" id="sign_nav_tabs">
 						<li className="nav-item">
-							<a className="nav-link active" data-toggle="tab" href="#type">Type</a>
+							<a className="nav-link " id="type_" data-toggle="tab" href="#type">Type</a>
 						</li>
 						<li className="nav-item">
-							<a className="nav-link" data-toggle="tab" href="#draw">Draw</a>
+							<a className="nav-link active" id="draw_" data-toggle="tab" href="#draw">Draw</a>
 						</li>
 						<li className="nav-item">
-							<a className="nav-link" data-toggle="tab" href="#upload">Upload</a>
+							<a className="nav-link" id="upload_" data-toggle="tab" href="#upload">Upload</a>
 						</li>
 					</ul>
 				</div>
@@ -492,24 +492,24 @@ class Signature extends Component {
 			<div className="modal-body">
 				<div className="container-fluid">
 					<div className="tab-content">
-						<div className="tab-pane active" id="type">
+						<div className="tab-pane" id="type">
 							<div className="col-12 p-0">
 								<div className="col-md-12 textinput p-0">
 									<input id="signatureTextInput" className="form-control" onChange={this.appendSignFont.bind(this)} placeholder="Type your name here"/>
 								</div>
 								<div className="col-md-12 textinput">
                 <ul className="col-list">
-										<li className="card prev-box preview cedarville_cursive black-txt" onClick={this.setSignFont.bind('Cedarville cursive')} style={{color:this.state.color}}>Type your name here</li>
-                    <li className="card prev-box preview kristi black-txt" onClick={this.setSignFont.bind('Kristi')} style={{color:this.state.color}}>Type your name here</li>
-                    <li className="card prev-box preview mr_dafo black-txt" onClick={this.setSignFont.bind('Mr Dafoe')} style={{color:this.state.color}}>Type your name here</li>
-                    <li className="card prev-box preview sacramento black-txt" onClick={this.setSignFont.bind('Sacramento')} style={{color:this.state.color}}>Type your name here</li>
-                    <li className="card prev-box preview montez black-txt" onClick={this.setSignFont.bind('Montez')} style={{color:this.state.color}}>Type your name here</li>
-                    <li className="card prev-box preview reenie_beanie black-txt" onClick={this.setSignFont.bind('Reenie Beanie')} style={{color:this.state.color}}>Type your name here</li>
+										<li className="card prev-box preview cedarville_cursive black-txt" onClick={this.setSignFont.bind(this,'Cedarville cursive')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview kristi black-txt" onClick={this.setSignFont.bind(this,'Kristi')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview mr_dafo black-txt" onClick={this.setSignFont.bind(this,'Mr Dafoe')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview sacramento black-txt" onClick={this.setSignFont.bind(this,'Sacramento')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview montez black-txt" onClick={this.setSignFont.bind(this,'Montez')} style={{color:this.state.color}}>Type your name here</li>
+                    <li className="card prev-box preview reenie_beanie black-txt" onClick={this.setSignFont.bind(this,'Reenie Beanie')} style={{color:this.state.color}}>Type your name here</li>
 									</ul>
 								</div>
 							</div>
 						</div>
-						<div className="tab-pane container fade" id="draw">
+						<div className="tab-pane container fade active show" id="draw">
 							<div className="col-12 p-0">
 								<div className="signature-area">
                   <Sign 
@@ -555,7 +555,7 @@ class Signature extends Component {
 					<div className="col-md-6">
 						<div className="d-flex btn-block pull-right">
 							<button type="button" className="btn btn-default" data-dismiss="modal">Cancel</button>
-							<button className="btn btn-primary btn-large" disabled>Sign</button>
+							<button className="btn btn-primary btn-large" onClick={this.appendSignature.bind(this)}>Sign</button>
 						</div>
 					</div>
 					</div>
