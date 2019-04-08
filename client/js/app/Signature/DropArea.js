@@ -13,6 +13,7 @@ class DropArea extends React.Component {
         doc_key: null,
         add_new: true,
         field_count:0,
+        signer_field:null,
         items: {},
         chkduplicacy:[]
       };
@@ -24,13 +25,24 @@ class DropArea extends React.Component {
     }
     onDrop(e) {
       console.log("DropArea.onDrop");
-      var obj = JSON.parse(e.dataTransfer.getData('application/json'));
-      // let list = this.state.list;
-      let list = this.state.items;
-      // let index = this.state.list.findIndex((item) => item.id == obj.id);
-      list[obj.id].isDragging = false;
-      list[obj.id].top  = (e.clientY - obj.y);
-      list[obj.id].left = (e.clientX - obj.x);
+      let fields = this.props.signer_field || '';
+      console.log(fields)
+      try {
+        var obj = JSON.parse(e.dataTransfer.getData('application/json'));
+        // let list = this.state.list;
+        let list = this.state.items;
+        if(list){
+          list[obj.id].isDragging = false;
+          list[obj.id].top  = (e.clientY - obj.y);
+          list[obj.id].left = (e.clientX - obj.x);
+        }else{
+          list = {};
+        }
+      }catch(e){
+        var obj = {};
+        let list = {};
+      }
+      
 
       // this.setState({
       //   items: [
@@ -40,7 +52,7 @@ class DropArea extends React.Component {
       //   ]
       // });
 
-    
+    // if(field == '')
       let newState = Object.assign(
         this.state, {
           items : list
@@ -80,7 +92,6 @@ class DropArea extends React.Component {
       list[id].height =  clientY - position.top  + (16 / 2);
       list[id].fontSize = parseFloat(list[id].height/2.5);
       // console.log(position)
-      console.log(list[id])
       let newState = Object.assign(
         this.state, {
           items : list
@@ -132,20 +143,24 @@ class DropArea extends React.Component {
         
         if(!alreday){
           let items = []
-          this.state.field_lists.push({ id: this.state.field_count, isDragging: false, isResizing: false, top:y, left: x,width:w, height:h, fontSize:20,isHide:false, type:key___,appendOn:false,doc_id:doc_id});
+          let text = '';
+          console.log(key___)
+          if(key___ == 'signer'){
+            text = this.props.signer_field;
+          }
+          
+          this.state.field_lists.push({ id: this.state.field_count, isDragging: false, isResizing: false, top:y, left: x,width:w, height:h, fontSize:20,isHide:false, type:key___,appendOn:false,content:text,doc_id:doc_id});
           let newobj = {};
           Object.assign(newobj, this.state.field_lists); 
           this.setState({show_field:true});
           if(e.target.id && e.target.id !=''){
             this.setState({doc_key:doc_id});
           }
-          console.log(newobj);
           this.setState({items:newobj});
         }
       }else{
         this.setState({add_new:false});
       }
-      console.log(this.state.items);
       // debugger;
     }
 
@@ -170,6 +185,7 @@ class DropArea extends React.Component {
       let DropJgah = []
       let key_ = 1;
       let fields = this.state.items;
+      console.log(fields);
       this.props.docs.map(doc => {
         let items = [];
         let back_style = {
@@ -182,11 +198,10 @@ class DropArea extends React.Component {
             if(!fields[key].isHide && !fields[key].isDragging && !fields[key].isResizing){
                 if(this.state.chkduplicacy.includes(fields[key].id)){
                   // delete this.state.list[fields[key].id];
-                  console.log(this.state.add_new)
+                 
                   // if(!this.state.add_new){
                     $('#'+fields[key].type+'_doc_'+key_+'_'+fields[key].id).remove();
                   // }
-                  console.log('#'+fields[key].type+'_doc_'+key_+'_'+fields[key].id);
                 }else{
                   this.state.chkduplicacy.push(fields[key].id);
                     // console.log('current:key- '+this.state.doc_key);
@@ -200,6 +215,7 @@ class DropArea extends React.Component {
                     id={'doc_'+key_+'_'+fields[key].id}
                     docId={key_}
                     fieldType={fields[key].type}
+                    signer_field={fields[key].content}
                     sign_image={this.props.sign_image}
                     sign_text={this.props.sign_text}
                     sign_font={this.props.sign_font}
@@ -207,7 +223,7 @@ class DropArea extends React.Component {
                     top={fields[key].top}
                     left={fields[key].left}
                     width={fields[key].width}
-                    height={fields[key].height}
+                    height={fields[key].onDragStartheight}
                     fontSize={fields[key].fontSize}
                     isDragging={fields[key].isDragging}
                     isResizing={fields[key].isResizing}
@@ -367,6 +383,10 @@ class DropArea extends React.Component {
     // }else{
     //   let field_ = <textarea className="form-control" defaultValue={dateField} style={cusstyle}></textarea>;
     // }
+    let textstyle = {
+      fontSize: '42px',
+      marginLeft: '50px'
+    }
       return (
         <div className="text-field-box item unselectable" 
           ref={"node"}
@@ -376,11 +396,13 @@ class DropArea extends React.Component {
           onMouseDown={this.onMouseDown.bind(this)}
           onMouseUp={this.onMouseUp.bind(this)}
           onDragStart={this.onDragStart.bind(this)}
-          onDragEnd={this.onDragEnd.bind(this)} style={styles}>
+          onDragEnd={this.onDragEnd.bind(this)} 
+          style={styles}>
         {(() => {
           switch (this.props.fieldType) {
             case "sign": return (<img src={this.props.sign_image ? this.props.sign_image.src : ''}></img>);
             case "check": return (<img src={'/assets/img/checkmark.png'} style={{width:'100px',height:'100px'}}></img>);
+            case "signer": return (<span style={textstyle}>{this.props.signer_field}</span>);
             default: return (<textarea className="form-control" defaultValue={dateField} style={cusstyle}></textarea>);
           }
         })()}

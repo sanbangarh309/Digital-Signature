@@ -7,7 +7,7 @@ var html2canvas = require('html2canvas');
 import jsPDF from 'jspdf';
 import swal from 'sweetalert';
 var NavLink = require('react-router-dom').NavLink;
-
+import SignerFields from './SignerFields';
 const getBase64 = (file) => {
   return new Promise((resolve,reject) => {
     const reader = new FileReader();
@@ -47,6 +47,7 @@ class Signature_edit extends Component {
       sign_font:null,
       sign_text:null,
       bind_signature:false,
+      signer_field:null,
       docs:[],
       color:'black',
       buttons:{
@@ -382,6 +383,12 @@ class Signature_edit extends Component {
     $('#close_btn').click();
   }
 
+  setSignerField = (field) => {
+    this.setState({signer_field: field});
+    // this.state.signer_field.push(field);
+    this.state.inputFields.push('signer');
+  }
+
   render() {
     let dashboard = '';
     let docs = localStorage.getItem('files_array')  || this.state.docs 
@@ -422,6 +429,10 @@ class Signature_edit extends Component {
       </header>
     <div className="container-fluid main-wrapper" style={{paddingTop:'0px'}}>
       <div className="left-sidebar">
+        <SignerFields 
+          field={this.state.inputFields}
+          setSignerField={this.setSignerField.bind(this)}
+        />
         <ul className="btn-list">
           <li>
             <div id="accordion" className="inner-accordian">
@@ -449,33 +460,6 @@ class Signature_edit extends Component {
             </div>
           </li>
         </ul>
-        <ul className="btn-list">
-          <li>
-            <div id="accordion" className="inner-accordian">
-              <div className="card">
-                <div className="card-header" id="headingTwo">
-                  <button className="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                    Add Fields
-                    <span className="btn-helper">for signers</span>
-                  </button>
-                </div>
-                <div id="collapseTwo" className="collapse  show" aria-labelledby="headingTwo" data-parent="#accordion">
-                  <div className="card-body">
-                  <ol className="btn-mainlist">
-                    <li><a href="#" className="btn current-btn">Signature Field</a></li>
-                    <li><a href="#" className="btn">Text Field</a></li>
-                    <li><a href="#" className="btn">Date Field</a></li>
-                    <li><a href="#" className="btn">Initials Field</a></li>
-                    <li><a href="#" className="btn">Checkbox Field</a></li>
-                    <li><a href="#" className="btn">Radio Fields</a></li>
-                    <li><a href="#" className="btn">Attachment</a></li>
-                  </ol>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
       </div>
       <DropArea 
       docs={docs}
@@ -485,6 +469,7 @@ class Signature_edit extends Component {
       sign_text={this.state.sign_text} 
       sign_font={this.state.sign_font} 
       sign_color={this.state.color}
+      signer_field={this.state.signer_field}
       />
     </div>
     <div className="modal signmodal" id="Signfiled">

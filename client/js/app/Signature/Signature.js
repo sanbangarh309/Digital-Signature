@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import axios from 'src/common/myAxios';
 import DropArea from './DropArea';
 import Sign from './Sign';
+import SignerFields from './SignerFields';
 import './Signature.css';
 var html2canvas = require('html2canvas');
 import jsPDF from 'jspdf';
@@ -45,6 +46,7 @@ class Signature extends Component {
       sign_image:null,
       sign_font:null,
       sign_text:null,
+      signer_field:null,
       bind_signature:false,
       docs:[],
       color:'black',
@@ -109,6 +111,13 @@ class Signature extends Component {
     let width = '';
     let height = '';
     let docs = this.state.docs;
+    // console.log($("#signature_container_1 .unselectable").attr('id'));
+    // console.log($("#signature_container_1 .unselectable").css('left'));
+    // $("#signature_container_1 .unselectable").each(function( index ) {
+    //   console.log( index + ": " + $( this ).attr('id') );
+    //   console.log( index + ": " + $( this ).css('left') );
+    // });
+    // debugger;
     if(this.state.docs.length > 0){
       for(let i=1;i <=this.state.docs.length;i++){
         html2canvas(document.querySelector("#signature_container_"+i), { allowTaint: true }).then(canvas => { 
@@ -124,11 +133,22 @@ class Signature extends Component {
             }else{
               doc.addPage();
             }
+             let drag_data = [];
+             docs[parseInt(i)-1].drag_data = [];
+            $("#signature_container_"+i+" .unselectable").each(function( index ) {
+              // if(docs[index]){
+                drag_data.push({'id':$( this ).attr('id'),'top':$( this ).css('left'),'left':$( this ).css('left'),'type':$( this ).find('span').text()});
+              // }
+              // console.log( index + ": " + $( this ).attr('id') );
+              // console.log( index + ": " + $( this ).css('left') );
+            });
+            docs[parseInt(i)-1].drag_data = drag_data;
+            console.log(docs)
             doc.addImage(imgData, 'JPEG', 0, 0, width, height);
             if(i == this.state.docs.length){
               setTimeout(function() {
                 var blob = doc.output("blob");
-                var blobURL = URL.createObjectURL(blob);console.log(blobURL)
+                var blobURL = URL.createObjectURL(blob);
                 var downloadLink = document.getElementById('pdf-download-link');
                 downloadLink.href = blobURL;
                 var loader = document.getElementById('outer-barG');
@@ -365,9 +385,16 @@ class Signature extends Component {
     }
     $('#close_btn').click();
   }
+
+  setSignerField = (field) => {
+    this.setState({signer_field: field});
+    // this.state.signer_field.push(field);
+    this.state.inputFields.push('signer');
+  }
   render() {
+    // debugger;
     let dashboard = '';
-    let docs = localStorage.getItem('files_array')  || this.state.docs 
+    let docs = this.state.docs || localStorage.getItem('files_array') 
     try {
       docs = JSON.parse(docs)
     }catch(e){
@@ -405,6 +432,10 @@ class Signature extends Component {
       </header>
     <div className="container-fluid main-wrapper" style={{paddingTop:'0px'}}>
       <div className="left-sidebar">
+       <SignerFields 
+          field={this.state.inputFields}
+          setSignerField={this.setSignerField.bind(this)}
+        />
         <ul className="btn-list">
           <li>
             <div id="accordion" className="inner-accordian">
@@ -432,33 +463,6 @@ class Signature extends Component {
             </div>
           </li>
         </ul>
-        <ul className="btn-list">
-          <li>
-            <div id="accordion" className="inner-accordian">
-              <div className="card">
-                <div className="card-header" id="headingTwo">
-                  <button className="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                    Add Fields
-                    <span className="btn-helper">for signers</span>
-                  </button>
-                </div>
-                <div id="collapseTwo" className="collapse  show" aria-labelledby="headingTwo" data-parent="#accordion">
-                  <div className="card-body">
-                  <ol className="btn-mainlist">
-                    <li><a href="#" className="btn current-btn">Signature Field</a></li>
-                    <li><a href="#" className="btn">Text Field</a></li>
-                    <li><a href="#" className="btn">Date Field</a></li>
-                    <li><a href="#" className="btn">Initials Field</a></li>
-                    <li><a href="#" className="btn">Checkbox Field</a></li>
-                    <li><a href="#" className="btn">Radio Fields</a></li>
-                    <li><a href="#" className="btn">Attachment</a></li>
-                  </ol>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
       </div>
       <DropArea 
       docs={docs} 
@@ -468,6 +472,7 @@ class Signature extends Component {
       sign_text={this.state.sign_text} 
       sign_font={this.state.sign_font} 
       sign_color={this.state.color}
+      signer_field={this.state.signer_field}
       />
     </div>
     <div className="modal signmodal" id="Signfiled">

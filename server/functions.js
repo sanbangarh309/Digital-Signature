@@ -123,7 +123,9 @@ module.exports = {
                   console.error(err);
                 })
             }else{
-              sb([{name:filename}]);
+              sb({ result: 'success',
+              message: 
+               [ { name: filename } ] });
             }
           });
       }

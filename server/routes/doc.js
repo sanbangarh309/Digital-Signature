@@ -49,7 +49,6 @@ module.exports = (app) => {
             const user = await jwt.verify(req.body.token, config.JWT_SECRET);
             const userMatched = await User.findById(user.sub);
             // console.log(userMatched);
-            console.log(req.body);
             if (userMatched) { 
               if (buffer.name) {
                   let doc = new Doc();

@@ -55,7 +55,6 @@ class Sign extends Component {
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
-        
       }
 
       clearSignature(e){
