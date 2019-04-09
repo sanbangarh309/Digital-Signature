@@ -111,6 +111,7 @@ class Signature extends Component {
     let width = '';
     let height = '';
     let docs = this.state.docs;
+    let inputfields = this.state.inputFields;
     // console.log($("#signature_container_1 .unselectable").attr('id'));
     // console.log($("#signature_container_1 .unselectable").css('left'));
     // $("#signature_container_1 .unselectable").each(function( index ) {
@@ -136,8 +137,11 @@ class Signature extends Component {
              let drag_data = [];
              docs[parseInt(i)-1].drag_data = [];
             $("#signature_container_"+i+" .unselectable").each(function( index ) {
+              let key___ = inputfields.slice(inputfields.length - 1);
+              let field = key___[0];
+              let type = $( this ).find('span').text() ? 'signer' : field; 
               // if(docs[index]){
-                drag_data.push({'id':$( this ).attr('id'),'top':$( this ).css('left'),'left':$( this ).css('left'),'type':$( this ).find('span').text()});
+                drag_data.push({ id: index, isDragging: false, isResizing: false, top:$( this ).css('top'), left: $( this ).css('left'),width:200, height:50, fontSize:20,isHide:false, type:type,appendOn:false,content:$( this ).find('span').text(),doc_id:i});
               // }
               // console.log( index + ": " + $( this ).attr('id') );
               // console.log( index + ": " + $( this ).css('left') );

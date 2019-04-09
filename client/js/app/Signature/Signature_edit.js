@@ -124,6 +124,8 @@ class Signature_edit extends Component {
     let width = '';
     let height = '';
     let edit_id = this.state.edit_id;
+    let docs = this.state.docs;
+    let inputfields = this.state.inputFields;
     if(this.state.docs.length > 0){
       for(let i=1;i <=this.state.docs.length;i++){
         $("#signature_container_"+i).css('background-color','transparent');
@@ -140,6 +142,20 @@ class Signature_edit extends Component {
             }else{
               doc.addPage();
             }
+            let drag_data = [];
+             docs[parseInt(i)-1].drag_data = [];
+            $("#signature_container_"+i+" .unselectable").each(function( index ) {
+              let key___ = inputfields.slice(inputfields.length - 1);
+              let field = key___[0];
+              let type = $( this ).find('span').text() ? 'signer' : field; 
+              // if(docs[index]){
+                drag_data.push({ id: index, isDragging: false, isResizing: false, top:$( this ).css('top'), left: $( this ).css('left'),width:200, height:50, fontSize:20,isHide:false, type:type,appendOn:false,content:$( this ).find('span').text(),doc_id:i});
+              // }
+              // console.log( index + ": " + $( this ).attr('id') );
+              // console.log( index + ": " + $( this ).css('left') );
+            });
+            docs[parseInt(i)-1].drag_data = drag_data;
+            console.log(docs)
             doc.addImage(imgData, 'JPEG', 0, 0, width, height);
             if(i == this.state.docs.length){
               setTimeout(function() {
@@ -163,7 +179,7 @@ class Signature_edit extends Component {
                     reader.readAsDataURL(blob); 
                     reader.onloadend = function() {
                         let base64data = reader.result;                
-                        axios.put('/api/doc/'+edit_id,{base64Data:base64data,token:localStorage.getItem('jwtToken')}).then((res) => {
+                        axios.put('/api/doc/'+edit_id,{base64Data:base64data,token:localStorage.getItem('jwtToken'),docs:docs}).then((res) => {
                           console.log(res);
                         });
                     }

@@ -4,6 +4,7 @@ import history from '../history';
 import Header from './Header';
 import Comment from './Comment';
 import Footer from './Footer';
+import ModalComponent from './ModalComponent';
 import './loader.css';
 let laoder = <div id="outer-barG" style={{display:'none'}}>
                 <div id="front-barG" className="bar-animationG">
@@ -25,6 +26,7 @@ const App = ({children}) => {
             <div>
                 {laoder}
                 {children}
+                <ModalComponent/>
             </div>
         );
     }

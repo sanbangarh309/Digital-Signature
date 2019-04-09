@@ -267,7 +267,7 @@ class Dashboard extends Component {
                                     </a>
                                   </li>
                                   <li><a href="#">SIGN </a></li>
-                                  <li><a href="#">SEND FOR SIGNING </a></li>
+                                  <li><a href="javascript:void(0)" data-toggle="modal" data-target="#emailModal">SEND FOR SIGNING </a></li>
                                   <li><NavLink to={'signature/'+value._id} className="btn btn-default btn-flat"><i className="fa fa-edit"></i></NavLink></li>
                                   <li><a href="#"><i className="fa fa-share"></i></a></li>
                                   <li><a href={'files/docs/'+value.file} target="_blank"><i className="fa fa-download"></i></a></li>

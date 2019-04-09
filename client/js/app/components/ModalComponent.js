@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import auth from 'src/auth';
 import axios from 'src/common/myAxios';
 import {connect} from 'react-redux';
+const ReactTags = require('react-tag-autocomplete')
 
 @connect((store) => {
   return {
@@ -33,12 +34,33 @@ export default class ModalComponent extends React.Component {
           mobile: '',
           confirmedPassword: '',
           terms: '',
+          tags: [
+            { id: 1, name: "Apples" },
+            { id: 2, name: "Pears" }
+          ],
+          suggestions: [
+            { id: 3, name: "Bananas" },
+            { id: 4, name: "Mangos" },
+            { id: 5, name: "Lemons" },
+            { id: 6, name: "Apricots" }
+          ]
       };
       // This binding is necessary to make `this` work in the callback
       this.Register = this.Register.bind(this);
       this.Login = this.Login.bind(this);
       this.closePopUp = this.closePopUp.bind(this);
       this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleDelete (i) {
+    const tags = this.state.tags.slice(0)
+    tags.splice(i, 1)
+    this.setState({ tags })
+  }
+ 
+  handleAddition (tag) {
+    const tags = [].concat(this.state.tags, tag)
+    this.setState({ tags })
   }
 
   toggle() {
@@ -107,6 +129,7 @@ export default class ModalComponent extends React.Component {
       // this.closePopUp()
     }
     return (
+      <div>
         <div className={cusClass.join(' ')} id="auth-modal" tabIndex="-1" role="dialog">
            <div className="modal-dialog">
               <div className="modal-content">
@@ -236,6 +259,62 @@ export default class ModalComponent extends React.Component {
                  </div>
               </div>
            </div>
+        </div>
+
+        <div id="emailModal" className="modal fade" tabindex="-1" role="dialog" aria-labelledby="contactModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-lg">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <button type="button" className="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 className="modal-title"><legend>Email Form</legend></h4>
+                    </div>
+                    <div className="modal-body">
+                        <div className="containter">
+                             <div className="row">
+							    <div className="col-md-10 col-md-offset-4">
+							      <form className="form-horizontal" role="form">
+							        <fieldset>
+							          <div className="form-group">
+							            <label className="col-sm-4 control-label" for="textinput">Email to Employee</label>
+							            <div className="col-sm-12">
+                          <ReactTags
+                            tags={this.state.tags}
+                            suggestions={this.state.suggestions}
+                            handleDelete={this.handleDelete.bind(this)}
+                            handleAddition={this.handleAddition.bind(this)} />
+							              {/* <input type="text" placeholder="Recipient Email" name="email_to" className="form-control" /> */}
+							            </div>
+							          </div>
+							          <div className="form-group">
+							            <label className="col-sm-4 control-label" for="textinput">Subject</label>
+							            <div className="col-sm-12">
+							              <input type="text" placeholder="Subject" name="subject" className="form-control" />
+							            </div>
+							          </div>
+							          <div className="form-group">
+							            <label className="col-sm-4 control-label" for="textinput">Message</label>
+							            <div className="col-sm-12">
+							              <textarea type="text" placeholder="Enter Email Body" name="message" className="form-control"></textarea>
+							            </div>
+							          </div>
+							          <div className="form-group">
+							            <div className="col-sm-offset-2 col-sm-10">
+							              <div className="pull-right">
+							                <button type="submit" className="btn btn-default">Cancel</button>
+							                <button type="submit" className="btn btn-primary">Send Email</button>
+							              </div>
+							            </div>
+							          </div>
+							        </fieldset>
+							      </form>
+							    </div>
+							</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         </div>
     );
   }

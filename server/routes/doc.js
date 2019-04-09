@@ -100,17 +100,18 @@ module.exports = (app) => {
         .then((doc) => {
           var fs = require('fs');
           console.log(doc);
-          if ( typeof doc.file !== 'undefined' && doc.file ){
+          if ( typeof doc.file !== 'undefined' && doc.file && fs.existsSync(config.directory+'/uploads/docs/'+doc.file)){
             fs.unlink(config.directory+'/uploads/docs/'+doc.file);
           }
-          if ( typeof doc.images !== 'undefined' && doc.images[0] ){
+          if ( typeof doc.images !== 'undefined' && doc.images[0]){
             doc.images.forEach(el => {
-              fs.unlink(config.directory+'/uploads/docs/'+el.name);
+              if(fs.existsSync(config.directory+'/uploads/docs/'+el.name)){
+                fs.unlink(config.directory+'/uploads/docs/'+el.name);
+              }
             });
             let strn = doc.images[0].name.replace("_cnvrt_1", "").split('.');
-            console.log(strn);
             let pdf_file = strn[0]+'.pdf';
-            if(pdf_file){
+            if(pdf_file && fs.existsSync(pdf_file)){
               fs.unlink(config.directory+'/uploads/docs/'+pdf_file);
             }
           }
@@ -127,6 +128,7 @@ module.exports = (app) => {
             if(doc.file){
               require('fs').unlinkSync(config.directory + "/uploads/docs/"+doc.file)
             }
+            doc.images = req.body.docs;
             doc.title = buffer.name;
             doc.file = buffer.name;
             doc.save()

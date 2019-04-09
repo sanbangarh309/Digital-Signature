@@ -25,7 +25,7 @@ const wow = new WOW({
   offset: 0,
   live: true
 });
-import OwlCarousel from 'react-owl-carousel';
+// import OwlCarousel from 'react-owl-carousel';
 import './scripts/custom.js';
 // import {Link} from 'react-router-dom';
 var NavLink = require('react-router-dom').NavLink;
