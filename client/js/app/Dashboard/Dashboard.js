@@ -67,6 +67,11 @@ class Dashboard extends Component {
     });
   }
 
+  appendId = (e) => {
+    $('#emailModal').modal('show');
+    $('#doc_id').val(e.target.id);
+  }
+
   deleteDoc = (id,e) => {
     e.preventDefault();
     swal({
@@ -253,13 +258,14 @@ class Dashboard extends Component {
                 <div className="card-body">
                   <ol className="od-list">
                   {this.state.docs.map((value, index) => {
-                    return <li key={index}>
+                    let img = "/files/docs/"+value.images[0].name || "/assets/img/doc-1.png";
+                    return (<li key={index}>
                                <ul className="list-inline top-box-list">
                                   <li><input type="checkbox"/><span></span></li>
                                   <li className="doc-box">
                                     <a href="#">
                                       <div className="fig-left">
-                                        <img src="/assets/img/doc-1.png" alt="No Thumb" className="doc-pic"/>
+                                        <img src={img} alt="No Thumb" className="doc-pic"/>
                                       </div>
                                       <div className="doc-info">
                                         <p>Document<span className="date-doc small">{value.created_at}</span></p>
@@ -267,13 +273,14 @@ class Dashboard extends Component {
                                     </a>
                                   </li>
                                   <li><a href="#">SIGN </a></li>
-                                  <li><a href="javascript:void(0)" data-toggle="modal" data-target="#emailModal">SEND FOR SIGNING </a></li>
+                                  {/* data-toggle="modal" data-target="#emailModal" */}
+                                  <li><a href="javascript:void(0)" id={value._id} onClick={this.appendId}>SEND FOR SIGNING </a></li>
                                   <li><NavLink to={'signature/'+value._id} className="btn btn-default btn-flat"><i className="fa fa-edit"></i></NavLink></li>
                                   <li><a href="#"><i className="fa fa-share"></i></a></li>
                                   <li><a href={'files/docs/'+value.file} target="_blank"><i className="fa fa-download"></i></a></li>
                                   <li className="delete-row"><a className="fa fa-trash danger" onClick={this.deleteDoc.bind(this, value._id)} href="javascript:void(0)"></a></li>
                               </ul>
-                          </li>
+                          </li>)
                   })}
                   </ol>
                 </div>

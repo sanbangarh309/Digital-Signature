@@ -70,6 +70,28 @@ module.exports = (app) => {
       });
     });
 
+    app.post('/api/sendemail', (req, res, next) => {
+      let link = 'http://0.0.0.0:5200/signature/'+req.body.id;
+      Doc.findById(req.body.id)
+        .exec()
+        .then((doc) => {
+          if(doc.images){
+            let img = "/files/docs/"+doc.images[0].name;
+          }else{
+            return false;
+          }
+          var mailOptions = {
+            from: 'sandeep.digittrix@gmail.com',
+            to: req.body.email_to,
+            subject: 'Document Shared For Sign',
+            text: '<div><b><font style="font-family:tahoma;font-size:8pt">Click To Sign:<br/>------------------------------<br/><a href="'+ link+'"><img src="'+img+'" width=100 /></a></font></b></div>'
+          };
+          San_Function.sanSendMail(req, res, mailOptions);
+          console.log(doc);
+          res.json(doc);
+        }).catch((err) => next(err));
+    });
+
     app.delete('/api/doc/:id', (req, res, next) => {
       // Doc.findOne({_id: ObjectId(req.params.id)})
       //   .exec()

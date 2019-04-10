@@ -222,6 +222,25 @@ module.exports = {
     }).catch(next).error(console.error);
   },
 
+  sanSendMail : function(req, res, mailOptions) {
+    var nodemailer = require('nodemailer');
+    var transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'sandeep.digittrix@gmail.com',
+        pass: 'dqubzvltrejhcelg'
+      }
+    });
+    transporter.sendMail(mailOptions, function(error, info){
+      console.log(error)
+      if (error) {
+        return res.status(500).send("There was a problem sending email.");
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  },
+
   san_middleware : function(req, res,next){
     var token = req.session.token;
     if (!token && req.path != '/admin/login' && !req.path.includes("assets")){

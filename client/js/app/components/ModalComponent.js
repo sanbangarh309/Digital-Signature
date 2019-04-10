@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import auth from 'src/auth';
 import axios from 'src/common/myAxios';
 import {connect} from 'react-redux';
-const ReactTags = require('react-tag-autocomplete')
 
 @connect((store) => {
   return {
@@ -34,22 +33,19 @@ export default class ModalComponent extends React.Component {
           mobile: '',
           confirmedPassword: '',
           terms: '',
-          tags: [
-            { id: 1, name: "Apples" },
-            { id: 2, name: "Pears" }
-          ],
-          suggestions: [
-            { id: 3, name: "Bananas" },
-            { id: 4, name: "Mangos" },
-            { id: 5, name: "Lemons" },
-            { id: 6, name: "Apricots" }
-          ]
+          email_to:'',
+          subject:'',
+          message:'',
+          tags: [],
+          tag: ''
       };
       // This binding is necessary to make `this` work in the callback
       this.Register = this.Register.bind(this);
       this.Login = this.Login.bind(this);
       this.closePopUp = this.closePopUp.bind(this);
       this.handleChange = this.handleChange.bind(this);
+      this.sendEmail = this.sendEmail.bind(this);
+      this.handleChangeEmail = this.handleChangeEmail.bind(this);
   }
 
   handleDelete (i) {
@@ -71,6 +67,31 @@ export default class ModalComponent extends React.Component {
 
   handleChange(e) {
       this.setState({[e.target.name]: e.target.value});
+  }
+
+  handleChangeEmail(e){
+    this.setState({[e.target.name]: e.target.value});
+  }
+
+  sendEmail(e){
+    e.preventDefault();
+    let id = $('#emailModal form').find('#doc_id').val();console.log(id);
+    console.log(this.state);
+    if(this.state.email_to !='' && id){
+      axios.post('/api/sendemail',{'email_to':this.state.email_to,'subject':this.state.subject,'body':this.state.message,'id':id}).then((res) => {
+        this.setState({
+          added: true,
+          alert: 'alert alert-success',
+          msg: 'Email Sent Successfully',
+        });
+      }).catch(error => {
+        this.setState({
+          added: true,
+          alert: 'alert alert-danger',
+          msg: error.response.data.error,
+        });
+      });
+    }
   }
 
   Register(event){
@@ -271,35 +292,31 @@ export default class ModalComponent extends React.Component {
                     <div className="modal-body">
                         <div className="containter">
                              <div className="row">
-							    <div className="col-md-10 col-md-offset-4">
-							      <form className="form-horizontal" role="form">
+							    <div className="col-md-12 col-md-offset-4">
+							      <form className="form-horizontal" role="form" onSubmit={this.sendEmail}>
+                      <input type="hidden" value="" id="doc_id"/>
 							        <fieldset>
 							          <div className="form-group">
 							            <label className="col-sm-4 control-label" for="textinput">Email to Employee</label>
 							            <div className="col-sm-12">
-                          <ReactTags
-                            tags={this.state.tags}
-                            suggestions={this.state.suggestions}
-                            handleDelete={this.handleDelete.bind(this)}
-                            handleAddition={this.handleAddition.bind(this)} />
-							              {/* <input type="text" placeholder="Recipient Email" name="email_to" className="form-control" /> */}
+							              <input type="text" placeholder="Recipient Email" value={this.state.eamils} onChange={this.handleChangeEmail} name="email_to" className="form-control" />
 							            </div>
 							          </div>
 							          <div className="form-group">
 							            <label className="col-sm-4 control-label" for="textinput">Subject</label>
 							            <div className="col-sm-12">
-							              <input type="text" placeholder="Subject" name="subject" className="form-control" />
+							              <input type="text" placeholder="Subject" value={this.state.subject} onChange={this.handleChangeEmail} name="subject" className="form-control" />
 							            </div>
 							          </div>
 							          <div className="form-group">
 							            <label className="col-sm-4 control-label" for="textinput">Message</label>
 							            <div className="col-sm-12">
-							              <textarea type="text" placeholder="Enter Email Body" name="message" className="form-control"></textarea>
+							              <textarea type="text" placeholder="Enter Email Body" value={this.state.message} onChange={this.handleChangeEmail} name="message" className="form-control"></textarea>
 							            </div>
 							          </div>
 							          <div className="form-group">
 							            <div className="col-sm-offset-2 col-sm-10">
-							              <div className="pull-right">
+							              <div className="col-sm-12 pull-right">
 							                <button type="submit" className="btn btn-default">Cancel</button>
 							                <button type="submit" className="btn btn-primary">Send Email</button>
 							              </div>
