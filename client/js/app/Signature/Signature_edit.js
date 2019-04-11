@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'src/common/myAxios';
 import DropArea from './DropArea';
+import  { Redirect } from 'react-router-dom'
 import Sign from './Sign';
 import './Signature.css';
 var html2canvas = require('html2canvas');
@@ -54,15 +55,17 @@ class Signature_edit extends Component {
         sign:false,
         clear:false,
         revoke:false
-      }
+      },
+      doc_for_sign: this.props.location.query.sign ? true : false
     };
     let doc = localStorage.getItem('uploaded_doc') || ''
     if(doc){
       this.chkFileType(doc);
     }
+    // console.log(this.state);debugger;
   }
 
-  componentWillMount() {
+  componentDidMount() {
     let docs = localStorage.getItem('files_array') || this.state.docs
     try {
       docs = JSON.parse(docs)
@@ -87,7 +90,6 @@ class Signature_edit extends Component {
   }
 
   chkFileType = (doc) => {
-    console.log(doc)
     // this.setState({
     //        doc_blob: doc
     // });
@@ -413,7 +415,7 @@ class Signature_edit extends Component {
     }catch(e){
 
     }
-    if (!localStorage.getItem('jwtToken')) {
+    if (!localStorage.getItem('jwtToken') && !this.state.doc_for_sign) {
       return <Redirect to='/'  />
     }else{
       dashboard = <li><NavLink  className="btn" id="dashboard" to='/dashboard'>Dasboard</NavLink></li>
@@ -445,37 +447,46 @@ class Signature_edit extends Component {
       </header>
     <div className="container-fluid main-wrapper" style={{paddingTop:'0px'}}>
       <div className="left-sidebar">
-        <SignerFields 
-          field={this.state.inputFields}
-          setSignerField={this.setSignerField.bind(this)}
-        />
-        <ul className="btn-list">
-          <li>
-            <div id="accordion" className="inner-accordian">
-              <div className="card">
-                <div className="card-header" id="headingOne">
-                  <button className="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                    Add Content
-                    <span className="btn-helper">to document</span>
-                  </button>
-                </div>
-                <div id="collapseOne" className="collapse  show" aria-labelledby="headingOne" data-parent="#accordion">
-                  <div className="card-body">
-                    <ol className="btn-mainlist">
-                    {dashboard}
-                      <li><a href="javascript:void(0)" id="sign_pad" className="btn sign-btn" onClick={this.showSignatureField.bind(this)} data-toggle="modal" data-target="#Signfiled">Signature</a></li>
-                      <li><a href="javascript:void(0)" id="text_field" className="btn" onClick={this.createTextField.bind(this)}>Text</a></li>
-                      <li><a href="javascript:void(0)" id="date_field" className="btn" onClick={this.createDateField.bind(this)}>Date</a></li>
-                      <li><a href="javascript:void(0)" id="initial_field" className="btn" onClick={this.showInitialField.bind(this)}>Initials</a></li>
-                      <li><a href="javascript:void(0)" id="check_field" className="btn" onClick={this.showCheckField.bind(this)}>Check</a></li>
-                      <li><a href="javascript:void(0)" id="clear_field" className="btn" onClick={this.clearContainer.bind(this)}>Clear</a></li>
-                    </ol>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
+        {(() => {
+          if(!this.state.doc_for_sign){
+            return (<SignerFields 
+              field={this.state.inputFields}
+              setSignerField={this.setSignerField.bind(this)}
+            />);
+          }
+        })()}
+
+        {(() => {
+          if(!this.state.doc_for_sign){
+            return (<ul className="btn-list">
+                    <li>
+                      <div id="accordion" className="inner-accordian">
+                        <div className="card">
+                          <div className="card-header" id="headingOne">
+                            <button className="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                              Add Content
+                              <span className="btn-helper">to document</span>
+                            </button>
+                          </div>
+                          <div id="collapseOne" className="collapse  show" aria-labelledby="headingOne" data-parent="#accordion">
+                            <div className="card-body">
+                              <ol className="btn-mainlist">
+                              {dashboard}
+                                <li><a href="javascript:void(0)" id="sign_pad" className="btn sign-btn" onClick={this.showSignatureField.bind(this)} data-toggle="modal" data-target="#Signfiled">Signature</a></li>
+                                <li><a href="javascript:void(0)" id="text_field" className="btn" onClick={this.createTextField.bind(this)}>Text</a></li>
+                                <li><a href="javascript:void(0)" id="date_field" className="btn" onClick={this.createDateField.bind(this)}>Date</a></li>
+                                <li><a href="javascript:void(0)" id="initial_field" className="btn" onClick={this.showInitialField.bind(this)}>Initials</a></li>
+                                <li><a href="javascript:void(0)" id="check_field" className="btn" onClick={this.showCheckField.bind(this)}>Check</a></li>
+                                <li><a href="javascript:void(0)" id="clear_field" className="btn" onClick={this.clearContainer.bind(this)}>Clear</a></li>
+                              </ol>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>);
+          }
+        })()}
       </div>
       <DropArea 
       docs={docs}
@@ -486,6 +497,7 @@ class Signature_edit extends Component {
       sign_font={this.state.sign_font} 
       sign_color={this.state.color}
       signer_field={this.state.signer_field}
+      doc_for_sign={this.state.doc_for_sign}
       />
     </div>
     <div className="modal signmodal" id="Signfiled">

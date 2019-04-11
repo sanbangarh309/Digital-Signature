@@ -69,7 +69,11 @@ class Dashboard extends Component {
 
   appendId = (e) => {
     $('#emailModal').modal('show');
-    $('#doc_id').val(e.target.id);
+    if(!$('#doc_id').hasClass('hidden_doc')){
+      $('#email_modal_form').append('<input type="hidden" value="'+e.target.id+'" class="hidden_doc" id="doc_id"/>');
+    }else{
+      $('#doc_id').val(e.target.id);
+    }
   }
 
   deleteDoc = (id,e) => {

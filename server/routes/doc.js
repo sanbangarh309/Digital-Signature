@@ -71,23 +71,29 @@ module.exports = (app) => {
     });
 
     app.post('/api/sendemail', (req, res, next) => {
-      let link = 'http://0.0.0.0:5200/signature/'+req.body.id;
+      let link = 'http://'+req.headers.host+'/signature/'+req.body.id+'?sign=true';
       Doc.findById(req.body.id)
         .exec()
         .then((doc) => {
+          let img = '';
           if(doc.images){
-            let img = "/files/docs/"+doc.images[0].name;
+            img = "http://"+req.headers.host+"/files/docs/"+doc.images[0].name;
           }else{
             return false;
+          }
+          // doc.shared_with = [];
+          // doc.save();
+          if(!doc.shared_with.includes(req.body.email_to)){
+            doc.shared_with.push(req.body.email_to);
+            doc.save();
           }
           var mailOptions = {
             from: 'sandeep.digittrix@gmail.com',
             to: req.body.email_to,
-            subject: 'Document Shared For Sign',
-            text: '<div><b><font style="font-family:tahoma;font-size:8pt">Click To Sign:<br/>------------------------------<br/><a href="'+ link+'"><img src="'+img+'" width=100 /></a></font></b></div>'
+            subject: req.body.subject,
+            html: '<div><b><font style="font-family:tahoma;font-size:8pt">Click To Sign:<br/>-------------------<br/><a href="'+ link+'"><img src="'+img+'" width=100 /></a></font></b></div>'
           };
           San_Function.sanSendMail(req, res, mailOptions);
-          console.log(doc);
           res.json(doc);
         }).catch((err) => next(err));
     });

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'src/common/myAxios';
 import DropArea from './DropArea';
+import  { Redirect } from 'react-router-dom'
 import Sign from './Sign';
 import SignerFields from './SignerFields';
 import './Signature.css';

@@ -86,7 +86,7 @@ class DropArea extends React.Component {
         this.state, {
           items : list
         });
-      // console.log(list[id])
+      console.log(list[id])
       this.setState(newState);
     }
     updateStateResizing( id, isResizing){
@@ -114,32 +114,48 @@ class DropArea extends React.Component {
         });
       this.setState(newState);
     }
-    pasteSelectedField(e){
+    pasteSelectedField(e){ e.target.parentElement.remove(); console.log(e.target);
+      const parent = e.target.parentElement; 
       e.preventDefault();
+      let key___ = ''
       if( !e.target.className.includes('btn-removebox1') && !e.target.className.includes('form-control') && !e.target.className.includes('unselectable') && !e.target.className.includes('sign_image')){
         console.log('new element created')
         this.setState({add_new:true});
         let position = e.target.getBoundingClientRect();
         var x = e.clientX - position.left; //x position within the element.
         var y = e.clientY - position.top;
-        let doc_id = e.target.id.replace ( /[^\d.]/g, '' );
-        let id = 0;
+        let doc_id = e.target.id.replace ( /[^\d.]/g, '' ) || 1;
         let h = 100;
         let w = 200;
         let alreday = false;
         let list = this.state.items;
-        let key___ = this.props.field_type.slice(this.props.field_type.length - 1);
-        if(key___.length <= 0 || key___ == 'initials'){
+        let key___c = this.props.field_type.slice(this.props.field_type.length - 1);
+        key___ = key___c[0];
+        if(key___c.length <= 0 || key___c == 'initials'){
           this.props.getSignPosition(y,x,doc_id);
-          $('.sign-btn').click();
+          // $('.sign-btn').click();
+          if(this.props.doc_for_sign && e.target.nodeName == 'SPAN'){ console.log('or inside');
+            if(e.target.innerText == 'sign'){ 
+              let drag_id = $(parent).attr('id'); console.log($('#signature_container_'+doc_id));
+              $('#signature_container_'+doc_id).removeChild(document.getElementById(drag_id));
+              $('#Signfiled').modal('show');
+              return false
+            }
+            key___ = e.target.innerText;
+          }else if(!this.props.doc_for_sign){
+            $('#Signfiled').modal('show');
+          } 
           return false
         }
 
         // if(key___.includes('sign')){
 
         // }
-
-        key___ = key___[0];
+        
+        
+        if(e.target.nodeName == 'SPAN'){
+          key___ = e.target.innerText;
+        }
         this.setState((state) => ({ field_count: state.field_count + 1}));
         if(key___ == 'date'){
           w = 100
@@ -160,7 +176,6 @@ class DropArea extends React.Component {
         if(!alreday){
           let items = []
           let text = '';
-          console.log(key___)
           if(key___ == 'signer'){
             text = this.props.signer_field;
           }
@@ -256,6 +271,7 @@ class DropArea extends React.Component {
                     updateStateResizing={this.updateStateResizing.bind(this)}
                     funcResizing={this.funcResizing.bind(this)}
                     removeFieldBox={this.removeFieldBox.bind(this)}
+                    pasteSelectedField={this.pasteSelectedField.bind(this)}
                   />
                 );
               
@@ -398,13 +414,14 @@ class DropArea extends React.Component {
       return (
         <div className="text-field-box item unselectable" 
           ref={"node"}
-          draggable="true"
+          draggable={this.props.isDragging}
           id={ this.props.fieldType+'_' + this.props.id }
           fieldtype={this.props.fieldType}
           onMouseDown={this.onMouseDown.bind(this)}
           onMouseUp={this.onMouseUp.bind(this)}
           onDragStart={this.onDragStart.bind(this)}
           onDragEnd={this.onDragEnd.bind(this)} 
+          onClick={(e) =>{this.props.pasteSelectedField(e)}}
           style={styles}>
         {(() => {
           switch (this.props.fieldType) {
@@ -455,15 +472,19 @@ class DropArea extends React.Component {
     }
     componentDidMount(){
       const x = document.getElementById("signature_container_"+this.props.docId);
-      x.addEventListener('mousemove', this.onMouseMove.bind(this), false);
-      x.addEventListener('mouseup', this.onMouseUp.bind(this), false);
+      if(x){
+        x.addEventListener('mousemove', this.onMouseMove.bind(this), false);
+        x.addEventListener('mouseup', this.onMouseUp.bind(this), false);
+      }
       // window.addEventListener('mousemove', this.onMouseMove.bind(this), false);
       // window.addEventListener('mouseup', this.onMouseUp.bind(this), false);
     }
     componentWillUnmount(){
       const x = document.getElementById("signature_container_"+this.props.docId);
-      x.removeEventListener('mousemove', this.onMouseMove.bind(this), false);
-      x.removeEventListener('mouseup', this.onMouseUp.bind(this), false);
+      if(x){
+        x.removeEventListener('mousemove', this.onMouseMove.bind(this), false);
+        x.removeEventListener('mouseup', this.onMouseUp.bind(this), false);
+      }
     }
     onMouseDown(e) {
       console.log("Resizer.onMouseDown");

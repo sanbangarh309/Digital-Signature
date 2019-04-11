@@ -70,19 +70,21 @@ export default class ModalComponent extends React.Component {
   }
 
   handleChangeEmail(e){
+    e.preventDefault();
+    console.log(e.target.name);
+    console.log(e.target.value);
     this.setState({[e.target.name]: e.target.value});
   }
 
   sendEmail(e){
     e.preventDefault();
-    let id = $('#emailModal form').find('#doc_id').val();console.log(id);
-    console.log(this.state);
+    let id = $('#emailModal form').find('#doc_id').val();
     if(this.state.email_to !='' && id){
       axios.post('/api/sendemail',{'email_to':this.state.email_to,'subject':this.state.subject,'body':this.state.message,'id':id}).then((res) => {
         this.setState({
           added: true,
           alert: 'alert alert-success',
-          msg: 'Email Sent Successfully',
+          msg: 'Document Shared Successfully',
         });
       }).catch(error => {
         this.setState({
@@ -292,9 +294,10 @@ export default class ModalComponent extends React.Component {
                     <div className="modal-body">
                         <div className="containter">
                              <div className="row">
+                             
 							    <div className="col-md-12 col-md-offset-4">
-							      <form className="form-horizontal" role="form" onSubmit={this.sendEmail}>
-                      <input type="hidden" value="" id="doc_id"/>
+                  {addedAlert}
+							      <form className="form-horizontal" role="form" onSubmit={this.sendEmail} id="email_modal_form">
 							        <fieldset>
 							          <div className="form-group">
 							            <label className="col-sm-4 control-label" for="textinput">Email to Employee</label>
