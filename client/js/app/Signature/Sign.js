@@ -19,7 +19,6 @@ class Sign extends Component {
       bindSignature(e){
         if(this.sigCanvas.isEmpty()) return false;
         let docId = this.props.docId || 1;
-        console.log(this.trim(this.sigCanvas.getCanvas()));
         let newcanvas = this.trim(this.sigCanvas.getCanvas());
         let image = newcanvas.toDataURL(),
         container = document.getElementById('signature_container_'+docId),
@@ -34,13 +33,15 @@ class Sign extends Component {
           $(img).addClass('sign_image');
           $(img).css('margin-top',this.props.t);
           $(img).css('margin-left',this.props.l);
-          console.log(img);
           // console.log(this.props);
           this.props.updateSignField({src:image,top:this.props.t,left:this.props.l,canvas:newcanvas});
           container.children.length ? container.removeChild(container.children[0]) : null;
+          if(this.props.doc_for_sign){
+            container.appendChild(img);
+          }
           // container.appendChild(img);
         //   debugger;
-          //  img.removeEventListener("dblclick",onClick);
+          // img.removeEventListener("dblclick",onClick);
           // img.addEventListener("dblclick",onClick);
           this.setState({buttons:{revoke:true,clear:true,sign:true}});
       }
@@ -136,7 +137,6 @@ class Sign extends Component {
     //   }
 
       render() {
-        console.log(this.props.bind_signature);
         if(this.props.bind_signature){
           this.bindSignature(this);
         }
@@ -153,12 +153,6 @@ class Sign extends Component {
             <p className="clear-link"><a href="javascript:void(0)" onClick={this.clearSignature.bind(this)}>clear</a></p>
             </div>
               </div>
-             {/* <div class='row' ref="btnWrapper" >
-               <div class='col-sm-6'>
-                    <div ref="btnSign" className='btn btn-success pull-left' onClick={this.bindSignature.bind(this)}>Sign</div> &nbsp;
-                    <div ref="btnClear" className='btn btn-warning pull-right' onClick={this.clearSignature.bind(this)}>Clear</div>
-               </div>
-               </div> */}
           </div>;
       }
 }

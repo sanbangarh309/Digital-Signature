@@ -15,7 +15,9 @@ class DropArea extends React.Component {
         field_count:0,
         signer_field:null,
         items: {},
-        chkduplicacy:[]
+        chkduplicacy:[],
+        currentNode:null,
+        currentText:null
       };
     }
 
@@ -58,7 +60,8 @@ class DropArea extends React.Component {
         var obj = {};
         let list = {};
       }
-      
+      console.log(this.state.list)
+      // this.state.list.splice(parseInt(this.state.list.length)-2, 1)
 
       // this.setState({
       //   items: [
@@ -86,7 +89,6 @@ class DropArea extends React.Component {
         this.state, {
           items : list
         });
-      console.log(list[id])
       this.setState(newState);
     }
     updateStateResizing( id, isResizing){
@@ -114,8 +116,9 @@ class DropArea extends React.Component {
         });
       this.setState(newState);
     }
-    pasteSelectedField(e){ e.target.parentElement.remove(); console.log(e.target);
-      const parent = e.target.parentElement; 
+    pasteSelectedField(e){ 
+      this.setState({currentNode:e.target.nodeName});
+      this.setState({currentText:e.target.innerText});
       e.preventDefault();
       let key___ = ''
       if( !e.target.className.includes('btn-removebox1') && !e.target.className.includes('form-control') && !e.target.className.includes('unselectable') && !e.target.className.includes('sign_image')){
@@ -131,13 +134,12 @@ class DropArea extends React.Component {
         let list = this.state.items;
         let key___c = this.props.field_type.slice(this.props.field_type.length - 1);
         key___ = key___c[0];
+        this.props.getSignPosition(e.target.parentElement.style.top,e.target.parentElement.style.left,doc_id);
         if(key___c.length <= 0 || key___c == 'initials'){
-          this.props.getSignPosition(y,x,doc_id);
           // $('.sign-btn').click();
-          if(this.props.doc_for_sign && e.target.nodeName == 'SPAN'){ console.log('or inside');
+          if(this.props.doc_for_sign && e.target.nodeName == 'SPAN'){
             if(e.target.innerText == 'sign'){ 
-              let drag_id = $(parent).attr('id'); console.log($('#signature_container_'+doc_id));
-              $('#signature_container_'+doc_id).removeChild(document.getElementById(drag_id));
+              e.target.parentElement.remove();
               $('#Signfiled').modal('show');
               return false
             }
@@ -172,16 +174,26 @@ class DropArea extends React.Component {
           //   alreday = true;
           // }
         }
-        
+        let newobj = {};
+          if(this.props.doc_for_sign && key___ =='sign'){
+            let new_list = [];
+            Object.keys(this.state.items).map(key => {
+              if(this.state.items[key].type =='signer' && this.state.items[key].content == 'sign'){  
+              }else{
+                new_list.push(this.state.items[key]);
+              }
+            });
+            Object.assign(newobj, new_list);
+            this.setState({items:newobj});
+          }
         if(!alreday){
           let items = []
           let text = '';
           if(key___ == 'signer'){
             text = this.props.signer_field;
           }
-          
           this.state.field_lists.push({ id: this.state.field_count, isDragging: false, isResizing: false, top:y, left: x,width:w, height:h, fontSize:20,isHide:false, type:key___,appendOn:false,content:text,doc_id:doc_id});
-          let newobj = {};
+          
           Object.assign(newobj, this.state.field_lists); 
           this.setState({show_field:true});
           if(e.target.id && e.target.id !=''){
@@ -199,7 +211,6 @@ class DropArea extends React.Component {
       let list = this.state.items; 
       // let index = this.state.field_lists.findIndex((item) => item.id == id);
       delete list[id];
-      console.log(list);
       // list[id].isHide = true;
       // list[id].type = 'yes';
       // list[id].appendOn = false;
@@ -227,14 +238,16 @@ class DropArea extends React.Component {
         if(doc.drag_data && Object.keys(fields).length <= 0){
           fields = doc.drag_data;
         }
-        if(doc.drag_data && Object.keys(fields).length > 0){
-
-        }
         if((this.state.doc_key == key_) || doc.drag_data){ 
           Object.keys(fields).map(key => {
             // if(doc.drag_data){
             //   key_ = 
             // }
+            if(this.props.doc_for_sign && this.state.currentNode == 'SPAN'){
+              if(this.state.currentText == 'sign' && fields[key].type =='signer' && fields[key].content == 'sign'){
+                return;
+              }
+            }
             if(!fields[key].isHide && !fields[key].isDragging && !fields[key].isResizing){ 
                 if(this.state.chkduplicacy.includes(fields[key].id)){
                   // delete this.state.list[fields[key].id];
@@ -272,9 +285,11 @@ class DropArea extends React.Component {
                     funcResizing={this.funcResizing.bind(this)}
                     removeFieldBox={this.removeFieldBox.bind(this)}
                     pasteSelectedField={this.pasteSelectedField.bind(this)}
+                    doc_for_sign={this.props.doc_for_sign}
+                    currentNode={this.state.currentNode}
+                    currentText={this.state.currentText}
                   />
                 );
-              
             }
             // else if(fields[key].isDragging || fields[key].isResizing){
             //   if(this.state.chkduplicacy.includes(fields[key].id)){
@@ -283,7 +298,15 @@ class DropArea extends React.Component {
 
             //   }
             // }
+
+            // console.log(this.state.list);
+            // if(fields[key].isDragging){
+            //   console.log(this.state.list.splice(parseInt(this.state.list.length)-2, 1));
+            // }
+            
+            console.log(this.state.list.length);
           });
+         
           DropJgah.push(<div
             className="drop-area container doc-bg signature_container hovrcr_sign" 
             onDragOver={this.onDragOver.bind(this)}
@@ -333,6 +356,9 @@ class DropArea extends React.Component {
     onMouseUp(e){
       console.log("Draggable.onMouseUp");
       this.props.updateStateDragging( this.props.drag_id, false );
+      if(this.props.fieldType =='signer' && this.props.doc_for_sign){ console.log('hello')
+        this.props.pasteSelectedField(e);
+      }
     }
     onDragStart(e) {
       console.log("Draggable.onDragStart");
@@ -411,17 +437,22 @@ class DropArea extends React.Component {
       fontSize: '42px',
       marginLeft: '50px'
     }
+    console.log(this.props.fieldType);
+      if(this.props.doc_for_sign && this.props.currentNode =='SPAN' && this.props.currentText == 'text'){
+        this.props.fieldType = 'text';
+        this.props.signer_field = '';
+      }
+      // {this.props.isDragging}
       return (
         <div className="text-field-box item unselectable" 
           ref={"node"}
-          draggable={this.props.isDragging}
+          draggable="true"
           id={ this.props.fieldType+'_' + this.props.id }
           fieldtype={this.props.fieldType}
           onMouseDown={this.onMouseDown.bind(this)}
           onMouseUp={this.onMouseUp.bind(this)}
           onDragStart={this.onDragStart.bind(this)}
           onDragEnd={this.onDragEnd.bind(this)} 
-          onClick={(e) =>{this.props.pasteSelectedField(e)}}
           style={styles}>
         {(() => {
           switch (this.props.fieldType) {

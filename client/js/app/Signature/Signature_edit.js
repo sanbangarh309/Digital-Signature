@@ -552,6 +552,7 @@ class Signature_edit extends Component {
                     bind_signature={this.state.bind_signature}
                     updateSignField={this.updateSignField.bind(this)}
                     updateSignFieldType={this.updateSignFieldType.bind(this)}
+                    doc_for_sign={this.state.doc_for_sign}
                     />
 								</div>
 							</div>
