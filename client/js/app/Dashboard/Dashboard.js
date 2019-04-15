@@ -122,7 +122,7 @@ class Dashboard extends Component {
 				<div className="collapse navbar-collapse navigation-bar3" id="navbarCollapse">
 					<ul className="navbar-nav ml-auto custom-navi">
 										<li className="dropdown messages-menu">
-					<a href="#" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+					{/* <a href="#" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 					  <i className="fa fa-envelope-o"></i>
 					  <span className="label label-success">4</span>
 					</a>
@@ -193,7 +193,7 @@ class Dashboard extends Component {
 						</ul>
 					  </li>
 					  <li className="footer"><a href="#">See All Messages</a></li>
-					</ul>
+					</ul> */}
 				  </li>
 						<li className="dropdown user user-menu">
 							<a href="#" className="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -201,12 +201,12 @@ class Dashboard extends Component {
 							  
 							</a>
 							<ul className="dropdown-menu">
-								<li>
-									<a href="#" className="btn btn-default btn-flat"><i className="fa fa-user"></i> My Profile</a>
+								{/* <li>
+									<a href="javascript:void(0)" className="btn btn-default btn-flat"><i className="fa fa-user"></i> My Profile</a>
 								</li>
 								<li>
-								  <a href="#" className="btn btn-default btn-flat"><i className="fa fa-globe"></i> Feedback</a>
-								</li>
+								  <a href="javascript:void(0)" className="btn btn-default btn-flat"><i className="fa fa-globe"></i> Feedback</a>
+								</li> */}
 								<li>
                   <NavLink to='/logout' className="btn btn-default btn-flat"><i className="fa fa-sign-out"></i>Logout</NavLink>
 								</li>
@@ -224,12 +224,12 @@ class Dashboard extends Component {
             <img src="/assets/img/user2.jpg" className="img-circle" alt="User Image"/>
           </div>
           <div className="pull-left info">
-            <p>DIGITTRIX <span className="small">Founder of App</span></p>
+            <p>DIGISIGN <span className="small">Founder of App</span></p>
           </div>
          </div>
          <ul className="sidebar-menu tree" data-widget="tree">
           <li><NavLink activeClassName='active' to='/dashboard'><i className="fa fa-dashboard"></i> <span>Documentation</span></NavLink></li>
-          <li><NavLink activeClassName='active' to='/temps'><i className="fa fa-rebel"></i> <span>Templates</span></NavLink></li>
+          {/* <li><NavLink activeClassName='active' to='/temps'><i className="fa fa-rebel"></i> <span>Templates</span></NavLink></li> */}
           <li><NavLink activeClassName='active' to='/logout'><i className="fa fa-sign-out"></i> <span>Logout</span></NavLink></li>
          </ul>
       </aside>
@@ -242,11 +242,11 @@ class Dashboard extends Component {
                 <div className="card-header">
                   <ul className="list-inline top-box-list">
                     <li><input type="checkbox"/><span></span></li>
-                    <li><a href="#">NEW</a></li>
-                    <li><a href="#">FOLDER SEND </a></li>
-                    <li><a href="#">FOR SIGNING</a></li>
-                    <li><a href="#">Move to</a></li>
-                    <li className="delete-row"><a className="fa fa-trash danger" href="#"></a></li>
+                    <li><a href="javascript:void(0)">NEW</a></li>
+                    <li><a href="javascript:void(0)">FOLDER SEND </a></li>
+                    <li><a href="javascript:void(0)">FOR SIGNING</a></li>
+                    <li><a href="javascript:void(0)">Move to</a></li>
+                    <li className="delete-row"><a className="fa fa-trash danger" href="javascript:void(0)"></a></li>
                     <li className="search-row">
                       <form id="example1_filter" className="dataTables_filter">
                         <label className="filter_search">

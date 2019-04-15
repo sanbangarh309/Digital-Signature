@@ -14,11 +14,6 @@
     -webkit-user-drag: element;
   }
 
-  .right-maintemplate .san_jgah {
-    /* float: left;
-    width: 100%;
-    padding: 41px; */
-  }
   .drop-area {
     position: relative;
     padding:0;
@@ -39,7 +34,8 @@
     font-size: 105%;
     /* background: white; */
     /* border: dashed 1px black; */
-    /* background-color: rgba(28, 164, 255, 0.2); */
+    /* background-color: rgba(34, 176, 20, 0.2); */
+    background-color: green;
     margin:0;
     padding:0;
   }

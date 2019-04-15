@@ -4,6 +4,7 @@ const passwordValidator = require('password-validator');
 
 const User = require.main.require('./user').models.user;
 const config = require.main.require('./custom_config');
+const San_Function = require.main.require('./functions');
 
 // Create a schema
 const passwordSchema = new passwordValidator()
@@ -49,7 +50,7 @@ async function respondAuth(res, user) {
         });
     } else {
         setTimeout(() => {
-            res.status(401).send({error: 'Incorrect username/password'});
+            res.status(401).send({error: 'Incorrect email/password'});
         }, 300); // Timout 0.3 second to prevent attack
     }
 }
@@ -81,6 +82,48 @@ async function logout(req, res, next) {
         next(err);
     }
 }
+
+async function forgot(req, res, next) {
+    const {email,password,confirmedPassword,forgotid} = req.body;
+    try {
+        if(email){
+            const user = await User.findOne({'email': email});
+            if(user){
+                let link = 'http://'+req.headers.host+'?forgot=true&id='+user._id;
+                var mailOptions = {
+                    from: 'digittrix@gmail.com',
+                    to: email,
+                    subject: 'Reset Password Request',
+                    html: '<div><b><font style="font-family:tahoma;font-size:8pt">Click Below To Reset Your Password :<br/>-------------------<br/><a href="'+ link+'">Reset</a></font></b></div>'
+                };
+                San_Function.sanSendMail(req, res, mailOptions);
+                return res.json(user);
+            }else{
+                return res.status(422).json({error: 'Email Not Exist.'});
+            }
+        }
+        if(confirmedPassword && password && forgotid){
+            const userMatched = await User.findById(forgotid);
+            if(userMatched){
+                if (password !== confirmedPassword) {
+                    return res.status(422).json({error: 'Password does not match'});
+                }
+                if (!passwordSchema.validate(password + '')) {
+                    return res.status(422).json({error: 'Password format error'});
+                }
+                userMatched.password = password;
+                userMatched.save();
+                return res.json(userMatched);
+            }else{
+                return res.status(422).json({error: 'Email Not Exist.'});
+            }
+            
+        }
+    } catch (err) {
+        next(err);
+    }
+}
+
 
 // Use new async await to mongoose and bycrypt
 async function signup(req, res, next) {
@@ -148,6 +191,7 @@ async function reAuthorize(req, res, next) {
 module.exports = (app) => {
     app.post('/api/login', login);
     app.post('/api/logout', logout);
+    app.post('/api/forgot', forgot);
     app.post('/api/signup', signup);
     app.post('/api/reauth', reAuthorize);
 };

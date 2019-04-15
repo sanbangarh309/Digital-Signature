@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import auth from 'src/auth';
 import axios from 'src/common/myAxios';
 import {connect} from 'react-redux';
+import history from '../history';
 
 @connect((store) => {
   return {
@@ -17,9 +18,16 @@ export default class ModalComponent extends React.Component {
       dispatch: PropTypes.func,
       user: PropTypes.object,
   };
-  constructor() {
-      super();
-
+  constructor(props) {
+      super(props);
+      let forgotid = null;
+      if(history.location.query.forgot){
+        forgotid = history.location.query.id; 
+      }
+      // const params = this.props.location.pathname.split('/');
+      // if(params[params.length-1] != 'signature'){
+      //   forgot = params[params.length-1];
+      // }
       this.state = {
           added: false,
           msg: '',
@@ -37,7 +45,8 @@ export default class ModalComponent extends React.Component {
           subject:'',
           message:'',
           tags: [],
-          tag: ''
+          tag: '',
+          forgotid: forgotid
       };
       // This binding is necessary to make `this` work in the callback
       this.Register = this.Register.bind(this);
@@ -46,6 +55,15 @@ export default class ModalComponent extends React.Component {
       this.handleChange = this.handleChange.bind(this);
       this.sendEmail = this.sendEmail.bind(this);
       this.handleChangeEmail = this.handleChangeEmail.bind(this);
+      this.forgotpwd = this.forgotpwd.bind(this);
+      this.submitForgot = this.submitForgot.bind(this);
+      
+  }
+
+  componentDidMount() {
+    if(this.state.forgotid){
+      $('#reset_pwd_save').modal('show');
+    }
   }
 
   handleDelete (i) {
@@ -74,6 +92,11 @@ export default class ModalComponent extends React.Component {
     console.log(e.target.name);
     console.log(e.target.value);
     this.setState({[e.target.name]: e.target.value});
+  }
+
+  forgotpwd(e){
+    e.preventDefault();
+    $('#forgot_pwd').modal('show');
   }
 
   sendEmail(e){
@@ -115,22 +138,65 @@ export default class ModalComponent extends React.Component {
         alert: 'alert alert-danger',
         msg: error.response.data.error,
       });
+      // $('.login-tabs__login').click();
     });
+  }
+
+  submitForgot(e){
+    // console.log(this.state.email);
+    // if(this.state.email){
+      axios.post('/api/forgot',this.state).then((res) => {
+        this.setState({
+          added: true,
+          alert: 'alert alert-success',
+          msg: this.state.email ? 'Please Check Your Email' : 'Password Changed Successfully.',
+        });
+      }).catch(error => {
+        this.setState({
+          added: true,
+          alert: 'alert alert-danger',
+          msg: error.response.data.error,
+        });
+      });
+    // }
   }
 
   Login(event){
     event.preventDefault();
-    document.getElementById("hidePopUpBtn").click();
     this.props.dispatch(auth.actions.login(this.state, '/dashboard'));
-    if(user && user.user.email !=''){
+    setTimeout(
+      function() {
+        // console.log(this.props)
+        const {user} = this.props;
+        if(user && user.email !=''){
+            // console.log(this.props.action)
+            this.setState({
+              added: true,
+              alert: 'alert alert-success',
+              msg: 'Logged In Successfully! Redirecting..',
+            });
+            // document.getElementById("hidePopUpBtn").click();
+            setTimeout(function(){ $('#auth-modal').modal('hide');$('.modal-backdrop').remove();$('body').removeClass('modal-open') }, 1000);
+        }else{
+          this.setState({
+            added: true,
+            alert: 'alert alert-danger',
+            msg: user.error,
+          });
+        }
+      }
+      .bind(this),
+      1000
+  );
+    // if(user && user.user.email !=''){
       // console.log(this.props.action)
-      this.setState({
-        added: true,
-        alert: 'alert alert-success',
-        msg: 'Logged In Successfully! Redirecting..',
-      });
-      document.getElementById("hidePopUpBtn").click();
-    }
+      // this.setState({
+      //   added: true,
+      //   alert: 'alert alert-success',
+      //   msg: 'Logged In Successfully! Redirecting..',
+      // });
+      // document.getElementById("hidePopUpBtn").click();
+    // }
   }
   closePopUp(){
     setTimeout(
@@ -142,15 +208,24 @@ export default class ModalComponent extends React.Component {
     );
   }
   render() {
-    const {user} = this.props;
     let cusClass = ['modal','fade','auth-modal','no-guest-checkout'];
     let addedAlert;
+    let added = this.state.added;
+    let alert = this.state.msg;
     if (this.state.added) {
       addedAlert = <div className={this.state.alert} style={{textAlign:'center'}}>
       <strong>{this.state.msg}</strong>   
       </div>;
       // this.closePopUp()
     }
+    setTimeout(function() { 
+      $(".alert").hide();
+      if(added && alert == 'Registerted Successfully'){
+        $("form.sign-up input").each(function( index ) {
+          $(this).val('');
+        });
+      }
+     }, 8000);
     return (
       <div>
         <div className={cusClass.join(' ')} id="auth-modal" tabIndex="-1" role="dialog">
@@ -199,7 +274,7 @@ export default class ModalComponent extends React.Component {
                             </label>
                           </div>
                            <div className="login__forgot-password">
-                            <a href="/forgot-your-password">
+                            <a href="javascript:void(0)" onClick={this.forgotpwd}>
                             Forgot your password?
                             </a>
                            </div>
@@ -221,16 +296,16 @@ export default class ModalComponent extends React.Component {
                           <span>OR</span>
                         </div>
                       </div>
-                      <form action="/customer/register" method="post" role="form" noValidate="novalidate" className="sign-up">
+                      <form role="form" noValidate="novalidate" className="sign-up">
                           <div className="form-group">
                            <div className="col-12 p-0 raw">
                             <div className="col-md-6">
                                <label className="control-label sr-only required" for="customer_registration_firstName"> First name</label>
-                               <input id="customer_registration_firstName" name="firstname" value={this.state.firstname} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="First name" type="text"/>
+                               <input id="customer_registration_firstName" name="firstname"  onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="First name" type="text"/>
                             </div>
                             <div className="col-md-6">
                                <label className="control-label sr-only required" for="customer_registration_lastName">Last name</label>
-                               <input id="customer_registration_lastName" name="lastname" value={this.state.lastname} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Last name" type="text"/>
+                               <input id="customer_registration_lastName" name="lastname" onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Last name" type="text"/>
                             </div>
                            </div>
                           </div>
@@ -241,14 +316,14 @@ export default class ModalComponent extends React.Component {
                                <input id="customer_registration_mobileCountryCode" name="mobilecountrycode" value={this.state.mobilecountrycode} onChange={this.handleChange} required="required" readonly="readonly" className="form-control input-lg" value="91" type="text"/>
                             </div> */}
                             <div className="col-12">
-                               <input id="customer_registration_mobileNumber" name="mobile" value={this.state.mobile} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Mobile" type="text"/>
+                               <input id="customer_registration_mobileNumber" name="mobile" onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Mobile" type="text"/>
                             </div>
                            </div>
                           </div>
                           <div className="form-group">
                            <div className="col-12">
                              <label className="control-label sr-only required" for="customer_registration_email">Email</label>
-                             <input id="customer_registration_email" name="reg_email" value={this.state.reg_email} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Email" type="email"/>
+                             <input id="customer_registration_email" name="reg_email" onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Email" type="email"/>
                           </div>
                           </div>
                           <div className="form-group cst-group">
@@ -256,17 +331,17 @@ export default class ModalComponent extends React.Component {
                            <div className="col-12 p-0 raw">
                             <div className="col-md-6">
                                <label className="control-label sr-only required" for="customer_registration_password_first">Password</label>
-                               <input id="customer_registration_password_first" name="password" value={this.state.password} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Password Must Have one upper case letter with symbols" autoComplete="off" type="password"/>
+                               <input id="customer_registration_password_first" name="password" onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Password Must Have one upper case letter with symbols" autoComplete="off" type="password"/>
                             </div>
                             <div className="col-md-6">
                                <label className="control-label sr-only required" for="customer_registration_password_second"> Repeat password</label>
-                               <input id="customer_registration_password_second" name="confirmedPassword" value={this.state.confirmedPassword} onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Repeat password" autoComplete="off" type="password"/>
+                               <input id="customer_registration_password_second" name="confirmedPassword" onChange={this.handleChange} required="required" className="form-control input-lg" placeholder="Repeat password" autoComplete="off" type="password"/>
                             </div>
                            </div>
                           </div>
                           <div className="form-group">
                           <div className="col-sm-12 auth-submit login_privacy">
-                             <input id="customer_registration_termsAndConditionsAccepted" name="terms" value={this.state.terms} onChange={this.handleChange} required="required" value="1" type="checkbox"/>
+                             <input id="customer_registration_termsAndConditionsAccepted" name="terms" onChange={this.handleChange} required="required" value="1" type="checkbox"/>
                              <label className="control-label required" for="customer_registration_termsAndConditionsAccepted">I have read and accepted the <a target="_blank" href="/contents/terms-and-conditions.htm">Terms and conditions</a> and <a target="_blank" href="/contents/privacy.htm">Privacy policy</a>
                              </label>
                           </div>
@@ -334,6 +409,82 @@ export default class ModalComponent extends React.Component {
                 </div>
             </div>
         </div>
+
+        <div className="modal fade" id="forgot_pwd" role="dialog">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-body">
+                  <div className="col-md-12 col-md-offset-4">
+                  {addedAlert}
+                        <div className="panel panel-default">
+                          <div className="panel-body">
+                            <div className="text-center">
+                                <h3><i className="fa fa-lock fa-4x"></i></h3>
+                                <h2 className="text-center">Forgot Password?</h2>
+                                <p>You can reset your password here.</p>
+                                <div className="panel-body">
+                                    <div className="form-group">
+                                      <div className="input-group">
+                                        <span className="input-group-addon"><i className="glyphicon glyphicon-envelope color-blue"></i></span>
+                                        <input id="email" name="email" placeholder="email address" onChange={this.handleChange} className="form-control"  type="email" />
+                                      </div>
+                                    </div>
+                                    <div className="form-group">
+                                      <input name="recover-submit" className="btn btn-lg btn-primary btn-block" value="Reset Password" onClick={this.submitForgot} type="button" />
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                  </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+       </div>
+
+       <div className="modal fade" id="reset_pwd_save" role="dialog">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-body">
+                  <div className="col-md-12 col-md-offset-4">
+                  {addedAlert}
+                        <div className="panel panel-default">
+                          <div className="panel-body">
+                            <div className="text-center">
+                                <h3><i className="fa fa-lock fa-4x"></i></h3>
+                                <h2 className="text-center">Reset Password?</h2>
+                                <p>You can reset your password here.</p>
+                                <div className="panel-body">
+                                    <div className="form-group">
+                                      <div className="input-group">
+                                        <span className="input-group-addon"><i className="glyphicon glyphicon-envelope color-blue"></i></span>
+                                        <input id="email" name="password" placeholder="Enter Password" onChange={this.handleChange} className="form-control"  type="password" />
+                                      </div>
+                                    </div>
+                                    <div className="form-group">
+                                      <div className="input-group">
+                                        <span className="input-group-addon"><i className="glyphicon glyphicon-envelope color-blue"></i></span>
+                                        <input id="email" name="confirmedPassword" placeholder="Enter Confirm Password" onChange={this.handleChange} className="form-control"  type="password" />
+                                      </div>
+                                    </div>
+                                    <div className="form-group">
+                                      <input name="recover-submit" className="btn btn-lg btn-primary btn-block" value="Save" onClick={this.submitForgot} type="button" />
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                  </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+       </div>
 
         </div>
     );

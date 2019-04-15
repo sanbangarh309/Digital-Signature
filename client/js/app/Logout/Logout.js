@@ -24,9 +24,9 @@ export default class Logout extends React.Component {
     // this.props.dispatch(auth.actions.logout());
   }
 
-    componentWillMount() {
-        this.props.dispatch(auth.actions.logout());
-    }
+  componentDidMount() {
+    this.props.dispatch(auth.actions.logout());
+  }
 
     render() {
         // debugger;
